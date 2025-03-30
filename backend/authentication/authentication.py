@@ -4,27 +4,25 @@ from .models import User
 import jwt
 
 class IsAuthenticated(authentication.BaseAuthentication):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated
-    # def authenticate(self, request):
-    #     try:
-    #         token = request.COOKIES.get('token')
-    #         if not token:
-    #             raise exceptions.AuthenticationFailed('Authentication Failed')
-    #         try:
-    #             payload = jwt.decode(token, settings.JWT_KEY, 'HS256')
-    #         except:
-    #             raise exceptions.AuthenticationFailed('Authentication Failed')
-    #         email = payload['id']
+    def authenticate(self, request):
+        try:
+            token = request.COOKIES.get('token')
+            if not token:
+                raise exceptions.AuthenticationFailed('Authentication Failed')
+            try:
+                payload = jwt.decode(token, settings.JWT_KEY, 'HS256')
+            except:
+                raise exceptions.AuthenticationFailed('Authentication Failed')
+            email = payload['id']
 
-    #         try:
-    #             user = User.objects.get(email=email)
-    #         except User.DoesNotExist:
-    #             raise exceptions.AuthenticationFailed('Authentication Failed')
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                raise exceptions.AuthenticationFailed('Authentication Failed')
 
-    #         return (user, None)
-    #     except:
-    #         raise exceptions.AuthenticationFailed('Authentication Failed')
+            return (user, None)
+        except:
+            raise exceptions.AuthenticationFailed('Authentication Failed')
 
 class JWTCookieAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):

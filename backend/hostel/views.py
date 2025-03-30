@@ -2,13 +2,14 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from authentication.authentication import IsAuthenticated
+from .serializers import HostelSerializer
 
 from .models import *
 
 # Create your views here.
 class InitiateBookingAPI(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
-
+    authentication_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request, hostel_id):
         hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
         print(request.user.id)
@@ -16,9 +17,13 @@ class InitiateBookingAPI(generics.CreateAPIView):
             user = request.user,
             status__in = ['otp_pending', 'payment_pending', 'confirmed']
         ).exists():
+            booking = RoomBooking.objects.get(user=request.user)
             return Response(
                 {
-                    "message": "You have already booked a hostel"
+                    "message": "You have already booked a hostel",
+                    "data": {
+                        "booking_id": booking.id
+                    }
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -47,7 +52,8 @@ class InitiateBookingAPI(generics.CreateAPIView):
         )
     
 class VerifyOTPApi(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes=[IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         booking_id = request.data.get('booking_id')
@@ -78,3 +84,17 @@ class VerifyOTPApi(generics.CreateAPIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+class GetHostelDataAPI(generics.CreateAPIView):
+    authentication_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = HostelSerializer
+    queryset = Hostel.objects.filter(enable=True)
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "message": "Fetched data successfully",
+            "data": serializer.data
+        })

@@ -45,13 +45,13 @@ class Hostel(models.Model):
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status='success'
+            status__in=['confirmed', 'payment_verified']
         ).count()
-        return self.no_of_rooms - booked_rooms
+        return self.total_capacity - booked_rooms
 
     def is_available(self):
         return self.enable and self.available_rooms() > 0
-    
+ 
 class RoomBooking(models.Model):
     BOOKING_STATUS = [
         ('otp_pending', 'OTP Pending'),
@@ -118,9 +118,10 @@ class RoomBooking(models.Model):
         })
 
     def verify_otp(self, otp_code):
+        print(otp_code)
         if (self.status != 'otp_pending' or 
             timezone.now() > self.otp_expiry or 
-            self.otp_code != otp_code):
+            self.otp_code != str(otp_code)):
             return False
         
         self.otp_verified_at = timezone.now()

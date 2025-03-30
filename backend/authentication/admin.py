@@ -29,7 +29,7 @@ class UserAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'gender']
     resource_classes = UserResource
 
-@admin.register(BookingOTP)
+# @admin.register(BookingOTP)
 class VerificationCodeAdmin(admin.ModelAdmin):
     list_display = ['user', 'code']
     search_fields = ['user_email', 'user_first_name']

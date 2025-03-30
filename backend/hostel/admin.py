@@ -10,7 +10,7 @@ class HostelAdmin(admin.ModelAdmin):
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'hostel', 'status', 'booked_at')
+    list_display = ('id', 'user', 'hostel', 'status', 'booked_at')
     list_filter = ('status', 'hostel',)
     actions = ['confirm_payment', 'cancel_booking']
 
