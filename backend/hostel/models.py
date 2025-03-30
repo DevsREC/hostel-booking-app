@@ -1,0 +1,177 @@
+from django.db import models
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+from authentication.models import User
+from authentication.utils import send_email
+
+# Create your models here.
+class Hostel(models.Model):
+    ROOM_TYPE = [
+        ('AC', 'AC'),
+        ('NON-AC', 'NON-AC'),
+    ]
+    FOOD_TYPE = [
+        ('Veg', "Veg"),
+        ('Non-veg', 'Non-Veg'),
+    ]
+    GENDER = [
+        ('M', 'Male'),
+        ('F', 'Female')
+    ]
+
+    name = models.CharField('Hostel Name', blank=False, max_length=50)
+    location = models.CharField('Location', blank=False,max_length=50)
+    room_type = models.CharField('Room Type', max_length=20, blank=False, choices=ROOM_TYPE)
+    food_type = models.CharField('Food Type', max_length=20, blank=False, choices=FOOD_TYPE)
+    gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER)
+    person_per_room = models.IntegerField(blank=False)
+    no_of_rooms = models.IntegerField(blank=False)
+    total_capacity = models.IntegerField(editable=False)
+    room_description = models.CharField(max_length=100, blank=False)
+    amount = models.IntegerField(blank=False)
+    image = models.ImageField(upload_to='rooms/')
+    enable = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name}-{self.location}-{self.room_type}-{self.food_type}-{self.person_per_room}"
+    
+    def clean(self):
+        self.total_capacity = self.person_per_room * self.no_of_rooms
+
+    def save(self, force_insert = ..., force_update = ..., using = ..., update_fields = ...):
+        self.clean()
+        return super().save(force_insert, force_update, using, update_fields)()
+    
+    def available_rooms(self):
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=self, 
+            payment_status='success'
+        ).count()
+        return self.no_of_rooms - booked_rooms
+
+    def is_available(self):
+        return self.enable and self.available_rooms() > 0
+    
+class RoomBooking(models.Model):
+    BOOKING_STATUS = [
+        ('otp_pending', 'OTP Pending'),
+        ('payment_pending', 'Payment Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+        ('payment_verified', 'Payment Verified by Admin'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20, 
+        default='otp_pending', 
+        choices=BOOKING_STATUS
+    )
+    booked_at = models.DateTimeField(auto_now_add=True)
+    otp_verified_at = models.DateTimeField(null=True, blank=True)
+    payment_completed_at = models.DateTimeField(null=True, blank=True)
+    payment_link = models.URLField(max_length=255, blank=True, null=True)
+    payment_reference = models.CharField(max_length=100, blank=True, null=True)
+    otp_code = models.CharField(max_length=10, blank=True, null=True)
+    otp_expiry = models.DateTimeField(null=True, blank=True)
+    payment_expiry = models.DateTimeField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.email} - {self.hostel.name} - {self.status}'
+
+    class Meta:
+        unique_together = ('user', 'hostel')
+
+    def clean(self):
+        if self.user.gender != self.hostel.gender:
+            raise ValidationError("User gender doesn't match hostel gender requirement")
+        
+        if not self.hostel.is_available() and self.status != 'confirmed':
+            raise ValidationError("This hostel is currently not available")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def generate_otp(self):
+        import random
+        self.otp_code = str(random.randint(100000, 999999))
+        self.otp_expiry = timezone.now() + timezone.timedelta(minutes=10)
+        self.status = 'otp_pending'
+        self.save()
+        self.send_otp_email()
+
+    def send_otp_email(self):
+        startcontent = f"""
+            Your OTP for hostel booking is: {self.otp_code}\n
+            Valid for 10 minutes.\n
+            \n
+            Hostel: {self.hostel.name}\n
+            Room Type: {self.hostel.get_room_type_display()}\n
+            Amount: ₹{self.hostel.amount}\n
+        """
+        subject = "Hostel Booking OTP Verification"
+        to_email = self.user.email
+        send_email(subject=subject, to_email=to_email, context={
+            "startingcontent": startcontent
+        })
+
+    def verify_otp(self, otp_code):
+        if (self.status != 'otp_pending' or 
+            timezone.now() > self.otp_expiry or 
+            self.otp_code != otp_code):
+            return False
+        
+        self.otp_verified_at = timezone.now()
+        self.status = 'payment_pending'
+        self.payment_expiry = timezone.now() + timezone.timedelta(hours=24)
+        self.payment_link = f"https://payment.link.should.be.pasted.here"
+        self.save()
+        self.send_payment_instructions()
+        return True
+
+    def send_payment_instructions(self):
+        subject = "Hostel Booking - Payment Instructions"
+        message = f"""
+        OTP verified successfully!
+        
+        Payment Instructions:
+        1. Make a payment of ₹{self.hostel.amount} via:
+           - Bank Transfer: Account XXXX, IFSC XXXX
+           - UPI: yourupi@example
+        2. After payment, visit: {self.payment_link} 
+           to submit your payment reference
+        3. Admin will verify and confirm your booking
+        
+        Complete within 24 hours.
+        
+        Hostel: {self.hostel.name}
+        Amount: ₹{self.hostel.amount}
+        """
+        to_email = self.user.email
+        send_email(subject=subject, to_email=to_email, context={
+            "startingcontent": message
+        })
+
+    # def submit_payment_reference(self, reference):
+    #     self.payment_reference = reference
+    #     self.status = 'payment_verified'
+    #     self.save()
+    #     self.notify_admin()
+
+    # def notify_admin(self):
+    #     print(f"Admin notification: Payment reference {self.payment_reference} submitted for booking {self.id}")
+
+    @classmethod
+    def cleanup_expired_bookings(cls):
+        cls.objects.filter(
+            status='otp_pending',
+            otp_expiry__lt=timezone.now()
+        ).update(status='cancelled')
+        
+        cls.objects.filter(
+            status='payment_pending',
+            payment_expiry__lt=timezone.now()
+        ).update(status='cancelled')

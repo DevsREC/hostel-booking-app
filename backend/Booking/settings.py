@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'authentication',
     'import_export',
     'corsheaders',
+    'authentication',
+    'hostel',
 ]
 
 # X_FRAME_OPTIONS = "SAMEORIGIN"
