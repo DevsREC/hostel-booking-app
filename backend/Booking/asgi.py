@@ -1,5 +1,5 @@
 """
-ASGI config for hostel_booking_app project.
+ASGI config for Booking project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hostel_booking_app.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Booking.settings')
 
 application = get_asgi_application()
