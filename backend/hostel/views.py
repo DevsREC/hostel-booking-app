@@ -9,10 +9,9 @@ from .models import *
 class InitiateBookingAPI(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        hostel_id = request.data.get('hostel_id')
+    def post(self, request, hostel_id):
         hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
-
+        print(request.user.id)
         if RoomBooking.objects.filter(
             user = request.user,
             status__in = ['otp_pending', 'payment_pending', 'confirmed']

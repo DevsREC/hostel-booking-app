@@ -33,8 +33,6 @@ class LoginAPIView(generics.CreateAPIView):
 
         if user:
             return user.generate_login_response()
-            # else:
-            #     return Response({'detail':"User Not Verified"}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'detail':"Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         

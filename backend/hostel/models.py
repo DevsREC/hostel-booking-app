@@ -40,12 +40,12 @@ class Hostel(models.Model):
 
     def save(self, force_insert = ..., force_update = ..., using = ..., update_fields = ...):
         self.clean()
-        return super().save(force_insert, force_update, using, update_fields)()
+        return super().save()
     
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            payment_status='success'
+            status='success'
         ).count()
         return self.no_of_rooms - booked_rooms
 
@@ -87,7 +87,6 @@ class RoomBooking(models.Model):
     def clean(self):
         if self.user.gender != self.hostel.gender:
             raise ValidationError("User gender doesn't match hostel gender requirement")
-        
         if not self.hostel.is_available() and self.status != 'confirmed':
             raise ValidationError("This hostel is currently not available")
 

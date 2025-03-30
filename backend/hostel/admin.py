@@ -5,12 +5,12 @@ from .models import *
 # Register your models here.
 @admin.register(Hostel)
 class HostelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'enable', 'name', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'total_capacity', 'gender')
+    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type', 'food_type')
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'hostel', 'status', 'booked_at')
+    list_display = ('user', 'hostel', 'status', 'booked_at')
     list_filter = ('status', 'hostel',)
     actions = ['confirm_payment', 'cancel_booking']
 

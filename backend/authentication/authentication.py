@@ -4,25 +4,45 @@ from .models import User
 import jwt
 
 class IsAuthenticated(authentication.BaseAuthentication):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+    # def authenticate(self, request):
+    #     try:
+    #         token = request.COOKIES.get('token')
+    #         if not token:
+    #             raise exceptions.AuthenticationFailed('Authentication Failed')
+    #         try:
+    #             payload = jwt.decode(token, settings.JWT_KEY, 'HS256')
+    #         except:
+    #             raise exceptions.AuthenticationFailed('Authentication Failed')
+    #         email = payload['id']
+
+    #         try:
+    #             user = User.objects.get(email=email)
+    #         except User.DoesNotExist:
+    #             raise exceptions.AuthenticationFailed('Authentication Failed')
+
+    #         return (user, None)
+    #     except:
+    #         raise exceptions.AuthenticationFailed('Authentication Failed')
+
+class JWTCookieAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
+        token = request.COOKIES.get('token')
+        
+        if not token:
+            return None 
         try:
-            token = request.COOKIES.get('token')
-            if not token:
-                raise exceptions.AuthenticationFailed('Authentication Failed')
-            try:
-                payload = jwt.decode(token, settings.JWT_KEY, 'HS256')
-            except:
-                raise exceptions.AuthenticationFailed('Authentication Failed')
+            payload = jwt.decode(token, settings.JWT_KEY, algorithms=['HS256'])
             email = payload['id']
-
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                raise exceptions.AuthenticationFailed('Authentication Failed')
-
+            user = User.objects.get(email=email)
             return (user, None)
-        except:
-            raise exceptions.AuthenticationFailed('Authentication Failed')
+        except jwt.ExpiredSignatureError:
+            raise exceptions.AuthenticationFailed('Token expired')
+        except jwt.InvalidTokenError:
+            raise exceptions.AuthenticationFailed('Invalid token')
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('User not found')
 
 class CheckAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
