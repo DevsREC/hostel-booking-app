@@ -21,7 +21,7 @@ from rest_framework_swagger.views import get_swagger_view
 schema_view = get_swagger_view(title="Hostel Booking App")
 
 urlpatterns = [
-    path('swagger/', schema_view),
+    # path('swagger/', schema_view),
     path('admin/', admin.site.urls),
     path('authenticate/', include('authentication.urls')),
     path('hostel/',include('hostel.urls'))

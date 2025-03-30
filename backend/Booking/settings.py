@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'authentication',
     'hostel',
+    'column_toggle',
 ]
 
 # X_FRAME_OPTIONS = "SAMEORIGIN"
