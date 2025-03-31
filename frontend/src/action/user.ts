@@ -1,107 +1,73 @@
 import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
 import axios from "axios";
-import { LoginRequest, PasswordResetRequest, RegisterRequest, ResendVerificationRequest, ResetPasswordRequest } from "@/types/index.types";
+import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
 
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'http://localhost:8000';  // Update to match your Django backend URL
 
 // Create axios instance with default config
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // This enables sending cookies with requests
+  withCredentials: true,
 });
-
-// Add interceptor to include auth token in requests (for backward compatibility)
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-
-// API functions
-
-// Register user
-  export const useRegisterUser = (onSuccess?: () => void) => {
-    return useMutationData(
-      ['register'],
-      async (data: RegisterRequest) => {
-      try {
-        const response = await api.post('/auth/register', data);
-        return {
-          status: response.status,
-          data: response.data.message,
-          userId: response.data.userId,
-        };
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-          return {
-            status: error.response.status,
-            data: error.response.data.message || 'Registration failed',
-          };
-        }
-        throw error;
-      }
-    },
-    'users',
-    onSuccess
-  );
-};
-
-// Verify email
-export const useVerifyEmail = () => {
-  return (token: string) => {
-    return useQueryData(
-      ['verifyEmail', token],
-      async () => {
-        try {
-          const response = await api.get(`/auth/verify/${token}`);
-          return response.data;
-        } catch (error) {
-          if (axios.isAxiosError(error) && error.response) {
-            throw new Error(error.response.data.message || 'Verification failed');
-          }
-          throw error;
-        }
-      }
-    );
-  };
-};
 
 // Login user
 export const useLoginUser = (onSuccess?: () => void) => {
-  return useMutationData(
+  return useMutationData<LoginResponse, LoginRequest>(
     ['login'],
-    async (data: LoginRequest) => {
+    async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
       try {
-        const response = await api.post('/auth/login', data);
-        
-        // Store token in localStorage (for backward compatibility)
-        localStorage.setItem('authToken', response.data.token);
-        
+        const response = await api.post<LoginResponse>('/authenticate/login/', data);
+
         // Store user info
         localStorage.setItem('user', JSON.stringify({
-          id: response.data.user.id,
-          email: response.data.user.email,
-          name: response.data.user.name,
-          isVerified: response.data.user.isVerified,
+          id: Number(response.data.id),
+          first_name: response.data.first_name,
+          last_name: response.data.last_name,
+          gender: response.data.gender,
+          email: response.data.email,
+          year: response.data.year,
+          dept: response.data.dept,
+          roll_no: response.data.roll_no,
+          phone_number: response.data.phone,
+          parent_phone_number: response.data.phone, // Using same phone as parent phone for now
+          is_active: response.data.is_active,
+          is_staff: response.data.is_staff,
+          is_superuser: response.data.is_superuser,
+          date_joined: response.data.date_joined,
+          last_login: response.data.last_login,
         }));
-        
+
         return {
           status: response.status,
-          data: response.data.message,
-          user: response.data.user,
+          data: response.data,
+          user: {
+            id: Number(response.data.id),
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            gender: response.data.gender,
+            email: response.data.email,
+            year: response.data.year,
+            dept: response.data.dept,
+            roll_no: response.data.roll_no,
+            phone_number: response.data.phone,
+            parent_phone_number: response.data.phone, // Using same phone as parent phone for now
+            is_active: response.data.is_active,
+            is_staff: response.data.is_staff,
+            is_superuser: response.data.is_superuser,
+            date_joined: response.data.date_joined,
+            last_login: response.data.last_login,
+          },
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           return {
             status: error.response.status,
-            data: error.response.data.message || 'Login failed',
+            data: error.response.data.detail || 'Login failed',
+            user: undefined,
           };
         }
         throw error;
@@ -114,20 +80,20 @@ export const useLoginUser = (onSuccess?: () => void) => {
 
 // Request password reset
 export const useRequestPasswordReset = (onSuccess?: () => void) => {
-  return useMutationData(
+  return useMutationData<string, PasswordResetRequest>(
     ['requestPasswordReset'],
-    async (data: PasswordResetRequest) => {
+    async (data: PasswordResetRequest): Promise<ApiResponse<string>> => {
       try {
-        const response = await api.post('/auth/forgot-password', data);
+        const response = await api.post('/authenticate/forgot_password/', data);
         return {
           status: response.status,
-          data: response.data.message,
+          data: response.data.detail || 'Password reset instructions sent successfully',
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           return {
             status: error.response.status,
-            data: error.response.data.message || 'Password reset request failed',
+            data: error.response.data.detail || 'Password reset request failed',
           };
         }
         throw error;
@@ -140,46 +106,20 @@ export const useRequestPasswordReset = (onSuccess?: () => void) => {
 
 // Reset password
 export const useResetPassword = (token: string, onSuccess?: () => void) => {
-  return useMutationData(
+  return useMutationData<string, ResetPasswordRequest>(
     ['resetPassword', token],
-    async (data: ResetPasswordRequest) => {
+    async (data: ResetPasswordRequest): Promise<ApiResponse<string>> => {
       try {
-        const response = await api.post(`/auth/reset-password/${token}`, data);
+        const response = await api.get(`/authenticate/forgot_password/?email=${data.email}&token=${token}`);
         return {
           status: response.status,
-          data: response.data.message,
+          data: response.data.detail || 'Password reset successful',
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           return {
             status: error.response.status,
-            data: error.response.data.message || 'Password reset failed',
-          };
-        }
-        throw error;
-      }
-    },
-    undefined,
-    onSuccess
-  );
-};
-
-// Resend verification email
-export const useResendVerification = (onSuccess?: () => void) => {
-  return useMutationData(
-    ['resendVerification'],
-    async (data: ResendVerificationRequest) => {
-      try {
-        const response = await api.post('/auth/resend-verification', data);
-        return {
-          status: response.status,
-          data: response.data.message,
-        };
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-          return {
-            status: error.response.status,
-            data: error.response.data.message || 'Failed to resend verification email',
+            data: error.response.data.detail || 'Password reset failed',
           };
         }
         throw error;
@@ -192,56 +132,45 @@ export const useResendVerification = (onSuccess?: () => void) => {
 
 // Check if user is logged in
 export const useCurrentUser = () => {
-  return useQueryData(
+  return useQueryData<User>(
     ['currentUser'],
     async () => {
       try {
-        // Attempt to get current user from the cookie-based endpoint
-        const response = await api.get('/auth/current-user');
-        return response.data.user;
-      } catch (cookieError) {
-        // If cookie-based auth fails, try token-based auth as fallback
-        try {
-          // Check if we have a token
-          const token = localStorage.getItem('authToken');
-          if (!token) return null;
-          
-          // Try to verify token is valid
-          const tokenResponse = await api.get('/auth/me');
-          return tokenResponse.data.user;
-        } catch (tokenError) {
-          // If both auth methods fail, clear token and user info
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('user');
-          return null;
-        }
+        const response = await api.get('/authenticate/profile/');
+        return response.data.data.user; // Extract user data from the new response structure
+      } catch (error) {
+        localStorage.removeItem('user');
+        return null;
       }
+    },
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: false,
     }
   );
 };
 
 // Logout user
 export const useLogout = (onSuccess?: () => void) => {
-  return useMutationData(
+  return useMutationData<void, void>(
     ['logout'],
-    async () => {
+    async (): Promise<ApiResponse> => {
       try {
-        // Call logout endpoint to clear cookie
-        const response = await api.post('/auth/logout');
-        
+        const response = await api.post('/authenticate/logout/');
+
         // Clear localStorage
-        localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        
+
         return {
           status: response.status,
-          data: response.data.message,
+          data: response.data.detail,
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           return {
             status: error.response.status,
-            data: error.response.data.message || 'Logout failed',
+            data: error.response.data.detail || 'Logout failed',
           };
         }
         throw error;
@@ -249,5 +178,30 @@ export const useLogout = (onSuccess?: () => void) => {
     },
     'currentUser',
     onSuccess
+  );
+};
+
+// Get user profile
+export const useGetProfile = () => {
+  return useQueryData<User | null>(
+    ['profile'],
+    async () => {
+      try {
+        const response = await api.get('/authenticate/profile/');
+        return response.data.data.user; // Extract user data from the new response structure
+      } catch (error) {
+        // If unauthorized, clear auth data and return null
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          localStorage.removeItem('user');
+          return null;
+        }
+        throw error;
+      }
+    },
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: false,
+    }
   );
 };

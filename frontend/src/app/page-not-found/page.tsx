@@ -9,20 +9,20 @@ const Page = () => {
         <div className=" flex items-center justify-center h-screen w-full">
             <Card className="w-[450px] px-4">
                 <CardHeader className="flex justify-center items-center">
-        <CardTitle className="text-8xl font-bold">404</CardTitle>
-        <CardDescription className="text-3xl font-medium">
-                    Page Not Found!
+                    <CardTitle className="text-8xl font-bold">404</CardTitle>
+                    <CardDescription className="text-3xl font-medium">
+                        Page Not Found!
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                 <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+                    <p>The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
                 </CardContent>
                 <CardFooter className="flex justify-evenly">
-                <Button onClick={() => navigate("/dashboard")}><MoveLeftIcon/> Go Back</Button>
-                <Button onClick={() => navigate("/dashboard")}><HomeIcon/> Back To Dashboard</Button>
+                    <Button onClick={() => navigate("/")}><MoveLeftIcon /> Go Back</Button>
+                    <Button onClick={() => navigate("/")}><HomeIcon /> Back To Dashboard</Button>
                 </CardFooter>
             </Card>
-      
+
         </div>
     )
 }

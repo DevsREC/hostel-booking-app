@@ -1,0 +1,146 @@
+import { useGetUserBookings } from "@/action/hostel";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate, Link } from "react-router";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Building2, Calendar, IndianRupee, Clock } from "lucide-react";
+
+export default function BookingsPage() {
+    const navigate = useNavigate();
+    const { data: bookings, isLoading } = useGetUserBookings();
+
+    const hasActiveBooking = bookings?.some(booking =>
+        booking.status === 'otp_pending' ||
+        booking.status === 'payment_pending'
+    );
+
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="flex justify-between items-center mb-8">
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+                <div className="space-y-6">
+                    {[1, 2, 3].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                            <CardHeader>
+                                <Skeleton className="h-6 w-1/3" />
+                                <Skeleton className="h-4 w-1/4 mt-2" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-2/3" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-foreground">Your Bookings</h1>
+                <Button
+                    onClick={() => navigate("/hostels")}
+                    disabled={hasActiveBooking}
+                >
+                    {hasActiveBooking ? "Booking in Progress" : "Book a New Room"}
+                </Button>
+            </div>
+
+            {!bookings || bookings.length === 0 ? (
+                <Card className="p-8">
+                    <div className="flex flex-col items-center justify-center text-center space-y-4">
+                        <Building2 className="h-12 w-12 text-muted-foreground" />
+                        <h2 className="text-2xl font-semibold text-foreground">No Bookings Found</h2>
+                        <p className="text-muted-foreground max-w-sm">
+                            You haven't made any bookings yet. Browse our available hostels and find the perfect room for you.
+                        </p>
+                        <div className="flex gap-4 mt-4">
+                            <Button
+                                onClick={() => navigate("/hostels")}
+                                disabled={hasActiveBooking}
+                            >
+                                Browse Hostels
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => navigate("/profile")}
+                                disabled={hasActiveBooking}
+                            >
+                                View Profile
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+            ) : (
+                <div className="space-y-6">
+                    {bookings.map((booking) => (
+                        <Card key={booking.id} className="w-full">
+                            <CardHeader>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <CardTitle>Booking #{booking.id}</CardTitle>
+                                        <CardDescription>
+                                            Booked on {new Date(booking.booked_at).toLocaleDateString()}
+                                        </CardDescription>
+                                    </div>
+                                    <Badge
+                                        variant={
+                                            booking.status === 'otp_pending' ? 'outline' :
+                                                booking.status === 'payment_pending' ? 'secondary' :
+                                                    booking.status === 'confirmed' ? 'default' :
+                                                        'destructive'
+                                        }
+                                        className="capitalize"
+                                    >
+                                        {booking.status}
+                                    </Badge>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <Building2 className="h-5 w-5 text-muted-foreground" />
+                                        <div>
+                                            <p className="font-medium">{booking.hostel.name}</p>
+                                            <p className="text-sm text-muted-foreground">{booking.hostel.location}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <IndianRupee className="h-5 w-5 text-muted-foreground" />
+                                        <div>
+                                            <p className="font-medium">₹{booking.hostel.amount * 12}</p>
+                                            <p className="text-sm text-muted-foreground">Annual Amount</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex justify-between">
+                                <Link
+                                    to={`/hostels/${booking.hostel.id}`}
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    View Hostel
+                                </Link>
+                                <Link
+                                    to={`/bookings/${booking.id}`}
+                                    className="text-sm text-primary hover:text-primary/80 transition-colors"
+                                >
+                                    View Booking Details →
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+} 
