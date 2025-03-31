@@ -95,12 +95,12 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? "Signing in..." : "Sign in"}
             </Button>
-            <p className="text-center text-sm text-muted-foreground">
+            {/* <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link to="/auth/signup" className="text-primary hover:underline">
                 Sign up
               </Link>
-            </p>
+            </p> */}
           </CardFooter>
         </form>
       </Card>

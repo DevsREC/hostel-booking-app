@@ -27,7 +27,7 @@ class UserAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_filter = ['is_active', 'is_staff', 'is_superuser', 'year', 'dept', 'gender']
     search_fields = ['email', 'first_name', 'last_name', 'phone_number']
     list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'gender']
-    resource_classes = UserResource
+    resource_classes = [UserResource]
 
 # @admin.register(BookingOTP)
 class VerificationCodeAdmin(admin.ModelAdmin):

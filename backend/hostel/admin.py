@@ -2,19 +2,24 @@ from django.contrib import admin
 from authentication.utils import send_email
 from .models import *
 from column_toggle.admin import ColumnToggleModelAdmin
+from import_export.admin import ExportActionModelAdmin
+from .models import RoomBooking
+from .resources import *
 
 # Register your models here.
 @admin.register(Hostel)
-class HostelAdmin(admin.ModelAdmin):
+class HostelAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type', 'food_type')
+    resource_classes = [HostelResource]
 
 @admin.register(RoomBooking)
-class RoomBookingAdmin(admin.ModelAdmin):
+class RoomBookingAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_display = ('id', 'user', 'hostel', 'status', 'booked_at', 'verified_by')
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
     actions = ['confirm_payment', 'cancel_booking']
+    resource_classes = [RoomBookingResource]
 
     def save_model(self, request, obj, form, change):
         if change:
