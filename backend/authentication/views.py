@@ -3,6 +3,8 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework import generics, permissions, status
+from hostel.models import RoomBooking
+from hostel.serializers import RoomBookingSerializer
 from .models import *
 from .serializers import *
 from .authentication import IsAuthenticated
@@ -36,6 +38,23 @@ class LoginAPIView(generics.CreateAPIView):
         else:
             return Response({'detail':"Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         
+class ProfileAPIView(generics.CreateAPIView):
+    serializer_class = RoomBookingSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = get_object_or_404(User, id=request.user.id)
+        user_bookings = RoomBooking.objects.filter(user=user)
+        
+        serializer = self.serializer_class(user_bookings, many=True)
+        print(serializer)
+        print(user_bookings)
+        return Response({
+            "message": "Nice one",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
 class VerifyTokenAPIView(APIView):
     def get(self, request):
         email = request.query_params.get('email', '')
@@ -80,6 +99,7 @@ class ForgotPasswordAPI(generics.GenericAPIView):
             return user.generate_login_response()
         except:
             return Response({'detail': 'Invalid Code.'}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class LogoutAPIView(APIView):
     authentication_classes = [IsAuthenticated]

@@ -58,7 +58,7 @@ class RoomBooking(models.Model):
         ('payment_pending', 'Payment Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
-        ('payment_verified', 'Payment Verified by Admin'),
+        # ('payment_verified', 'Payment Verified by Admin'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -77,6 +77,14 @@ class RoomBooking(models.Model):
     otp_expiry = models.DateTimeField(null=True, blank=True)
     payment_expiry = models.DateTimeField(null=True, blank=True)
     admin_notes = models.TextField(blank=True, null=True)
+    verified_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL,
+        related_name="verified_bookings",
+        null=True,
+        blank=True,
+        editable=False
+    )
 
     def __str__(self):
         return f'{self.user.email} - {self.hostel.name} - {self.status}'
@@ -93,6 +101,17 @@ class RoomBooking(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    def update_status(self, new_status, verified_by_user=None):
+        old_status = self.status
+        self.status = new_status
+        
+        if old_status != new_status and verified_by_user is not None:
+            if verified_by_user.is_staff or verified_by_user.is_superuser:
+                self.verified_by = verified_by_user
+        
+        self.save()
+        return True
 
     def generate_otp(self):
         import random

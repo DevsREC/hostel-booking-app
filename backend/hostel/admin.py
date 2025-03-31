@@ -11,10 +11,19 @@ class HostelAdmin(admin.ModelAdmin):
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'hostel', 'status', 'booked_at')
+    list_display = ('id', 'user', 'hostel', 'status', 'booked_at', 'verified_by')
+    readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
     actions = ['confirm_payment', 'cancel_booking']
 
+    def save_model(self, request, obj, form, change):
+        if change:
+            original_obj = self.model.objects.get(pk=obj.pk)
+            
+            if original_obj.status != obj.status:
+                obj.verified_by = request.user
+                
+        super().save_model(request, obj, form, change)
     def confirm_payment(self, request, queryset):
         queryset.filter(status='payment_verified').update(status='confirmed')
         self.message_user(request, "Selected bookings confirmed")

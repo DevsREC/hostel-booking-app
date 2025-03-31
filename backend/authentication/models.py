@@ -81,17 +81,18 @@ class User(AbstractUser):
             'exp': timezone.now() + timezone.timedelta(days=30),
             'iat': timezone.now()
         }
-
+        
         token = jwt.encode(payload, settings.JWT_KEY, algorithm='HS256')
         response = Response({
             'id': self.email,
             'first_name': self.first_name,
             'last_name': self.last_name,
+            'gender': self.gender,
         }, status=status.HTTP_200_OK)
 
         response.set_cookie(key='token', value=token, samesite='Lax', httponly=True, secure=False, domain=settings.COOKIE_DOMAIN)
-
         return response
+    
     
     def send_verification_mail(self):
         verfication_code = get_random_string(length=8)

@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from authentication.authentication import IsAuthenticated
-from .serializers import HostelSerializer
+from .serializers import *
 
 from .models import *
 
@@ -50,7 +50,79 @@ class InitiateBookingAPI(generics.CreateAPIView):
             },
             status=status.HTTP_201_CREATED
         )
-    
+
+class GetBookingAPI(generics.CreateAPIView):
+    authentication_classes=[IsAuthenticated]
+    permission_classes=[permissions.IsAuthenticated]    
+    serializer_class = RoomBookingSerializer
+
+    def get(self, request):
+        try:
+            bookings = RoomBooking.objects.filter(user=request.user)
+            serializer = self.serializer_class(bookings, many=True)
+            return Response(
+                {
+                    "message": "Success!",
+                    "data": serializer.data
+                },
+                status=status.HTTP_200_OK
+            )
+        except RoomBooking.DoesNotExist:
+            return Response(
+                {
+                    "message": "No bookings found"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        except Exception as e:
+            print(e)
+            return Response(
+                {
+                    "message": "An error occurred while cancelling the booking"
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class CancelBookingAPI(generics.CreateAPIView):
+    authentication_classes=[IsAuthenticated]
+    permission_classes=[permissions.IsAuthenticated]
+
+    def delete(self, request):
+        try:
+            booking_id = request.data.get('booking_id')
+            if booking_id:
+                booking = RoomBooking.objects.get(id=booking_id, user=request.user)
+                booking.delete()
+                return Response(
+                    {
+                        "message": "Booking cancelled successfully"
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Booking ID is required"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except RoomBooking.DoesNotExist:
+            return Response(
+                {
+                    "message": "No bookings found or payment has been confirmed"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:  
+            print(e)
+            return Response(
+                {
+                    "message": "An error occurred while cancelling the booking"
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class VerifyOTPApi(generics.CreateAPIView):
     authentication_classes=[IsAuthenticated]
     permission_classes = [permissions.IsAuthenticated]
