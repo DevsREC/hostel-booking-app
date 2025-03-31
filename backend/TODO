@@ -1,0 +1,8 @@
+For cron job:
+python manage.py crontab add
+python manage.py crontab show
+python manage.py crontab remove 
+
+
+# TODO:
+1. Check whether cron works really

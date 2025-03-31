@@ -1,20 +1,84 @@
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import { useGetUserBookings, useCancelBooking } from "@/action/hostel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Building2, Calendar, IndianRupee, Clock, User, XCircle } from "lucide-react";
+import { Building2, IndianRupee, Clock, User, XCircle, VerifiedIcon, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { toast } from "sonner";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { api } from "@/action/user";
 
 export default function BookingDetail() {
     const { id } = useParams();
     const { data: bookings, isLoading } = useGetUserBookings();
     const { mutate: cancelBooking } = useCancelBooking();
     const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [showOTPDialog, setShowOTPDialog] = useState(false);
+    const [otp, setOtp] = useState("");
+    const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
+    const navigate = useNavigate();
+    
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Invalid Date';
+        }
+    };
+    const handleOTPVerification = async () => {
+        if (!id || !otp) return;
+
+        setIsVerifyingOTP(true);
+        try {
+            const response = await api.post('/hostel/verify_otp/', {
+                booking_id: id,
+                otp_code: otp
+            });
+
+            if (response.status === 200) {
+                const { payment_link, payment_instructions, expires_at } = response.data;
+                toast.success("OTP verified successfully!");
+                setShowOTPDialog(false);
+
+                // Show payment instructions in a success toast
+                toast.success(
+                    <div className="space-y-2">
+                        <p className="font-medium">Payment Instructions:</p>
+                        <p>{payment_instructions}</p>
+                        <p className="text-sm text-muted">Payment link has been sent to your email.</p>
+                        <p className="text-sm text-yellow-600">Complete payment before: {formatDate(expires_at)}</p>
+                    </div>,
+                    {
+                        duration: 10000, // Show for 10 seconds
+                    }
+                );
+
+                // navigate(`/bookings/${bookingId}`);
+            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Invalid/OTP Expired";
+            toast.error(errorMessage);
+
+            // If OTP is expired, close the dialog and redirect to bookings
+            if (errorMessage.includes("expired")) {
+                setShowOTPDialog(false);
+                navigate('/bookings');
+            }
+        } finally {
+            setIsVerifyingOTP(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -233,7 +297,87 @@ export default function BookingDetail() {
                         >
                             View Hostel Details
                         </Link>
-                        {(booking.status === 'otp_pending' || booking.status === 'payment_pending') && (
+                        {
+                            (booking.status === 'otp_pending') ?
+                            <div className="flex justify-end gap-2 flex-wrap">   
+                                <Dialog open={showOTPDialog} onOpenChange={setShowOTPDialog}>
+                                    <DialogTrigger>
+                                        <Button variant="default" className="flex items-center gap-2">
+                                            <VerifiedIcon className="h-4 w-4" />
+                                            Verify OTP
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-2xl font-bold text-primary">Verify OTP</DialogTitle>
+                                            <DialogDescription className="text-base">
+                                                Please enter the 6-digit OTP sent to your email address to confirm your booking.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="py-4">
+                                            <div className="space-y-4">
+                                                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                                                    <p className="font-medium">Hostel: {booking.hostel?.name}</p>
+                                                    <p className="font-medium">Room Type: {booking.hostel?.room_type}</p>
+                                                    <p className="font-medium text-primary text-xl">Annual Price: ₹{(booking.hostel?.amount || 0) * 12}</p>
+                                                </div>
+                                                <InputOTP
+                                                    maxLength={6}
+                                                    value={otp}
+                                                    onChange={(value) => setOtp(value)}
+                                                >
+                                                    <InputOTPGroup>
+                                                        <InputOTPSlot index={0} />
+                                                        <InputOTPSlot index={1} />
+                                                        <InputOTPSlot index={2} />
+                                                        <InputOTPSlot index={3} />
+                                                        <InputOTPSlot index={4} />
+                                                        <InputOTPSlot index={5} />
+                                                    </InputOTPGroup>
+                                                </InputOTP>
+                                                <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 p-3 rounded-lg">
+                                                    <AlertCircle className="h-5 w-5" />
+                                                    <p className="text-sm">The OTP will expire in 10 minutes. Please complete the payment within 24 hours after verification.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setShowOTPDialog(false)}>
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                onClick={handleOTPVerification}
+                                                disabled={isVerifyingOTP || otp.length !== 6}
+                                                className="bg-primary hover:bg-primary/90"
+                                            >
+                                                {isVerifyingOTP ? "Verifying..." : "Verify OTP"}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                                <Button
+                                        variant="destructive"
+                                        onClick={handleCancelBooking}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <XCircle className="h-4 w-4" />
+                                        Cancel Booking
+                                </Button>
+                            </div>
+                                :
+                                (booking.status === 'payment_pending') ?
+                                    <Button
+                                        variant="destructive"
+                                        onClick={handleCancelBooking}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <XCircle className="h-4 w-4" />
+                                        Cancel Booking
+                                    </Button>
+                                    :
+                                <></>
+                    }
+                        {/* {(booking.status === 'otp_pending' || booking.status === 'payment_pending') && (
                             <Button
                                 variant="destructive"
                                 onClick={handleCancelBooking}
@@ -242,7 +386,7 @@ export default function BookingDetail() {
                                 <XCircle className="h-4 w-4" />
                                 Cancel Booking
                             </Button>
-                        )}
+                        )} */}
                     </div>
                 </CardContent>
             </Card>

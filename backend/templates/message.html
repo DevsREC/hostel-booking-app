@@ -3,51 +3,47 @@
 <head>
     <title>Hostel Booking App</title>
     <style>
-        .button-container {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .email-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .email-section:last-child {
+            border-bottom: none;
+        }
+        .footer {
             text-align: center;
+            font-size: 14px;
+            color: #888;
             margin-top: 20px;
-        }
-        .approve-button, .reject-button {
-            display: inline-block;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
-        }
-        .approve-button {
-            background-color: green;
-            color: white !important;
-        }
-        .reject-button {
-            background-color: red;
-            color: white !important;
-        }
-        .button-container a {
-            text-decoration: none;
-            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <p>
-        {{startingcontent|safe|linebreaksbr}}
-    </p>
-    
-    {% if link %}
-        <div class="button-container">
-            <a href="{{link}}" class="approve-button">Verification Link</a>
+    <div class="container">
+        <div class="email-section">
+            {{startingcontent|safe|linebreaksbr}}
         </div>
-        (or)
-        <p>
-            {{linkcontent}}. <a href="{{link}}">{{link}}</a>
-        </p>
-    {%endif%}
-    
-    <p>
-        {{endingcontent|safe|linebreaksbr}}
-    </p>
+        <div class="email-section">
+            {{endingcontent|safe|linebreaksbr}}
+        </div>
+        <div class="footer">
+            <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
+        </div>
+    </div>
 </body>
 </html>

@@ -92,9 +92,9 @@ export default function HostelsPage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <Users className="h-5 w-5" />
-                                    <span className="text-base">Available Students</span>
+                                    <span className="text-base">Available</span>
                                 </div>
-                                <span className="font-semibold text-lg">{hostel.available_rooms * hostel.person_per_room}</span>
+                                <span className="font-semibold text-lg">{hostel.available_rooms}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">

@@ -94,21 +94,28 @@ class User(AbstractUser):
         return response
     
     
-    def send_verification_mail(self):
-        verfication_code = get_random_string(length=8)
-        start_content = f'Hostel Room Booking: Initiated\nOTP: {verfication_code}'
-        subject = "Hostel Room Booking"
-        to_email = self.email
-        verfication, created = BookingOTP.objects.get_or_create(user=self)
-        verfication.code = verfication_code
-        verfication.save()
-        send_email(subject, to_email, {
-            "startingcontent": start_content,
-        })
+    # def send_verification_mail(self):
+    #     verfication_code = get_random_string(length=8)
+    #     start_content = f'Hostel Room Booking: Initiated\nOTP: {verfication_code}'
+    #     subject = "Hostel Room Booking"
+    #     to_email = self.email
+    #     verfication, created = BookingOTP.objects.get_or_create(user=self)
+    #     verfication.code = verfication_code
+    #     verfication.save()
+    #     send_email(subject, to_email, {
+    #         "startingcontent": start_content,
+    #     })
 
     def send_forgot_password_mail(self, new_password):
         verfication_code = get_random_string(length=8)
-        start_content = f'Hostel Room Booking: Forgot Password\nOTP: {verfication_code}'
+        start_content = f"""
+                <p><strong>Hostel Room Booking: Forgot Password</strong></p>
+                <p>Your OTP for resetting the password is:</p>
+                <div class="otp" style="font-size: 20px; font-weight: bold; color: #d32f2f; text-align: center; margin: 15px 0;">
+                    {verfication_code}
+                </div>
+                <p><strong>Please use this OTP to reset your password.</strong></p>
+            """
         subject = "Hostel Room Booking: Forgot Password"
         to_email = self.email
         verfication, created = ForgetPassword.objects.get_or_create(user=self)

@@ -248,8 +248,8 @@ export default function HostelDetail() {
                                     <p className="text-3xl font-bold text-primary">₹{(hostel?.amount || 0) * 12}</p>
                                 </div>
                                 <div>
-                                    <p className="text-muted-foreground mb-2">Available Students</p>
-                                    <p className="text-2xl font-semibold text-foreground">{(hostel?.available_rooms || 0) * (hostel?.person_per_room || 0)}</p>
+                                    <p className="text-muted-foreground mb-2">Available</p>
+                                    <p className="text-2xl font-semibold text-foreground">{(hostel?.available_rooms || 0)}</p>
                                 </div>
                                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between mt-8">
                                     <div className="flex items-center gap-2 text-muted-foreground">

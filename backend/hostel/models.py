@@ -47,7 +47,7 @@ class Hostel(models.Model):
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status__in=['confirmed', 'payment_verified']
+            status__in=['confirmed', 'payment_verified', 'payment_pending']
         ).count()
 
         total_available = self.total_capacity - booked_rooms
@@ -76,7 +76,7 @@ class RoomBooking(models.Model):
         ('payment_pending', 'Payment Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
-        # ('payment_verified', 'Payment Verified by Admin'),
+        ('payment_not_done', 'Payment Not Done'), # Worst case scenario
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -148,18 +148,31 @@ class RoomBooking(models.Model):
 
     def send_otp_email(self):
         startcontent = f"""
-            Your OTP for hostel booking is: {self.otp_code}\n
-            Valid for 10 minutes.\n
-            \n
-            Hostel: {self.hostel.name}\n
-            Room Type: {self.hostel.get_room_type_display()}\n
-            Amount: ₹{self.hostel.amount}\n
+            <p>Hello,</p>
+            <p>Your OTP for hostel booking is:</p>
+            <div class="otp">{self.otp_code}</div>
+            <p><strong>Valid for 10 minutes.</strong></p>
+            
+            <div class="details">
+                <p><strong>Hostel:</strong> {self.hostel.name}</p>
+                <p><strong>Room Type:</strong> {self.hostel.room_type}</p>
+                <p><strong>Amount:</strong> ₹{self.hostel.amount}</p>
+            </div>
         """
+        
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
-        send_email(subject=subject, to_email=to_email, context={
-            "startingcontent": startcontent
-        })
+        
+        send_email(
+            subject=subject,
+            to_email=to_email,
+            context={
+                "startingcontent": startcontent,
+                "endingcontent": "<p style='color: #d32f2f; font-weight: bold;'>Please do not share this OTP with anyone.</p>",
+                "footer": "<strong>Hostel Booking Team</strong>"
+            }
+        )
+
 
     def verify_otp(self, otp_code):
         print(otp_code)
@@ -178,26 +191,38 @@ class RoomBooking(models.Model):
 
     def send_payment_instructions(self):
         subject = "Hostel Booking - Payment Instructions"
+        
         message = f"""
-        OTP verified successfully!
-        
-        Payment Instructions:
-        1. Make a payment of ₹{self.hostel.amount} via:
-           - Bank Transfer: Account XXXX, IFSC XXXX
-           - UPI: yourupi@example
-        2. After payment, visit: {self.payment_link} 
-           to submit your payment reference
-        3. Admin will verify and confirm your booking
-        
-        Complete within 24 hours.
-        
-        Hostel: {self.hostel.name}
-        Amount: ₹{self.hostel.amount}
+            <p><strong>OTP verified successfully!</strong></p>
+            
+            <h3>Payment Instructions:</h3>
+            <ol>
+                <li>Make a payment of <strong>₹{self.hostel.amount}</strong> via:
+                    <ul>
+                        <li><strong>Bank Transfer:</strong> Account XXXX, IFSC XXXX</li>
+                        <li><strong>UPI:</strong> yourupi@example</li>
+                    </ul>
+                </li>
+                <li>After payment, visit: <a href="{self.payment_link}" target="_blank">{self.payment_link}</a>
+                    to submit your payment reference.
+                </li>
+                <li>Admin will verify and confirm your booking.</li>
+            </ol>
+            
+            <p><strong>Complete within 24 hours to secure your booking.</strong></p>
+            
+            <div class="details">
+                <p><strong>Hostel:</strong> {self.hostel.name}</p>
+                <p><strong>Amount:</strong> ₹{self.hostel.amount}</p>
+            </div>
         """
+        
         to_email = self.user.email
-        send_email(subject=subject, to_email=to_email, context={
-            "startingcontent": message
-        })
+        send_email(
+            subject=subject, 
+            to_email=to_email, 
+            context={"startingcontent": message}
+        )
 
     # def submit_payment_reference(self, reference):
     #     self.payment_reference = reference
@@ -207,15 +232,3 @@ class RoomBooking(models.Model):
 
     # def notify_admin(self):
     #     print(f"Admin notification: Payment reference {self.payment_reference} submitted for booking {self.id}")
-
-    @classmethod
-    def cleanup_expired_bookings(cls):
-        cls.objects.filter(
-            status='otp_pending',
-            otp_expiry__lt=timezone.now()
-        ).update(status='cancelled')
-        
-        cls.objects.filter(
-            status='payment_pending',
-            payment_expiry__lt=timezone.now()
-        ).update(status='cancelled')

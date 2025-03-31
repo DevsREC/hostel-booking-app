@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'authentication',
     'hostel',
     'column_toggle',
+    'django_crontab',
 ]
 
 # X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -193,3 +194,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+CRONJOBS = [
+    ('*/10 * * * *', 'hostel.cron.cancel_expired_bookings'),
+    ('0 * * * *', 'hostel.cron.mark_expired_payment'),
+]
+
+CRONTAB_COMMAND_PREFIX = BASE_DIR
+CRONTAB_DJANGO_SETTINGS_MODULE = 'Booking.settings'

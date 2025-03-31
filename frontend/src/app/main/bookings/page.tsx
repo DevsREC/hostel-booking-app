@@ -12,7 +12,7 @@ export default function BookingsPage() {
 
     const hasActiveBooking = bookings?.some(booking =>
         booking.status === 'otp_pending' ||
-        booking.status === 'payment_pending'
+        booking.status === 'payment_pending'    
     );
 
     const formatDate = (dateString: string) => {

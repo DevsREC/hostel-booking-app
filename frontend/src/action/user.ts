@@ -2,7 +2,8 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
 import axios from "axios";
 import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
-import { queryClient } from "../lib/react-query";
+// import { queryClient } from "/lib/react-query";
+import { QueryClient as queryClient } from "react-query";
 
 const API_URL = 'http://localhost:8000';  // Update to match your Django backend URL
 
