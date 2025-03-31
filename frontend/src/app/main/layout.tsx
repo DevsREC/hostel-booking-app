@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/global/sidebar"
 import { Outlet } from "react-router"
 import { Header } from "@/components/global/info-bar"
 

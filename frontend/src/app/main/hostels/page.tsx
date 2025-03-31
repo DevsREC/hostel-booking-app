@@ -64,7 +64,7 @@ export default function HostelsPage() {
                 {hostels.map((hostel) => (
                     <Card
                         key={hostel.id}
-                        className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
                     >
                         <div className="relative group">
                             <img
@@ -73,16 +73,16 @@ export default function HostelsPage() {
                                 className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                             <div className="absolute top-4 right-4 flex gap-2">
-                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1">
+                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
                                     {hostel.room_type}
                                 </Badge>
-                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1">
+                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
                                     {hostel.food_type}
                                 </Badge>
                             </div>
                         </div>
                         <CardHeader className="space-y-3">
-                            <CardTitle className="text-2xl font-semibold">{hostel.name}</CardTitle>
+                            <CardTitle className="text-2xl font-semibold text-card-foreground">{hostel.name}</CardTitle>
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <MapPin className="h-5 w-5" />
                                 <span className="text-base">{hostel.location}</span>
@@ -94,19 +94,19 @@ export default function HostelsPage() {
                                     <Users className="h-5 w-5" />
                                     <span className="text-base">Available</span>
                                 </div>
-                                <span className="font-semibold text-lg">{hostel.available_rooms}</span>
+                                <span className="font-semibold text-lg text-card-foreground">{hostel.available_rooms}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <IndianRupee className="h-5 w-5" />
                                     <span className="text-base">Annual Price</span>
                                 </div>
-                                <span className="font-semibold text-lg">₹{hostel.amount * 12}</span>
+                                <span className="font-semibold text-lg text-card-foreground">₹{hostel.amount * 12}</span>
                             </div>
                         </CardContent>
                         <CardFooter>
                             <Link to={`/hostels/${hostel.id}`} className="w-full">
-                                <Button className="w-full h-11 text-base font-medium" variant="default">
+                                <Button className="w-full h-11 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90" variant="default">
                                     View Details
                                 </Button>
                             </Link>

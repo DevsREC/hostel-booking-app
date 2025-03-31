@@ -7,7 +7,7 @@ const Layout = () => {
 
             </div> */}
             <div className="w-full">
-            <Outlet/>
+                <Outlet />
             </div>
         </div>
     )
