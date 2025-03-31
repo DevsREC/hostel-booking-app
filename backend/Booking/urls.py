@@ -16,12 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework_swagger.views import get_swagger_view
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 schema_view = get_swagger_view(title="Hostel Booking App")
+
+admin.site.site_header = "Hostel Booking Admin"
+admin.site.site_title = "Hostel Booking Admin Portal"
+admin.site.index_title = "Welcome to Hostel Booking Admin Portal"
 
 urlpatterns = [
     # path('swagger/', schema_view),

@@ -130,7 +130,7 @@ export default function Login() {
               <Link to="/auth/register" className="text-primary hover:underline">
                 Sign up
               </Link>
-            </p>
+            </p> */}
           </CardFooter>
         </form>
       </Card>
