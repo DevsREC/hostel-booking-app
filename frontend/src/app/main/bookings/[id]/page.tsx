@@ -1,14 +1,20 @@
 import { useParams, Link } from "react-router";
-import { useGetUserBookings } from "@/action/hostel";
+import { useGetUserBookings, useCancelBooking } from "@/action/hostel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Building2, Calendar, IndianRupee, Clock, User } from "lucide-react";
+import { Building2, Calendar, IndianRupee, Clock, User, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function BookingDetail() {
     const { id } = useParams();
     const { data: bookings, isLoading } = useGetUserBookings();
+    const { mutate: cancelBooking } = useCancelBooking();
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
 
     if (isLoading) {
         return (
@@ -54,6 +60,23 @@ export default function BookingDetail() {
             </div>
         );
     }
+
+    const handleCancelBooking = () => {
+        setShowCancelDialog(true);
+    };
+
+    const confirmCancelBooking = () => {
+        if (!id) return;
+        cancelBooking(id, {
+            onSuccess: () => {
+                toast.success("Booking cancelled successfully");
+                setShowCancelDialog(false);
+            },
+            onError: (error) => {
+                toast.error(error.message || "Failed to cancel booking");
+            }
+        });
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -203,16 +226,52 @@ export default function BookingDetail() {
                         </div>
                     </div>
 
-                    <div className="flex justify-end mt-6">
+                    <div className="flex justify-between items-center mt-6">
                         <Link
                             to={`/hostels/${booking.hostel.id}`}
                             className="text-primary hover:underline"
                         >
                             View Hostel Details
                         </Link>
+                        {(booking.status === 'otp_pending' || booking.status === 'payment_pending') && (
+                            <Button
+                                variant="destructive"
+                                onClick={handleCancelBooking}
+                                className="flex items-center gap-2"
+                            >
+                                <XCircle className="h-4 w-4" />
+                                Cancel Booking
+                            </Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Cancel Confirmation Dialog */}
+            <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Cancel Booking</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to cancel this booking? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowCancelDialog(false)}
+                        >
+                            No, Keep Booking
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={confirmCancelBooking}
+                        >
+                            Yes, Cancel Booking
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 } 

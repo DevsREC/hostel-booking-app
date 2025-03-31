@@ -27,6 +27,21 @@ export default function HostelDetail() {
     const { data: hostel, isLoading: isLoadingHostel } = useGetHostelById(id || "");
     const { data: userBookings } = useGetUserBookings();
 
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Invalid Date';
+        }
+    };
+
     const hasActiveBooking = userBookings?.some(booking =>
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending' ||
@@ -81,7 +96,7 @@ export default function HostelDetail() {
                         <p className="font-medium">Payment Instructions:</p>
                         <p>{payment_instructions}</p>
                         <p className="text-sm text-muted">Payment link has been sent to your email.</p>
-                        <p className="text-sm text-yellow-600">Complete payment before: {new Date(expires_at).toLocaleString()}</p>
+                        <p className="text-sm text-yellow-600">Complete payment before: {formatDate(expires_at)}</p>
                     </div>,
                     {
                         duration: 10000, // Show for 10 seconds

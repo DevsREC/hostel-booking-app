@@ -1,11 +1,9 @@
 import {
-    MutationFunction,
     MutationKey,
     useMutation,
     useMutationState,
     useQueryClient,
 } from '@tanstack/react-query'
-import { toast } from 'sonner'
 import { ApiResponse } from "@/types/index.types"
 
 export const useMutationData = <TData = any, TVariables = any>(

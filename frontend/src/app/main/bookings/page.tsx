@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate, Link } from "react-router";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Building2, Calendar, IndianRupee, Clock } from "lucide-react";
+import { Building2, IndianRupee } from "lucide-react";
 
 export default function BookingsPage() {
     const navigate = useNavigate();
@@ -15,6 +14,21 @@ export default function BookingsPage() {
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending'
     );
+
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Invalid Date';
+        }
+    };
 
     if (isLoading) {
         return (
@@ -89,7 +103,7 @@ export default function BookingsPage() {
                                     <div>
                                         <CardTitle>Booking #{booking.id}</CardTitle>
                                         <CardDescription>
-                                            Booked on {new Date(booking.booked_at).toLocaleDateString()}
+                                            Booked on {formatDate(booking.booked_at)}
                                         </CardDescription>
                                     </div>
                                     <Badge
@@ -123,19 +137,21 @@ export default function BookingsPage() {
                                     </div>
                                 </div>
                             </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <Link
-                                    to={`/hostels/${booking.hostel.id}`}
-                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    View Hostel
-                                </Link>
-                                <Link
-                                    to={`/bookings/${booking.id}`}
-                                    className="text-sm text-primary hover:text-primary/80 transition-colors"
-                                >
-                                    View Booking Details →
-                                </Link>
+                            <CardFooter className="flex justify-between items-center">
+                                <div className="flex gap-4">
+                                    <Link
+                                        to={`/hostels/${booking.hostel.id}`}
+                                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        View Hostel
+                                    </Link>
+                                    <Link
+                                        to={`/bookings/${booking.id}`}
+                                        className="text-sm text-primary hover:text-primary/80 transition-colors"
+                                    >
+                                        View Booking Details →
+                                    </Link>
+                                </div>
                             </CardFooter>
                         </Card>
                     ))}

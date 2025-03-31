@@ -2,14 +2,18 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
 import { Hostel, Room, Booking, HostelResponse, RoomResponse, BookingResponse, ApiResponse } from "@/types/index.types";
 import { api } from "./user";
+import { useCurrentUser } from "./user";
 
 // Get all hostels
 export const useGetHostels = () => {
+    const { data: currentUser } = useCurrentUser();
+
     return useQueryData<Hostel[]>(
         ['hostels'],
         async () => {
             const response = await api.get<HostelResponse>('/hostel/');
-            return response.data.data;
+            // Filter hostels based on user's gender
+            return response.data.data.filter(hostel => hostel.gender === currentUser?.gender);
         }
     );
 };

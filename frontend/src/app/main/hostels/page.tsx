@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Users, IndianRupee } from "lucide-react";
 import { Link } from "react-router";
+import { useCurrentUser } from "@/action/user";
 
 export default function HostelsPage() {
     const { data: hostels, isLoading } = useGetHostels();
+    const { data: currentUser } = useCurrentUser();
 
     if (isLoading) {
         return (
@@ -34,17 +36,30 @@ export default function HostelsPage() {
         );
     }
 
+    if (!hostels?.length) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold text-foreground mb-4">No Hostels Available</h1>
+                    <p className="text-muted-foreground">
+                        There are currently no hostels available for {currentUser?.gender === 'M' ? 'male' : 'female'} students.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-foreground">Available Hostels</h1>
                 <p className="text-muted-foreground">
-                    {hostels?.length || 0} {hostels?.length === 1 ? 'hostel' : 'hostels'} available
+                    {hostels.length} {hostels.length === 1 ? 'hostel' : 'hostels'} available for {currentUser?.gender === 'M' ? 'male' : 'female'} students
                 </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {hostels?.map((hostel) => (
+                {hostels.map((hostel) => (
                     <Card key={hostel.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
                         <div className="relative">
                             <img
