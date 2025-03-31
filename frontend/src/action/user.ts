@@ -4,7 +4,7 @@ import axios from "axios";
 import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
 import { QueryClient } from "@tanstack/react-query";
 
-const API_URL = 'http://192.168.1.8:8000';
+const API_URL = 'http://localhost:8000';
 
 // Create a new instance of QueryClient
 const queryClient = new QueryClient();
