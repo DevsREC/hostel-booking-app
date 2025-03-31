@@ -1,75 +1,49 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router";
-import { useCurrentUser } from "@/action/user";
-import { Loader2 } from "lucide-react";
+import { Navigate, useLocation } from 'react-router';
+import { useGetProfile } from '@/action/user';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
-  requireVerified?: boolean;
+    children: React.ReactNode;
 }
 
-export function ProtectedRoute({ children, requireVerified = true }: ProtectedRouteProps) {
-  const location = useLocation();
-  const { data: user, isPending }:{data:any, isPending:boolean} = useCurrentUser();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+    const { data: user, isLoading } = useGetProfile();
+    const location = useLocation();
 
-  useEffect(() => {
-    // Add a small delay to avoid flash of loading state
-    const timer = setTimeout(() => {
-      setIsCheckingAuth(false);
-    }, 500);
+    if (isLoading) {
+        return (
+            <div className="p-4">
+                <Skeleton className="h-8 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-1/4" />
+            </div>
+        );
+    }
 
-    return () => clearTimeout(timer);
-  }, []);
-  // Still loading
-  if (isPending || isCheckingAuth) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+    if (!user) {
+        // Redirect to login page but save the attempted location
+        return <Navigate to="/auth/login" state={{ from: location }} replace />;
+    }
 
-  // Not authenticated at all
-  if (!user) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
-  }
-  // Authenticated but not verified when verification is required
-  if (requireVerified && !user.isVerified) {
-    return <Navigate to="/auth/verify-required" state={{ email: user.email }} replace />;
-  }
+    return <>{children}</>;
+};
 
-  // Authentication and verification checks passed, render the protected component
-  return <>{children}</>;
-}
+export const PublicOnlyRoute = ({ children }: ProtectedRouteProps) => {
+    const { data: user, isLoading } = useGetProfile();
+    const location = useLocation();
 
-export function PublicOnlyRoute({ children }: { children: ReactNode }) {
-  const { data: user, isPending } = useCurrentUser();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    if (isLoading) {
+        return (
+            <div className="p-4">
+                <Skeleton className="h-8 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-1/4" />
+            </div>
+        );
+    }
 
-  useEffect(() => {
-    // Add a small delay to avoid flash of loading state
-    const timer = setTimeout(() => {
-      setIsCheckingAuth(false);
-    }, 500);
+    if (user) {
+        // Redirect to dashboard if user is already logged in
+        return <Navigate to="/" replace />;
+    }
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Still loading
-  if (isPending || isCheckingAuth) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // If user is authenticated, redirect to dashboard
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // If not authenticated, render the public route
-  return <>{children}</>;
-} 
+    return <>{children}</>;
+}; 

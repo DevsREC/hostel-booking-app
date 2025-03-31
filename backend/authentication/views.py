@@ -46,13 +46,33 @@ class ProfileAPIView(generics.CreateAPIView):
     def get(self, request):
         user = get_object_or_404(User, id=request.user.id)
         user_bookings = RoomBooking.objects.filter(user=user)
+        bookings_serializer = self.serializer_class(user_bookings, many=True)
         
-        serializer = self.serializer_class(user_bookings, many=True)
-        print(serializer)
-        print(user_bookings)
+        # Create user data dictionary
+        user_data = {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "gender": user.gender,
+            "year": user.year,
+            "dept": user.dept,
+            "roll_no": user.roll_no,
+            "phone_number": user.phone_number,
+            "parent_phone_number": user.parent_phone_number,
+            "is_active": user.is_active,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+            "date_joined": user.date_joined,
+            "last_login": user.last_login,
+        }
+
         return Response({
-            "message": "Nice one",
-            "data": serializer.data
+            "message": "Success",
+            "data": {
+                "user": user_data,
+                "bookings": bookings_serializer.data
+            }
         }, status=status.HTTP_200_OK)
 
 class VerifyTokenAPIView(APIView):

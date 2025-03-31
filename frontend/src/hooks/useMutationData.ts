@@ -6,53 +6,25 @@ import {
     useQueryClient,
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { ApiResponse } from "@/types/index.types"
 
-export const useMutationData = (
-    mutationKey: MutationKey,
-    mutationFn: MutationFunction<any, any>,
-    queryKey?: string | string[] | string[][],
-    onSuccess?: () => void
+export const useMutationData = <TData = any, TVariables = any>(
+    queryKey: string[],
+    mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>,
+    invalidateKey?: string,
+    onSuccess?: (response: ApiResponse<TData>) => void
 ) => {
-    const client = useQueryClient()
-    const { mutate, isPending } = useMutation({
-        mutationKey,
-        mutationFn,
-        onSuccess(data) {
-            if (onSuccess) onSuccess()
-            return toast(
-                    data?.status === 200 || data?.status === 201 ? 'Success' : 'Error',
-                    {
-                        description: data?.data,
-                    }
-            )
-        },
-        onSettled: async () => {
-            if (typeof queryKey === 'string') {
-                return await client.invalidateQueries({
-                    queryKey: [queryKey],
-                    exact: true,
-                })
-            }
-            else {
-                if (Array.isArray(queryKey) && Array.isArray(queryKey[0])) {
-                    for (let i of queryKey) {
-                        await client.invalidateQueries({
-                            queryKey: i as string[],
-                            exact: true,
-                        })
-                    }
-                } else {
-                    await client.invalidateQueries({
-                        queryKey: queryKey,
-                        exact: true,
-                    })
-                }
-                return {}
-            }
-        }
-    })
+    const queryClient = useQueryClient()
 
-    return { mutate, isPending }
+    return useMutation({
+        mutationFn,
+        onSuccess: (response) => {
+            if (invalidateKey) {
+                queryClient.invalidateQueries({ queryKey: [invalidateKey] })
+            }
+            onSuccess?.(response)
+        },
+    })
 }
 
 export const useMutationDataState = (mutationKey: MutationKey) => {

@@ -1,45 +1,39 @@
-import { useCurrentUser } from "@/action/user";
+import { useGetProfile } from "@/action/user";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useGetUserBookings } from "@/action/hostel";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router";
-import { User } from "@/types/index.types";
+import { useNavigate, Link } from "react-router";
+import { Separator } from "@/components/ui/separator";
 
-const Profile = () => {
-    const { data: user, isPending } = useCurrentUser();
+export default function ProfilePage() {
+    const { data: user, isLoading } = useGetProfile();
+    const { data: bookings, isLoading: isLoadingBookings } = useGetUserBookings();
     const navigate = useNavigate();
-    
-    const typedUser = user as User | null;
-    
-    const isValidUser = (user: any): user is User => {
-        return user && typeof user.id === 'number';
-    };
 
-    if (isPending) {
+    const hasActiveBooking = bookings?.some(booking =>
+        booking.status === 'otp_pending' ||
+        booking.status === 'payment_pending'
+    );
+
+    if (isLoading) {
         return (
-            <div className="container mx-auto p-6">
-                <Card className="w-full max-w-3xl mx-auto">
+            <div className="container mx-auto px-4 py-8">
+                <Card>
                     <CardHeader>
-                        <CardTitle><Skeleton className="h-8 w-1/3" /></CardTitle>
-                        <CardDescription><Skeleton className="h-4 w-1/2" /></CardDescription>
+                        <Skeleton className="h-8 w-1/3" />
+                        <Skeleton className="h-4 w-1/4" />
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <Skeleton className="h-16 w-16 rounded-full" />
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-32" />
-                                    <Skeleton className="h-4 w-48" />
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-2/3" />
                             </div>
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-8 w-full" />
-                            </div>
-                            <div className="space-y-2">
-                                <Skeleton className="h-4 w-20" />
-                                <Skeleton className="h-8 w-full" />
+                            <div className="space-y-4">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-2/3" />
                             </div>
                         </div>
                     </CardContent>
@@ -48,102 +42,186 @@ const Profile = () => {
         );
     }
 
-    if (!isValidUser(typedUser)) {
-        return (
-            <div className="container mx-auto p-6 text-center">
-                <h1 className="text-2xl font-bold mb-4">Not Logged In</h1>
-                <p className="mb-4">Please log in to view your profile</p>
-                <Button onClick={() => navigate("/auth/login")}>
-                    Go to Login
-                </Button>
-            </div>
-        );
-    }
-
-    // Generate initials for avatar fallback
-    const getInitials = (name: string | null) => {
-        if (!name) return "U";
-        return name
-            .split(" ")
-            .map(part => part[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
-
-    // Format date in a readable way
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-        });
-    };
-
     return (
-        <div className="mx-auto p-6">
-            <Card className="w-full  mx-auto">
-                <CardHeader>
-                    <CardTitle>Your Profile</CardTitle>
-                    <CardDescription>View and manage your account information</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-8">
-                        <div className="flex items-center gap-4">
-                            <Avatar className="h-16 w-16">
-                                <AvatarImage src="" alt={typedUser.name || "User"} />
-                                <AvatarFallback className="text-lg">{getInitials(typedUser.name)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <h3 className="text-xl font-semibold">{typedUser.name || "User"}</h3>
-                                <p className="text-muted-foreground">{typedUser.email}</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 className="text-sm font-medium text-muted-foreground mb-2">User ID</h4>
-                                <p className="text-sm">{typedUser.id}</p>
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-medium text-muted-foreground mb-2">Email Verification</h4>
-                                <p className="text-sm">
-                                    {typedUser.isVerified ? (
-                                        <span className="text-green-600 dark:text-green-400">Verified</span>
-                                    ) : (
-                                        <span className="text-red-600 dark:text-red-400">Not Verified</span>
-                                    )}
-                                </p>
-                            </div>
-                            {typedUser.createdAt && (
-                                <div>
-                                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Member Since</h4>
-                                    <p className="text-sm">{formatDate(typedUser.createdAt)}</p>
+        <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Profile Information */}
+                <div className="lg:col-span-2 space-y-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Personal Information</CardTitle>
+                            <CardDescription>Your basic details and contact information</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Full Name</p>
+                                    <p className="font-medium">{user?.first_name} {user?.last_name}</p>
                                 </div>
-                            )}
-                            {typedUser.updatedAt && (
-                                <div>
-                                    <h4 className="text-sm font-medium text-muted-foreground mb-2">Last Updated</h4>
-                                    <p className="text-sm">{formatDate(typedUser.updatedAt)}</p>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Email</p>
+                                    <p className="font-medium">{user?.email}</p>
                                 </div>
-                            )}
-                        </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Gender</p>
+                                    <p className="font-medium">{user?.gender === 'M' ? 'Male' : 'Female'}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Phone Number</p>
+                                    <p className="font-medium">{user?.phone_number}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Parent's Phone Number</p>
+                                    <p className="font-medium">{user?.parent_phone_number}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                        <div className="border-t pt-6">
-                            <Button 
-                                variant="outline" 
-                                onClick={() => navigate("/setting")}
-                                className="mr-2"
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Academic Information</CardTitle>
+                            <CardDescription>Your academic details and enrollment information</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Roll Number</p>
+                                    <p className="font-medium">{user?.roll_no}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Department</p>
+                                    <p className="font-medium">{user?.dept}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Year</p>
+                                    <p className="font-medium">{user?.year}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Account Status</CardTitle>
+                            <CardDescription>Your account details and activity information</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Account Status</p>
+                                    <Badge variant={user?.is_active ? "secondary" : "destructive"}>
+                                        {user?.is_active ? "Active" : "Inactive"}
+                                    </Badge>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Account Type</p>
+                                    <Badge variant="outline">
+                                        {user?.is_superuser ? "Admin" : user?.is_staff ? "Staff" : "Student"}
+                                    </Badge>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Member Since</p>
+                                    <p className="font-medium">{new Date(user?.date_joined || "").toLocaleDateString()}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-sm text-gray-500">Last Login</p>
+                                    <p className="font-medium">{new Date(user?.last_login || "").toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Bookings Section */}
+                <div className="lg:col-span-1">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Your Bookings</CardTitle>
+                            <CardDescription>View and manage your hostel bookings</CardDescription>
+                            <Button
+                                className="mt-4"
+                                onClick={() => navigate("/hostels")}
+                                disabled={hasActiveBooking}
                             >
-                                Settings
+                                {hasActiveBooking ? "Booking in Progress" : "Book a New Room"}
                             </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+                        </CardHeader>
+                        <CardContent>
+                            {isLoadingBookings ? (
+                                <div className="space-y-4">
+                                    <Skeleton className="h-24 w-full" />
+                                    <Skeleton className="h-24 w-full" />
+                                </div>
+                            ) : bookings?.length === 0 ? (
+                                <div className="text-center py-8 space-y-4">
+                                    <div className="text-gray-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-lg font-medium text-gray-900">No Bookings Yet</p>
+                                        <p className="text-gray-500 mt-1">You haven't made any hostel bookings yet.</p>
+                                        <p className="text-gray-500">Browse our available hostels and make your first booking!</p>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => navigate("/hostels")}
+                                        className="mt-4"
+                                    >
+                                        Browse Hostels
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {bookings?.map((booking) => (
+                                        <Link
+                                            key={booking.id}
+                                            to={`/bookings/${booking.id}`}
+                                            className="block border rounded-lg p-4 space-y-2 hover:bg-muted/50 transition-colors"
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <h4 className="font-semibold">{booking.hostel.name}</h4>
+                                                    <p className="text-sm text-gray-500">{booking.hostel.location}</p>
+                                                </div>
+                                                <Badge variant={
+                                                    booking.status === 'otp_pending' ? 'outline' :
+                                                        booking.status === 'payment_pending' ? 'secondary' :
+                                                            booking.status === 'confirmed' ? 'default' :
+                                                                'destructive'
+                                                }>
+                                                    {booking.status}
+                                                </Badge>
+                                            </div>
+                                            <Separator />
+                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                <div>
+                                                    <p className="text-gray-500">Room Type</p>
+                                                    <p className="font-medium">{booking.hostel.room_type}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500">Food Type</p>
+                                                    <p className="font-medium">{booking.hostel.food_type}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500">Amount</p>
+                                                    <p className="font-medium">₹{booking.hostel.amount}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500">Booked On</p>
+                                                    <p className="font-medium">{new Date(booking.booked_at).toLocaleDateString()}</p>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
     );
-};
-
-export default Profile;
+}
