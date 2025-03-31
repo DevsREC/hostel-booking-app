@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,8 +17,26 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
+const carouselImages = [
+    "/images/banner-1.jpg",
+    "/images/images.jpeg",
+    "/images/images (1).jpeg",
+    "/images/1551372417phpw6JY3j.jpeg"
+];
+
 export default function ForgotPassword() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentImageIndex((prevIndex) =>
+                prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
+            );
+        }, 5000); // Change image every 5 seconds
+
+        return () => clearInterval(timer);
+    }, []);
 
     const {
         register,
@@ -62,42 +80,82 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="flex justify-center items-center h-full">
-            <Card className="w-2/3">
-                <CardHeader>
-                    <CardTitle className="text-2xl">Forgot Password</CardTitle>
-                    <CardDescription>
-                        Enter your email address and we'll send you instructions to reset your password
-                    </CardDescription>
-                </CardHeader>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <CardContent className="space-y-4">
+        <div className="flex h-screen relative">
+            {/* Carousel Section */}
+            <div className="absolute inset-0">
+                <div className="absolute inset-0">
+                    {carouselImages.map((image, index) => (
+                        <div
+                            key={image}
+                            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                                }`}
+                            style={{
+                                backgroundImage: `url(${image})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                            }}
+                        >
+                            <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
+                        </div>
+                    ))}
+                </div>
+                <div className="relative z-10 flex flex-col justify-center items-center text-white p-8 w-full h-full">
+                    <img
+                        src="/images/images.jpeg"
+                        alt="REC Hostel Logo"
+                        className="w-32 h-32 mb-8 object-contain"
+                    />
+                    <h1 className="text-4xl font-bold mb-4 text-center">Reset Your Password</h1>
+                    <p className="text-xl text-center max-w-md">We'll help you get back into your account</p>
+                </div>
+            </div>
+
+            {/* Form Section */}
+            <div className="flex-1 flex items-center justify-center p-4 relative z-20">
+                <Card className="w-full max-w-md shadow-lg bg-background/80 backdrop-blur-sm border-border/50">
+                    <CardHeader className="text-center space-y-4">
+                        <img
+                            src="/images/images.jpeg"
+                            alt="REC Hostel Logo"
+                            className="w-24 h-24 mx-auto object-contain"
+                        />
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="your.email@example.com"
-                                {...register("email")}
-                            />
-                            {errors.email && (
-                                <p className="text-sm text-destructive">{errors.email.message}</p>
-                            )}
+                            <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
+                            <CardDescription className="text-base">
+                                Enter your email address and we'll send you instructions to reset your password
+                            </CardDescription>
                         </div>
-                    </CardContent>
-                    <CardFooter className="flex flex-col space-y-4 mt-4">
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? "Sending Instructions..." : "Send Reset Instructions"}
-                        </Button>
-                        <div className="flex justify-center gap-1 text-sm">
-                            <span className="text-muted-foreground">Remember your password?</span>
-                            <Link to="/auth/login" className="text-primary hover:underline">
-                                Sign in
-                            </Link>
-                        </div>
-                    </CardFooter>
-                </form>
-            </Card>
+                    </CardHeader>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-base">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="your.email@example.com"
+                                    className="h-11"
+                                    {...register("email")}
+                                />
+                                {errors.email && (
+                                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                                )}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex flex-col space-y-4 mt-4">
+                            <Button type="submit" className="w-full h-11 text-base" disabled={isSubmitting}>
+                                {isSubmitting ? "Sending Instructions..." : "Send Reset Instructions"}
+                            </Button>
+                            <p className="text-sm text-muted-foreground text-center">
+                                Remember your password?{" "}
+                                <Link to="/auth/login" className="text-primary hover:underline font-medium">
+                                    Sign in
+                                </Link>
+                            </p>
+                        </CardFooter>
+                    </form>
+                </Card>
+            </div>
         </div>
     );
 } 

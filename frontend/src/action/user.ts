@@ -2,6 +2,7 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
 import axios from "axios";
 import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
+import { queryClient } from "../lib/react-query";
 
 const API_URL = 'http://localhost:8000';  // Update to match your Django backend URL
 
@@ -16,61 +17,32 @@ export const api = axios.create({
 
 // Login user
 export const useLoginUser = (onSuccess?: () => void) => {
-  return useMutationData<LoginResponse, LoginRequest>(
+  return useMutationData<LoginResponse | string, LoginRequest>(
     ['login'],
-    async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
+    async (data: LoginRequest): Promise<ApiResponse<LoginResponse | string>> => {
       try {
         const response = await api.post<LoginResponse>('/authenticate/login/', data);
-
-        // Store user info
-        localStorage.setItem('user', JSON.stringify({
-          id: Number(response.data.id),
-          first_name: response.data.first_name,
-          last_name: response.data.last_name,
-          gender: response.data.gender,
-          email: response.data.email,
-          year: response.data.year,
-          dept: response.data.dept,
-          roll_no: response.data.roll_no,
-          phone_number: response.data.phone,
-          parent_phone_number: response.data.phone, // Using same phone as parent phone for now
-          is_active: response.data.is_active,
-          is_staff: response.data.is_staff,
-          is_superuser: response.data.is_superuser,
-          date_joined: response.data.date_joined,
-          last_login: response.data.last_login,
-        }));
-
         return {
           status: response.status,
           data: response.data,
-          user: {
-            id: Number(response.data.id),
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            gender: response.data.gender,
-            email: response.data.email,
-            year: response.data.year,
-            dept: response.data.dept,
-            roll_no: response.data.roll_no,
-            phone_number: response.data.phone,
-            parent_phone_number: response.data.phone, // Using same phone as parent phone for now
-            is_active: response.data.is_active,
-            is_staff: response.data.is_staff,
-            is_superuser: response.data.is_superuser,
-            date_joined: response.data.date_joined,
-            last_login: response.data.last_login,
-          },
+          user: response.data.user,
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
+          const errorData = error.response.data;
           return {
             status: error.response.status,
-            data: error.response.data.detail || 'Login failed',
+            data: errorData.detail || 'Login failed',
+            code: errorData.code,
             user: undefined,
           };
         }
-        throw error;
+        return {
+          status: 500,
+          data: 'An unexpected error occurred. Please try again.',
+          code: 'server_error',
+          user: undefined,
+        };
       }
     },
     'currentUser',
@@ -88,15 +60,22 @@ export const useRequestPasswordReset = (onSuccess?: () => void) => {
         return {
           status: response.status,
           data: response.data.detail || 'Password reset instructions sent successfully',
+          code: response.data.code,
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
+          const errorData = error.response.data;
           return {
             status: error.response.status,
-            data: error.response.data.detail || 'Password reset request failed',
+            data: errorData.detail || 'Password reset request failed',
+            code: errorData.code,
           };
         }
-        throw error;
+        return {
+          status: 500,
+          data: 'An unexpected error occurred. Please try again.',
+          code: 'server_error',
+        };
       }
     },
     undefined,
@@ -114,15 +93,22 @@ export const useResetPassword = (token: string, onSuccess?: () => void) => {
         return {
           status: response.status,
           data: response.data.detail || 'Password reset successful',
+          code: response.data.code,
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
+          const errorData = error.response.data;
           return {
             status: error.response.status,
-            data: error.response.data.detail || 'Password reset failed',
+            data: errorData.detail || 'Password reset failed',
+            code: errorData.code,
           };
         }
-        throw error;
+        return {
+          status: 500,
+          data: 'An unexpected error occurred. Please try again.',
+          code: 'server_error',
+        };
       }
     },
     undefined,
@@ -155,25 +141,38 @@ export const useCurrentUser = () => {
 export const useLogout = (onSuccess?: () => void) => {
   return useMutationData<void, void>(
     ['logout'],
-    async (): Promise<ApiResponse> => {
+    async (): Promise<ApiResponse<void>> => {
       try {
         const response = await api.post('/authenticate/logout/');
 
         // Clear localStorage
         localStorage.removeItem('user');
 
+        // Clear all query cache
+        queryClient.clear();
+
+        // Force reload to clear any remaining state
+        window.location.href = '/auth/login';
+
         return {
           status: response.status,
-          data: response.data.detail,
+          data: response.data.detail || 'Logged out successfully',
+          code: 'logout_success'
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
+          const errorData = error.response.data;
           return {
             status: error.response.status,
-            data: error.response.data.detail || 'Logout failed',
+            data: errorData.detail || 'Logout failed',
+            code: errorData.code || 'logout_failed'
           };
         }
-        throw error;
+        return {
+          status: 500,
+          data: 'An unexpected error occurred during logout.',
+          code: 'server_error'
+        };
       }
     },
     'currentUser',

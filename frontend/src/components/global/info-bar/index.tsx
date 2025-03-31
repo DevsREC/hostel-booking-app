@@ -51,6 +51,11 @@ export function Header({ toggleSidebar }: HeaderProps) {
       <div className="px-10 flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/images/images.jpeg"
+              alt="REC Hostel Logo"
+              className="h-8 w-8 object-contain"
+            />
             <span className="text-xl font-bold">REC Hostel</span>
           </Link>
         </div>

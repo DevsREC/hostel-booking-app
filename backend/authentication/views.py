@@ -31,12 +31,34 @@ class LoginAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')
+        
+        if not email or not password:
+            return Response({
+                'detail': 'Both email and password are required',
+                'code': 'missing_credentials'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
         user = authenticate(request, email=email, password=password)
 
         if user:
+            if not user.is_active:
+                return Response({
+                    'detail': 'Your account is not active. Please verify your email first.',
+                    'code': 'account_inactive'
+                }, status=status.HTTP_401_UNAUTHORIZED)
             return user.generate_login_response()
         else:
-            return Response({'detail':"Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            try:
+                user = User.objects.get(email=email)
+                return Response({
+                    'detail': 'Invalid password. Please try again.',
+                    'code': 'invalid_password'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            except User.DoesNotExist:
+                return Response({
+                    'detail': 'No account found with this email. Please sign up first.',
+                    'code': 'user_not_found'
+                }, status=status.HTTP_401_UNAUTHORIZED)
         
 class ProfileAPIView(generics.CreateAPIView):
     serializer_class = RoomBookingSerializer
@@ -98,13 +120,35 @@ class ForgotPasswordAPI(generics.GenericAPIView):
     def post(self, request):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
+        
+        if not email or not password:
+            return Response({
+                'detail': 'Both email and new password are required',
+                'code': 'missing_credentials'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
         try:
             user = User.objects.get(email=email)
+            if not user.is_active:
+                return Response({
+                    'detail': 'Your account is not active. Please verify your email first.',
+                    'code': 'account_inactive'
+                }, status=status.HTTP_400_BAD_REQUEST)
             user.send_forgot_password_mail(new_password=password)
-            return Response({'detail': 'Verification code sent to your email'}, status=status.HTTP_200_OK)
+            return Response({
+                'detail': 'Verification code sent to your email',
+                'code': 'reset_email_sent'
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({
+                'detail': 'No account found with this email. Please sign up first.',
+                'code': 'user_not_found'
+            }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print("Exeption: ", e)
-            return Response({'detail': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'detail': 'An error occurred while processing your request. Please try again.',
+                'code': 'server_error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     def get(self, request):
         email = request.query_params.get('email', '')

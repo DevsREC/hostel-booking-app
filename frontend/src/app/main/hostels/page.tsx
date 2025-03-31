@@ -13,21 +13,21 @@ export default function HostelsPage() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="container mx-auto px-4 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <Card key={i} className="overflow-hidden">
-                            <Skeleton className="h-48 w-full" />
-                            <CardHeader>
-                                <Skeleton className="h-6 w-3/4" />
-                                <Skeleton className="h-4 w-1/2 mt-2" />
+                        <Card key={i} className="overflow-hidden border-0 shadow-lg">
+                            <Skeleton className="h-56 w-full" />
+                            <CardHeader className="space-y-3">
+                                <Skeleton className="h-7 w-3/4" />
+                                <Skeleton className="h-5 w-1/2" />
                             </CardHeader>
-                            <CardContent>
-                                <Skeleton className="h-4 w-full mb-2" />
-                                <Skeleton className="h-4 w-2/3" />
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-5 w-full" />
+                                <Skeleton className="h-5 w-2/3" />
                             </CardContent>
                             <CardFooter>
-                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-11 w-full rounded-lg" />
                             </CardFooter>
                         </Card>
                     ))}
@@ -38,10 +38,10 @@ export default function HostelsPage() {
 
     if (!hostels?.length) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-foreground mb-4">No Hostels Available</h1>
-                    <p className="text-muted-foreground">
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center space-y-4">
+                    <h1 className="text-4xl font-bold text-foreground">No Hostels Available</h1>
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         There are currently no hostels available for {currentUser?.gender === 'M' ? 'male' : 'female'} students.
                     </p>
                 </div>
@@ -50,60 +50,63 @@ export default function HostelsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-foreground">Available Hostels</h1>
-                <p className="text-muted-foreground">
-                    {hostels.length} {hostels.length === 1 ? 'hostel' : 'hostels'} available for {currentUser?.gender === 'M' ? 'male' : 'female'} students
-                </p>
+        <div className="container mx-auto px-4 py-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+                <div>
+                    <h1 className="text-4xl font-bold text-foreground mb-2">Available Hostels</h1>
+                    <p className="text-lg text-muted-foreground">
+                        {hostels.length} {hostels.length === 1 ? 'hostel' : 'hostels'} available for {currentUser?.gender === 'M' ? 'male' : 'female'} students
+                    </p>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {hostels.map((hostel) => (
-                    <Card key={hostel.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
-                        <div className="relative">
+                    <Card
+                        key={hostel.id}
+                        className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                        <div className="relative group">
                             <img
                                 src={hostel.image || "https://placehold.co/600x400"}
                                 alt={hostel.name}
-                                className="w-full h-48 object-cover"
+                                className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                             <div className="absolute top-4 right-4 flex gap-2">
-                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1">
                                     {hostel.room_type}
                                 </Badge>
-                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1">
                                     {hostel.food_type}
                                 </Badge>
                             </div>
                         </div>
-                        <CardHeader>
-                            <CardTitle className="text-xl">{hostel.name}</CardTitle>
+                        <CardHeader className="space-y-3">
+                            <CardTitle className="text-2xl font-semibold">{hostel.name}</CardTitle>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                <span className="text-sm">{hostel.location}</span>
+                                <MapPin className="h-5 w-5" />
+                                <span className="text-base">{hostel.location}</span>
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        <Users className="h-4 w-4" />
-                                        <span className="text-sm">Available Students</span>
-                                    </div>
-                                    <span className="font-medium">{hostel.available_rooms * hostel.person_per_room}</span>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <Users className="h-5 w-5" />
+                                    <span className="text-base">Available Students</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                        <IndianRupee className="h-4 w-4" />
-                                        <span className="text-sm">Annual Price</span>
-                                    </div>
-                                    <span className="font-medium">₹{hostel.amount * 12}</span>
+                                <span className="font-semibold text-lg">{hostel.available_rooms * hostel.person_per_room}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <IndianRupee className="h-5 w-5" />
+                                    <span className="text-base">Annual Price</span>
                                 </div>
+                                <span className="font-semibold text-lg">₹{hostel.amount * 12}</span>
                             </div>
                         </CardContent>
                         <CardFooter>
                             <Link to={`/hostels/${hostel.id}`} className="w-full">
-                                <Button className="w-full" variant="default">
+                                <Button className="w-full h-11 text-base font-medium" variant="default">
                                     View Details
                                 </Button>
                             </Link>

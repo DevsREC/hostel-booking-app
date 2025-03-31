@@ -86,6 +86,7 @@ class RoomBooking(models.Model):
         default='otp_pending', 
         choices=BOOKING_STATUS
     )
+    is_internal_booking = models.BooleanField(default=False)
     booked_at = models.DateTimeField(auto_now_add=True)
     otp_verified_at = models.DateTimeField(null=True, blank=True)
     payment_completed_at = models.DateTimeField(null=True, blank=True)

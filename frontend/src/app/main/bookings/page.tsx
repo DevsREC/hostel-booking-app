@@ -62,7 +62,7 @@ export default function BookingsPage() {
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-foreground">Your Bookings</h1>
                 <Button
-                    onClick={() => navigate("/hostels")}
+                    onClick={() => navigate("/")}
                     disabled={hasActiveBooking}
                 >
                     {hasActiveBooking ? "Booking in Progress" : "Book a New Room"}
@@ -79,7 +79,7 @@ export default function BookingsPage() {
                         </p>
                         <div className="flex gap-4 mt-4">
                             <Button
-                                onClick={() => navigate("/hostels")}
+                                onClick={() => navigate("/")}
                                 disabled={hasActiveBooking}
                             >
                                 Browse Hostels

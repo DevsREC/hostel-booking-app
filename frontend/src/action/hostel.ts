@@ -3,6 +3,7 @@ import { useMutationData } from "@/hooks/useMutationData";
 import { Hostel, Room, Booking, HostelResponse, RoomResponse, BookingResponse, ApiResponse } from "@/types/index.types";
 import { api } from "./user";
 import { useCurrentUser } from "./user";
+import axios from "axios";
 
 // Get all hostels
 export const useGetHostels = () => {
@@ -62,15 +63,32 @@ export const useGetRoomsByHostel = (hostelId: string) => {
 };
 
 // Create booking
-export const useCreateBooking = (onSuccess?: (response: { data: { booking_id?: string; message?: string } }) => void) => {
+export const useCreateBooking = (onSuccess?: (response: ApiResponse<{ booking_id?: string; message?: string }>) => void) => {
     return useMutationData<{ booking_id?: string; message?: string }, { hostel: number }>(
         ['createBooking'],
         async (data: { hostel: number }): Promise<ApiResponse<{ booking_id?: string; message?: string }>> => {
-            const response = await api.post<{ booking_id?: string; message?: string }>(`/hostel/book/${data.hostel}/`, data);
-            return {
-                status: response.status,
-                data: response.data,
-            };
+            try {
+                const response = await api.post<{ booking_id?: string; message?: string }>(`/hostel/book/${data.hostel}/`, data);
+                return {
+                    status: response.status,
+                    data: response.data,
+                    code: 'booking_success'
+                };
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                    const errorData = error.response.data;
+                    return {
+                        status: error.response.status,
+                        data: errorData.detail || 'Booking failed',
+                        code: errorData.code || 'booking_failed'
+                    };
+                }
+                return {
+                    status: 500,
+                    data: 'An unexpected error occurred during booking.',
+                    code: 'server_error'
+                };
+            }
         },
         'bookings',
         onSuccess
@@ -93,13 +111,30 @@ export const useCancelBooking = (onSuccess?: () => void) => {
     return useMutationData<Booking, string>(
         ['cancelBooking'],
         async (bookingId: string): Promise<ApiResponse<Booking>> => {
-            const response = await api.delete<Booking>('/hostel/booking/', {
-                data: { booking_id: bookingId }
-            });
-            return {
-                status: response.status,
-                data: response.data,
-            };
+            try {
+                const response = await api.delete<Booking>('/hostel/booking/', {
+                    data: { booking_id: bookingId }
+                });
+                return {
+                    status: response.status,
+                    data: response.data,
+                    code: 'cancel_success'
+                };
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response) {
+                    const errorData = error.response.data;
+                    return {
+                        status: error.response.status,
+                        data: errorData.detail || 'Cancellation failed',
+                        code: errorData.code || 'cancel_failed'
+                    };
+                }
+                return {
+                    status: 500,
+                    data: 'An unexpected error occurred during cancellation.',
+                    code: 'server_error'
+                };
+            }
         },
         'userBookings',
         onSuccess

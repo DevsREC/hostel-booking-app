@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,26 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const carouselImages = [
+  "/images/banner-1.jpg",
+  "/images/images (1).jpeg",
+  "/images/1551372417phpw6JY3j.jpeg",
+  "/images/cafe.jpeg"
+];
+
 export default function Login() {
   const navigate = useNavigate();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
 
   const {
     register,
@@ -38,7 +56,7 @@ export default function Login() {
     try {
       mutate(data, {
         onSuccess: (result) => {
-          if (result?.status === 200) {
+          if (result?.status === 200 && typeof result.data !== 'string') {
             // Store user data in localStorage
             const userData = {
               id: result.user?.id,
@@ -50,26 +68,36 @@ export default function Login() {
             toast.success("Login successful! Welcome back.");
             navigate("/");
           } else {
-            // Handle specific error cases
-            const errorMessage = result?.data?.message || result?.data;
-            if (typeof errorMessage === 'string') {
-              if (errorMessage.toLowerCase().includes('password')) {
+            // Handle specific error cases based on error code
+            const errorMessage = typeof result?.data === 'string' ? result.data : 'Login failed';
+            const errorCode = result?.code;
+
+            switch (errorCode) {
+              case 'missing_credentials':
+                toast.error("Please enter both email and password.");
+                break;
+              case 'account_inactive':
+                toast.error("Your account is not active. Please verify your email first.");
+                break;
+              case 'invalid_password':
                 toast.error("Incorrect password. Please try again.");
-              } else if (errorMessage.toLowerCase().includes('email')) {
-                toast.error("Email not found. Please check your email or sign up.");
-              } else if (errorMessage.toLowerCase().includes('verify')) {
-                toast.error("Please verify your email before logging in.");
-              } else {
+                break;
+              case 'user_not_found':
+                toast.error("No account found with this email. Please sign up first.");
+                break;
+              case 'server_error':
+                toast.error("An unexpected error occurred. Please try again later.");
+                break;
+              default:
                 toast.error(errorMessage);
-              }
-            } else {
-              toast.error("Login failed. Please check your credentials.");
             }
           }
         },
         onError: (error: any) => {
-          const errorMessage = error?.response?.data?.message || error?.message;
-          if (errorMessage?.toLowerCase().includes('network')) {
+          const errorMessage = error?.response?.data?.detail || error?.message;
+          const errorCode = error?.response?.data?.code;
+
+          if (errorCode === 'network_error') {
             toast.error("Network error. Please check your internet connection.");
           } else {
             toast.error(errorMessage || "An error occurred during login. Please try again.");
@@ -82,58 +110,93 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center h-full">
-      <Card className="w-2/3">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email and password to access your account
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
+    <div className="flex h-screen relative">
+      {/* Carousel Section */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0">
+          {carouselImages.map((image, index) => (
+            <div
+              key={image}
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              style={{
+                backgroundImage: `url(${image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
             </div>
+          ))}
+        </div>
+        <div className="relative z-10 flex flex-col justify-center items-center text-white p-8 w-full h-full">
+          <img
+            src="/images/images.jpeg"
+            alt="REC Hostel Logo"
+            className="w-32 h-32 mb-8 object-contain"
+          />
+          <h1 className="text-4xl font-bold mb-4 text-center">Welcome to REC Hostel</h1>
+          <p className="text-xl text-center max-w-md">Your home away from home</p>
+        </div>
+      </div>
+
+      {/* Login Form Section */}
+      <div className="flex-1 flex items-center justify-center p-4 relative z-20">
+        <Card className="w-full max-w-md shadow-lg bg-background/80 backdrop-blur-sm border-border/50">
+          <CardHeader className="text-center space-y-4">
+            <img
+              src="/images/images.jpeg"
+              alt="REC Hostel Logo"
+              className="w-24 h-24 mx-auto object-contain"
+            />
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link to="/auth/forgot-password" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </Link>
+              <CardTitle className="text-2xl font-bold">Login</CardTitle>
+              <CardDescription className="text-base">
+                Enter your email and password to access your account
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-base">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your.email@example.com"
+                  className="h-11"
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+                )}
               </div>
-              <Input
-                id="password"
-                type="password"
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? "Signing in..." : "Sign in"}
-            </Button>
-            <p className="text-sm text-muted-foreground text-center">
-              Don't have an account?{" "}
-              <Link to="/auth/register" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </p> */}
-          </CardFooter>
-        </form>
-      </Card>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-base">Password</Label>
+                  <Link to="/auth/forgot-password" className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  className="h-11"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
+                )}
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4 mt-4">
+              <Button type="submit" className="w-full h-11 text-base" disabled={isPending}>
+                {isPending ? "Signing in..." : "Sign in"}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
     </div>
   );
 } 

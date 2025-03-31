@@ -24,26 +24,28 @@ export interface LoginRequest {
 
 export interface PasswordResetRequest {
   email: string;
+  password: string;
 }
 
 export interface ResetPasswordRequest {
   email: string;
-  password: string;
+  token: string;
 }
 
-export interface ApiResponse<TData = any> {
+export interface ApiResponse<T = any> {
   status: number;
-  data: TData;
+  data: T | string;
+  code?: string;
   user?: User;
 }
 
 export interface LoginResponse {
-  id: string;
+  id: number;
   first_name: string;
   last_name: string;
-  gender: 'M' | 'F';
+  gender: string;
   email: string;
-  year: number;
+  year: string;
   dept: string;
   roll_no: string;
   phone: string;
@@ -51,8 +53,8 @@ export interface LoginResponse {
   is_staff: boolean;
   is_superuser: boolean;
   date_joined: string;
-  last_login: string | null;
-  token: string;
+  last_login: string;
+  user?: User;
 }
 
 export interface Hostel {
