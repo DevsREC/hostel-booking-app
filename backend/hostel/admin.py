@@ -6,12 +6,16 @@ from import_export.admin import ExportActionModelAdmin
 from .models import RoomBooking
 from .resources import *
 
+INTERNAL_RESERVATION_PERCENT = 25
+
 # Register your models here.
 @admin.register(Hostel)
 class HostelAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type', 'food_type')
     resource_classes = [HostelResource]
+
+
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(ExportActionModelAdmin, admin.ModelAdmin):
@@ -45,7 +49,7 @@ class RoomStats(Hostel):
 
 @admin.register(RoomStats)
 class RoomBookingStats(ColumnToggleModelAdmin):
-    list_display = ['name', 'location', 'gender', 'room_type', 'food_type', 'person_per_room', 'total_capacity', 'rooms_booked', 'rooms_available']
+    list_display = ['name', 'location', 'gender', 'room_type', 'food_type', 'person_per_room', 'total_capacity', 'rooms_booked', 'rooms_available', 'reserved_capacity']
     default_selected_columns=list_display
     search_fields = ['name']
     list_filter = ['name', 'location', 'gender', 'room_type', 'food_type']
@@ -73,3 +77,17 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         booked_room_count = self.booking_count(hostel)
         remaining_capacity = hostel.total_capacity - booked_room_count
         return remaining_capacity
+    
+    # def reserved_heads(self):
+    #     booked_rooms = RoomBooking.objects.filter(
+    #         hostel=self.hostel, 
+    #         status__in=['confirmed', 'payment_pending', 'otp_pending']
+    #     ).count()
+        
+    #     total_available = self.total_capacity - booked_rooms
+    #     internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        
+    #     return min(total_available, internal_reserved)
+
+    def reserved_capacity(self, hostel: Hostel):
+        return int(hostel.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))

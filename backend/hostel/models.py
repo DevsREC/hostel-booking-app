@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from authentication.models import User
 from authentication.utils import send_email
 
+INTERNAL_RESERVATION_PERCENT = 25
+
 # Create your models here.
 class Hostel(models.Model):
     ROOM_TYPE = [
@@ -47,11 +49,27 @@ class Hostel(models.Model):
             hostel=self, 
             status__in=['confirmed', 'payment_verified']
         ).count()
-        return self.total_capacity - booked_rooms
+
+        total_available = self.total_capacity - booked_rooms
+        internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        online_available = total_available - internal_reserved
+
+        return max(0, online_available)
 
     def is_available(self):
         return self.enable and self.available_rooms() > 0
- 
+    
+    def admin_bookings_available(self):
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=self, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending']
+        ).count()
+        
+        total_available = self.total_capacity - booked_rooms
+        internal_reserved = int(self.total_capacity * (self.internal_reservation_percent / 100))
+        
+        return min(total_available, internal_reserved)
+    
 class RoomBooking(models.Model):
     BOOKING_STATUS = [
         ('otp_pending', 'OTP Pending'),
@@ -95,8 +113,14 @@ class RoomBooking(models.Model):
     def clean(self):
         if self.user.gender != self.hostel.gender:
             raise ValidationError("User gender doesn't match hostel gender requirement")
-        if not self.hostel.is_available() and self.status != 'confirmed':
-            raise ValidationError("This hostel is currently not available")
+        
+        if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
+            if self.is_internal_booking:
+                if self.hostel.admin_bookings_available() <= 0:
+                    raise ValidationError("No more internal reservation slots available")
+            else:
+                if not self.hostel.is_available():
+                    raise ValidationError("This hostel is currently not available")
 
     def save(self, *args, **kwargs):
         self.clean()
