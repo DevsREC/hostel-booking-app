@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Status Update</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .header h2 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 0;
+        }
+        .status-badge {
+            background-color: #ffebee;
+            color: #c62828;
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .status-badge i {
+            font-size: 24px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .booking-details {
+            background-color: #f7f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .booking-details h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+        .booking-details p {
+            margin: 10px 0;
+        }
+        .booking-details .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eaeaea;
+        }
+        .booking-details .item:last-child {
+            border-bottom: none;
+        }
+        .booking-details .label {
+            font-weight: 600;
+            color: #555;
+        }
+        .booking-details .value {
+            text-align: right;
+        }
+        .reasons {
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .reasons h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .reasons ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .reasons li {
+            margin-bottom: 8px;
+        }
+        .action-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .action-button a {
+            display: inline-block;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .action-button a:hover {
+            background-color: #1976d2;
+        }
+        .contact-info {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% comment %} <div class="logo">
+            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
+        </div> {% endcomment %}
+        
+        <div class="header">
+            <h2>Payment Status Update</h2>
+        </div>
+        
+        <div class="status-badge">
+            <i>⚠</i> Payment Not Verified
+        </div>
+        
+        <p>Hello {{user_name}},</p>
+        <p>We regret to inform you that we were unable to verify your payment for your recent hostel booking request. As a result, your booking has not been confirmed at this time.</p>
+        
+        <div class="booking-details">
+            <h3>Booking Details</h3>
+            
+            {% comment %} <div class="item">
+                <span class="label">Reference ID:</span>
+                <span class="value">{{booking_id}}</span>
+            </div> {% endcomment %}
+            
+            <div class="item">
+                <span class="label">Hostel:</span>
+                <span class="value">{{hostel_name}}</span>
+            </div>
+            
+            <div class="item">
+                <span class="label">Room Type:</span>
+                <span class="value">{{room_type}}</span>
+            </div>
+            
+            {% comment %} <div class="item" style="font-weight: bold; color: #2c3e50;">
+                <span class="label">Amount:</span>
+                <span class="value">₹{{amount}}</span>
+            </div> {% endcomment %}
+        </div>
+        
+        <div class="reasons">
+            <h3>Possible Reasons for Rejection</h3>
+            <ul>
+                <li>Payment reference not found in our system</li>
+                <li>Incorrect amount transferred</li>
+                <li>Payment session timeout</li>
+                <li>Bank transaction declined or canceled</li>
+                <li>Network or technical issues during payment processing</li>
+            </ul>
+        </div>
+        
+        <p>Don't worry - this is not uncommon, and we're here to help you resolve this issue quickly. You can try making the payment again or contact our support team for assistance.</p>
+        
+        {% comment %} <div class="action-button">
+            <a href="{{retry_payment_link}}">Try Payment Again</a>
+        </div> {% endcomment %}
+        
+        <div class="contact-info">
+            <h3 style="margin-top: 0; color: #2c3e50;">Need Help?</h3>
+            <p>Email: <a href="mailto:support@hostelbooking.com">support@hostelbooking.com</a></p>
+            {% comment %} <p>Phone: +91 98765 43210</p>
+            <p>Support Hours: 9 AM - 6 PM, Monday to Saturday</p> {% endcomment %}
+        </div>
+        
+        <p>We apologize for any inconvenience this may have caused and look forward to helping you complete your booking.</p>
+        
+        <div class="footer">
+            <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

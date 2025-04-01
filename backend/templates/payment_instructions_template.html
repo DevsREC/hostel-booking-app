@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hostel Booking Payment Instructions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .header h2 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 0;
+        }
+        .payment-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .payment-button a {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .payment-button a:hover {
+            background-color: #219653;
+        }
+        .details {
+            background-color: #f7f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .details p {
+            margin: 8px 0;
+        }
+        .timer {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin: 25px 0;
+            color: #856404;
+            font-weight: 500;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        .steps {
+            margin: 25px 0;
+        }
+        .steps ol {
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <h2>Payment Instructions</h2>
+        </div>
+        
+        <p>Hello,</p>
+        <p>Thank you for verifying your OTP. Your booking is now on hold and waiting for payment.</p>
+        
+        <div class="timer">
+            <p style="margin: 0;"><strong>Important:</strong> Please complete your payment within 24 hours (expires on {{payment_expiry_date}}). After this time, your booking will be automatically cancelled.</p>
+        </div>
+        
+        <div class="details">
+            <h3 style="margin-top: 0; color: #2c3e50;">Booking Details</h3>
+            <p><strong>Hostel:</strong> {{hostel_name}}</p>
+            <p><strong>Room Type:</strong> {{room_type}}</p>
+            <p><strong>Amount to Pay:</strong> ₹{{amount}}</p>
+        </div>
+        
+        <div class="payment-button">
+            <a href="{{payment_link}}">Pay Now</a>
+        </div>
+        
+        <div class="steps">
+            <h3 style="color: #2c3e50;">Payment Steps:</h3>
+            <ol>
+                <li>Click the "Pay Now" button above</li>
+                <li>You will be redirected to our secure payment gateway</li>
+                <li>Complete the payment process</li>
+                <li>You will receive a confirmation email once payment is processed</li>
+            </ol>
+        </div>
+        
+        <p>If you have any questions or need assistance, please contact our support team at <a href="mailto:support@hostelbooking.com">support@hostelbooking.com</a>.</p>
+        
+        <div class="footer">
+            <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

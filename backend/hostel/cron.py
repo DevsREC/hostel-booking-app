@@ -35,51 +35,37 @@ def mark_expired_payment():
     return count
 
 def send_cancellation_email(self, booking):
-    subject = "Hostel Booking Cancelled - OTP Verification Timeout"
+    subject = "Booking Cancellation - OTP Verification Timeout"
+    to_email = booking.user.email
     
-    message = f"""
-        <p><strong>Your hostel booking has been cancelled</strong> due to OTP verification timeout.</p>
-        
-        <h3>Booking Details:</h3>
-        <div class="details">
-            <p><strong>Hostel:</strong> {booking.hostel.name}</p>
-            <p><strong>Room Type:</strong> {booking.hostel.room_type}</p>
-            <p><strong>Food Type:</strong> {booking.hostel.food_type}</p>
-        </div>
-        
-        <p>To book again, please revisit our booking portal and restart the process.</p>
-        <p>We apologize for any inconvenience caused.</p>
-        
-        <p><strong>Note:</strong> OTP verification must be completed within 10 minutes of booking initiation.</p>
-    """
+    booking_url = "https://yourhostelbooking.com/booking/new"
     
     send_email(
-        subject=subject, 
-        to_email=booking.user.email, 
-        context={"startingcontent": message}
+        subject=subject,
+        to_email=to_email,
+        context={
+            "user_name": booking.user.first_name or "Valued Guest",
+            "hostel_name": booking.hostel.name,
+            "room_type": booking.hostel.room_type,
+            "food_type": booking.hostel.food_type,
+        },
+        template_name="booking_cancellation_template.html"
     )
 
 def send_payment_expired_email(self, booking):
-    subject = "Hostel Booking - Payment Deadline Expired"
-    
-    message = f"""
-        <p><strong>Your hostel booking payment deadline has expired.</strong></p>
-        
-        <h3>Booking Details:</h3>
-        <div class="details">
-            <p><strong>Hostel:</strong> {booking.hostel.name}</p>
-            <p><strong>Room Type:</strong> {booking.hostel.room_type}</p>
-            <p><strong>Food Type:</strong> {booking.hostel.food_type}</p>
-            <p><strong>Amount:</strong> ₹{booking.hostel.amount}</p>
-        </div>
-        
-        <p>Your booking status has been changed to <strong>"Payment Not Done"</strong>. If you still wish to book this room, you will need to start a new booking process.</p>
-        
-        <p><strong>Note:</strong> Payments must be completed within 24 hours after OTP verification.</p>
-    """
+    subject = "Payment Deadline Expired - Hostel Booking"
+    to_email = booking.user.email
+    )
+    booking_url = "https://yourhostelbooking.com/booking/new"
     
     send_email(
-        subject=subject, 
-        to_email=booking.user.email, 
-        context={"startingcontent": message}
+        subject=subject,
+        to_email=to_email,
+        context={
+            "user_name": booking.user.first_name or "Valued Guest",
+            "hostel_name": booking.hostel.name,
+            "room_type": booking.hostel.room_type,
+            "food_type": booking.hostel.food_type,
+        },
+        template_name="payment_expired_template.html"
     )

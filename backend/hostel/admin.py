@@ -185,54 +185,32 @@ class PaymentManagementAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
 
     def send_confirmation_email(self, booking):
-        subject = "Hostel Booking - Payment Confirmed"
-        
-        message = f"""
-            <p><strong>Good news!</strong> Your payment for the hostel booking has been <span style="color: green;"><strong>confirmed</strong></span>.</p>
-            
-            <h3>Booking Details:</h3>
-            <div class="details">
-                <p><strong>Hostel:</strong> {booking.hostel.name}</p>
-                <p><strong>Room Type:</strong> {booking.hostel.room_type}</p>
-                <p><strong>Food Type:</strong> {booking.hostel.food_type}</p>
-                <p><strong>Amount Paid:</strong> ₹{booking.hostel.amount}</p>
-            </div>
-            
-            <p>Your booking is now confirmed. Please keep this email for your records.</p>
-        """
+        subject = "Booking Confirmed - Your Stay is Ready!"
+        to_email = booking.user.email
         
         send_email(
             subject=subject,
-            to_email=booking.user.email,
-            context={"startingcontent": message}
+            to_email=to_email,
+            context={
+                "user_name": booking.user.first_name or "Valued Guest",
+                "hostel_name": booking.hostel.name,
+                "room_type": booking.hostel.room_type,
+                "food_type": booking.hostel.food_type,
+            },
+            template_name="booking_confirmation_template.html"
         )
 
     
     def send_rejection_email(self, booking):
-        subject = "Hostel Booking - Payment Rejected"
-        
-        message = f"""
-            <p><strong>We regret to inform you</strong> that your payment for the hostel booking could not be verified.</p>
-            
-            <h3>Booking Details:</h3>
-            <div class="details">
-                <p><strong>Hostel:</strong> {booking.hostel.name}</p>
-                <p><strong>Room Type:</strong> {booking.hostel.room_type}</p>
-                <p><strong>Amount:</strong> ₹{booking.hostel.amount}</p>
-            </div>
-            
-            <h3>Possible reasons for rejection:</h3>
-            <ul>
-                <li>Payment reference not found</li>
-                <li>Incorrect amount paid</li>
-                <li>Payment timeout</li>
-            </ul>
-            
-            <p>Please contact the hostel administration for more information or to make a new booking.</p>
-        """
-        
+        subject = "Important Update on Your Hostel Booking Payment"
+        to_email = booking.user.email
         send_email(
             subject=subject,
-            to_email=booking.user.email,
-            context={"startingcontent": message}
+            to_email=to_email,
+            context={
+                "user_name": booking.user.first_name or "Valued Guest",
+                "hostel_name": booking.hostel.name,
+                "room_type": booking.hostel.room_type,
+            },
+            template_name="payment_rejection_template.html"
         )

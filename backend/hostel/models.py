@@ -147,19 +147,6 @@ class RoomBooking(models.Model):
         self.send_otp_email()
 
     def send_otp_email(self):
-        startcontent = f"""
-            <p>Hello,</p>
-            <p>Your OTP for hostel booking is:</p>
-            <div class="otp">{self.otp_code}</div>
-            <p><strong>Valid for 10 minutes.</strong></p>
-            
-            <div class="details">
-                <p><strong>Hostel:</strong> {self.hostel.name}</p>
-                <p><strong>Room Type:</strong> {self.hostel.room_type}</p>
-                <p><strong>Amount:</strong> ₹{self.hostel.amount}</p>
-            </div>
-        """
-        
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
         
@@ -167,15 +154,16 @@ class RoomBooking(models.Model):
             subject=subject,
             to_email=to_email,
             context={
-                "startingcontent": startcontent,
-                "endingcontent": "<p style='color: #d32f2f; font-weight: bold;'>Please do not share this OTP with anyone.</p>",
-                "footer": "<strong>Hostel Booking Team</strong>"
-            }
+                "otp_code": self.otp_code,
+                "hostel_name": self.hostel.name,
+                "room_type": self.hostel.room_type,
+                "amount": self.hostel.amount
+            },
+            template_name='otp_email.html'
         )
 
 
     def verify_otp(self, otp_code):
-        print(otp_code)
         if (self.status != 'otp_pending' or 
             timezone.now() > self.otp_expiry or 
             self.otp_code != str(otp_code)):
@@ -190,38 +178,22 @@ class RoomBooking(models.Model):
         return True
 
     def send_payment_instructions(self):
-        subject = "Hostel Booking - Payment Instructions"
-        
-        message = f"""
-            <p><strong>OTP verified successfully!</strong></p>
-            
-            <h3>Payment Instructions:</h3>
-            <ol>
-                <li>Make a payment of <strong>₹{self.hostel.amount}</strong> via:
-                    <ul>
-                        <li><strong>Bank Transfer:</strong> Account XXXX, IFSC XXXX</li>
-                        <li><strong>UPI:</strong> yourupi@example</li>
-                    </ul>
-                </li>
-                <li>After payment, visit: <a href="{self.payment_link}" target="_blank">{self.payment_link}</a>
-                    to submit your payment reference.
-                </li>
-                <li>Admin will verify and confirm your booking.</li>
-            </ol>
-            
-            <p><strong>Complete within 24 hours to secure your booking.</strong></p>
-            
-            <div class="details">
-                <p><strong>Hostel:</strong> {self.hostel.name}</p>
-                <p><strong>Amount:</strong> ₹{self.hostel.amount}</p>
-            </div>
-        """
-        
+        subject = "Complete Your Hostel Booking Payment"
         to_email = self.user.email
+        
+        payment_expiry_formatted = self.payment_expiry.strftime("%d %b %Y, %I:%M %p")
+        
         send_email(
-            subject=subject, 
-            to_email=to_email, 
-            context={"startingcontent": message}
+            subject=subject,
+            to_email=to_email,
+            context={
+                "hostel_name": self.hostel.name,
+                "room_type": self.hostel.room_type,
+                "amount": self.hostel.amount,
+                "payment_link": self.payment_link,
+                "payment_expiry_date": payment_expiry_formatted
+            },
+            template_name="payment_instructions_template.html"  # Path to the HTML template
         )
 
     # def submit_payment_reference(self, reference):

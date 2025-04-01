@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .header h2 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 0;
+        }
+        .success-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .success-badge i {
+            font-size: 24px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .booking-details {
+            background-color: #f7f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .booking-details h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+        .booking-details p {
+            margin: 10px 0;
+        }
+        .booking-details .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eaeaea;
+        }
+        .booking-details .item:last-child {
+            border-bottom: none;
+        }
+        .booking-details .label {
+            font-weight: 600;
+            color: #555;
+        }
+        .booking-details .value {
+            text-align: right;
+        }
+        .booking-id {
+            background-color: #f1f8fe;
+            border: 1px dashed #b3d4fc;
+            padding: 12px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .booking-id p {
+            margin: 0;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .notes {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 25px 0;
+        }
+        .notes h4 {
+            margin-top: 0;
+            color: #f57c00;
+        }
+        .notes ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .notes li {
+            margin-bottom: 5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        .contact-support {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .contact-support a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% comment %} <div class="logo">
+            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
+        </div> {% endcomment %}
+        
+        <div class="header">
+            <h2>Booking Confirmation</h2>
+        </div>
+        
+        <div class="success-badge">
+            <i>✓</i> Payment Successful
+        </div>
+        
+        <p>Hello {{user_name}},</p>
+        <p>Great news! Your payment has been successfully processed and your hostel booking is now <strong>confirmed</strong>.</p>
+        
+        <div class="booking-details">
+            <h3>Booking Details</h3>
+            
+            <div class="item">
+                <span class="label">Hostel:</span>
+                <span class="value">{{hostel_name}}</span>
+            </div>
+            
+            <div class="item">
+                <span class="label">Room Type:</span>
+                <span class="value">{{room_type}}</span>
+            </div>
+            
+            <div class="item">
+                <span class="label">Food Type:</span>
+                <span class="value">{{food_type}}</span>
+            </div>
+            
+            {% comment %} <div class="item">
+                <span class="label">Check-in Date:</span>
+                <span class="value">{{check_in_date}}</span>
+            </div>
+            
+            <div class="item">
+                <span class="label">Check-out Date:</span>
+                <span class="value">{{check_out_date}}</span>
+            </div>
+            
+            <div class="item" style="font-weight: bold; color: #2c3e50;">
+                <span class="label">Amount Paid:</span>
+                <span class="value">₹{{amount}}</span>
+            </div> {% endcomment %}
+        </div>
+        
+        <div class="qr-code">
+            <p>Show this QR code during check-in:</p>
+            <img src="/api/placeholder/150/150" alt="Booking QR Code">
+        </div>
+        
+        <div class="notes">
+            <h4>Important Information</h4>
+            <ul>
+                {% comment %} <li>Check-in time starts at 2:00 PM</li>
+                <li>Please bring a valid ID proof for verification</li>
+                <li>Wi-Fi password will be provided at reception</li> {% endcomment %}
+                <li>For any changes to your booking, please contact us at least 24 hours in advance</li>
+            </ul>
+        </div>
+        
+        <p>We're looking forward to welcoming you! If you have any questions before your stay, feel free to contact us.</p>
+        
+        <div class="contact-support">
+            <a href="mailto:support@hostelbooking.com">Contact Support</a>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for choosing us!</p>
+            <p><strong>Hostel Booking Team</strong></p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hostel Booking OTP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .header h2 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 0;
+        }
+        .otp {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #2c3e50;
+            background-color: #f7f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            border: 1px dashed #ccc;
+        }
+        .timer {
+            text-align: center;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        .details {
+            background-color: #f7f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .details p {
+            margin: 8px 0;
+        }
+        .warning {
+            background-color: #fff8f8;
+            border-left: 4px solid #e74c3c;
+            padding: 12px 15px;
+            margin: 25px 0;
+            color: #c0392b;
+            font-weight: 500;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% comment %} <div class="logo">
+            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
+        </div> {% endcomment %}
+        
+        <div class="header">
+            <h2>OTP Verification</h2>
+        </div>
+        
+        <p>Hello,</p>
+        <p>Thank you for using our Hostel Booking service. Please use the following One-Time Password (OTP) to complete your verification:</p>
+        
+        <div class="otp">{{otp_code}}</div>
+        
+        <div class="timer">
+            <p>This OTP is valid for 10 minutes only</p>
+        </div>
+        
+        <div class="details">
+            <h3 style="margin-top: 0; color: #2c3e50;">Booking Details</h3>
+            <p><strong>Hostel:</strong> {{hostel_name}}</p>
+            <p><strong>Room Type:</strong> {{room_type}}</p>
+            <p><strong>Amount:</strong> ₹{{amount}}</p>
+        </div>
+        
+        <div class="warning">
+            <p style="margin: 0;">Please do not share this OTP with anyone for security reasons.</p>
+        </div>
+        
+        <p>If you didn't request this OTP, please ignore this email or contact our support team.</p>
+        
+        <div class="footer">
+            <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

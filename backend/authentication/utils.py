@@ -3,8 +3,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.conf import settings
 
-def send_email(subject, to_email, context):
-    html_content = render_to_string('message.html', context)
+def send_email(subject, to_email, context, template_name):
+    html_content = render_to_string(template_name, context)
 
     text_content = strip_tags(html_content)
 

@@ -106,25 +106,26 @@ class User(AbstractUser):
     #         "startingcontent": start_content,
     #     })
 
-    def send_forgot_password_mail(self, new_password):
-        verfication_code = get_random_string(length=8)
-        start_content = f"""
-                <p><strong>Hostel Room Booking: Forgot Password</strong></p>
-                <p>Your OTP for resetting the password is:</p>
-                <div class="otp" style="font-size: 20px; font-weight: bold; color: #d32f2f; text-align: center; margin: 15px 0;">
-                    {verfication_code}
-                </div>
-                <p><strong>Please use this OTP to reset your password.</strong></p>
-            """
-        subject = "Hostel Room Booking: Forgot Password"
-        to_email = self.email
-        verfication, created = ForgetPassword.objects.get_or_create(user=self)
-        verfication.code = verfication_code
-        verfication.new_password = new_password
-        verfication.save()
-        send_email(subject, to_email, {
-            "startingcontent": start_content,
-        })
+def send_forgot_password_mail(self, new_password):
+    verification_code = get_random_string(length=8)
+    
+    subject = "Password Reset - Hostel Room Booking"
+    to_email = self.email
+    
+    verification, created = ForgetPassword.objects.get_or_create(user=self)
+    verification.code = verification_code
+    verification.new_password = new_password
+    verification.save()
+    
+    send_email(
+        subject=subject, 
+        to_email=to_email, 
+        context={
+            "verification_code": verification_code,
+        },
+        template_name="forgot_password_template.html"  # Path to your HTML template
+    )
+
 
 class BookingOTP(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
