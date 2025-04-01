@@ -2,12 +2,13 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
 import axios from "axios";
 import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
-// import { queryClient } from "/lib/react-query";
-import { QueryClient as queryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 
-const API_URL = 'http://localhost:8000';  // Update to match your Django backend URL
+const API_URL = 'http://localhost:8000';
 
-// Create axios instance with default config
+// Create a new instance of QueryClient
+const queryClient = new QueryClient();
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: {

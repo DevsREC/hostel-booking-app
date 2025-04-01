@@ -13,7 +13,10 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { api } from "@/action/user";
 import { toast } from "sonner";
 
-
+interface BookingResponse {
+    booking_id?: string;
+    message?: string;
+}
 
 export default function HostelDetail() {
     const { id } = useParams();
@@ -49,15 +52,16 @@ export default function HostelDetail() {
     );
 
     const { mutate: createBooking, isPending: isCreatingBooking } = useCreateBooking((response) => {
-        if (response.data.booking_id) {
-            setBookingId(response.data.booking_id);
+        const bookingResponse = response.data as BookingResponse;
+        if (bookingResponse.booking_id) {
+            setBookingId(bookingResponse.booking_id);
             setShowConfirmDialog(false);
             setShowOTPDialog(true);
             toast.success("OTP sent to your email!");
-        } else if (response.data.message === "You have already booked a hostel") {
+        } else if (bookingResponse.message === "You have already booked a hostel") {
             toast.error("You already have an active booking!");
-            if (response.data.booking_id) {
-                navigate(`/bookings/${response.data.booking_id}`);
+            if (bookingResponse.booking_id) {
+                navigate(`/bookings/${bookingResponse.booking_id}`);
             } else {
                 navigate('/bookings');
             }
