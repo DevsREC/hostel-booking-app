@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,9 +36,14 @@ CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    'django_daisy',
+    # 'django_daisy',
+    # 'django.contrib.humanize',
+    'unfold',
+    "unfold.contrib.import_export",
+    "unfold.contrib.filters",
+    "unfold.contrib.inlines",
+    "unfold.contrib.forms",
     'django.contrib.admin',
-    'django.contrib.humanize',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -228,4 +234,64 @@ DAISY_SETTINGS = {
             'icon': 'fa-solid fa-users-gear',  # Custom FontAwesome icon for the 'social_django' app
         },
     },
+}
+
+UNFOLD = {
+    "SHOW_VIEW_ON_SITE": False,
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Users And Groups",
+                "seperator": True,
+                "collapsible": True,
+                "icon": "users",
+                "items": [
+                    {
+                        "title": "Groups",
+                        "icon": "groups",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                    },
+                    {
+                        "title": "Users",
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:authentication_user_changelist"),
+                    },
+                    {
+                        "title": "Forgot Password",
+                        "icon": "password",
+                        "link": reverse_lazy("admin:authentication_forgetpassword_changelist"),
+                    }
+                ]
+            },
+            {
+                "title": "Hostel",
+                "seperator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": "Hostel",
+                        "icon": "apartment",
+                        "link": reverse_lazy("admin:hostel_hostel_changelist"),
+                    },
+                    {
+                        "title": "Booking Stats",
+                        "icon": "query_stats",
+                        "link": reverse_lazy("admin:hostel_roomstats_changelist"),
+                    },
+                    {
+                        "title": "Pending",
+                        "icon": "pending",
+                        "link": reverse_lazy("admin:hostel_paymentmanagement_changelist"),
+                    },
+                   {
+                       "title": "Confirmed",
+                       "icon": "check_circle",
+                       "link": reverse_lazy("admin:hostel_roombooking_changelist"),
+                   } 
+                ]
+            }
+        ]
+    }
 }

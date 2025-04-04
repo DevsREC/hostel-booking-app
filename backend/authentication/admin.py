@@ -1,7 +1,8 @@
 from django.contrib import admin
-from import_export.admin import ExportActionModelAdmin
+from import_export.admin import ImportExportActionModelAdmin
 from .models import *
 from .resources import UserResource
+from unfold.admin import ModelAdmin
 # Register your models here.
 
 class VerificationCodeInline(admin.StackedInline):
@@ -15,7 +16,8 @@ class ForgotPasswordInline(admin.StackedInline):
     can_delete = False
 
 @admin.register(User)
-class UserAdmin(ExportActionModelAdmin, admin.ModelAdmin):
+class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
+    compressed_fields = True
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'parent_phone_number', 'gender')}),
@@ -30,13 +32,13 @@ class UserAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     resource_classes = [UserResource]
 
 # @admin.register(BookingOTP)
-class VerificationCodeAdmin(admin.ModelAdmin):
+class VerificationCodeAdmin(ModelAdmin):
     list_display = ['user', 'code']
     search_fields = ['user_email', 'user_first_name']
     autocomplete_fields = ['user']
 
 @admin.register(ForgetPassword)
-class ForgotPasswordAdmin(admin.ModelAdmin):
+class ForgotPasswordAdmin(ModelAdmin):
     list_display = ['user', 'code']
     search_fields = ['user_email', 'user_first_name']
     autocomplete_fields = ['user']

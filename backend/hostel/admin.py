@@ -2,24 +2,37 @@ from django.contrib import admin
 from authentication.utils import send_email
 from .models import *
 from column_toggle.admin import ColumnToggleModelAdmin
-from import_export.admin import ExportActionModelAdmin
+from import_export.admin import ExportActionModelAdmin, ImportExportActionModelAdmin
 from .models import RoomBooking
 from django.utils.html import format_html
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from .resources import *
+from unfold.admin import ModelAdmin
 
 INTERNAL_RESERVATION_PERCENT = 25
 
 # Register your models here.
 @admin.register(Hostel)
-class HostelAdmin(ExportActionModelAdmin, admin.ModelAdmin):
-    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'total_capacity', 'gender')
+class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
+    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'amount' ,'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type', 'food_type')
     resource_classes = [HostelResource]
 
+    def amount(self, obj):
+        return format_html(
+            '<p class="text-xs">1 - ₹{}</p>'
+            '<p class="text-xs">2 - ₹{}</p>'
+            '<p class="text-xs">3 - ₹{}</p>'
+            '<p class="text-xs">4 - ₹{}</p>',
+            obj.first_year_fee,
+            obj.second_year_fee,
+            obj.third_year_fee,
+            obj.fourth_year_fee,
+        )
+
 @admin.register(RoomBooking)
-class RoomBookingAdmin(ExportActionModelAdmin, admin.ModelAdmin):
+class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'verified_by')
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
@@ -100,8 +113,8 @@ class PaymentManagement(RoomBooking):
         verbose_name_plural = "Payment Management"
 
 @admin.register(PaymentManagement)
-class PaymentManagementAdmin(admin.ModelAdmin):
-    list_display = ('user', 'user_gender', 'hostel_name', 'amount', 'payment_reference', 'payment_status', 'payment_actions')
+class PaymentManagementAdmin(ModelAdmin):
+    list_display = ('user', 'user_year', 'user_gender', 'hostel_name', 'amount', 'payment_reference', 'payment_status', 'payment_actions')
     list_filter = ('status', 'hostel')
     search_fields = ('user__email', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
@@ -113,13 +126,24 @@ class PaymentManagementAdmin(admin.ModelAdmin):
     def user_gender(self, obj):
         return obj.user.gender
     user_gender.short_description = 'Gender'
+
+    def user_year(self, obj):
+        return obj.user.year
+    user_year.short_description = 'Year'
     
     def hostel_name(self, obj):
         return obj.hostel.name
     hostel_name.short_description = 'Hostel'
     
     def amount(self, obj):
-        return f"₹{obj.hostel.amount}"
+        if self.user_year(obj) == 1:
+            return f"₹{obj.hostel.first_year_fee}"
+        elif self.user_year(obj) == 2:
+            return f"₹{obj.hostel.second_year_fee}"
+        elif self.user_year(obj) == 3:
+            return f"₹{obj.hostel.third_year_fee}"
+        elif self.user_year(obj) == 4:
+            return f"₹{obj.hostel.fourth_year_fee}"
     amount.short_description = 'Amount'
 
     def payment_status(self, obj):
