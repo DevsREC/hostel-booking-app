@@ -67,12 +67,12 @@ export default function HostelsPage() {
                         className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
                     >
                         <div className="relative group">
-                            <img
+                            {/* <img
                                 src={hostel.image || "https://placehold.co/600x400"}
                                 alt={hostel.name}
                                 className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                            <div className="absolute top-4 right-4 flex gap-2">
+                            /> */}
+                            <div className="absolute top-7 right-4 flex gap-2">
                                 <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
                                     {hostel.room_type}
                                 </Badge>
@@ -99,9 +99,9 @@ export default function HostelsPage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <IndianRupee className="h-5 w-5" />
-                                    <span className="text-base">Annual Price</span>
+                                    <span className="text-base">Additional Fees</span>
                                 </div>
-                                <span className="font-semibold text-lg text-card-foreground">₹{hostel.amount * 12}</span>
+                                <span className="font-semibold text-lg text-card-foreground">₹{hostel.amount}</span>
                             </div>
                         </CardContent>
                         <CardFooter>

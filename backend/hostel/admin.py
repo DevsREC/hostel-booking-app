@@ -18,14 +18,12 @@ class HostelAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_filter = ('location', 'gender', 'room_type', 'food_type')
     resource_classes = [HostelResource]
 
-
-
 @admin.register(RoomBooking)
 class RoomBookingAdmin(ExportActionModelAdmin, admin.ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'verified_by')
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
-    actions = ['confirm_payment', 'cancel_booking']
+    actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
 
     def save_model(self, request, obj, form, change):
@@ -126,9 +124,9 @@ class PaymentManagementAdmin(admin.ModelAdmin):
 
     def payment_status(self, obj):
         if obj.status == 'payment_pending':
-            return format_html('<span style="color: orange; font-weight: bold;">Pending</span>')
+            return format_html('<span class="badge badge-soft badge-error">Pending</span>')
         elif obj.status == 'payment_verified':
-            return format_html('<span style="color: blue; font-weight: bold;">Verified</span>')
+            return format_html('<span class="badge badge-soft badge-success">Verified</span>')
         else:
             return obj.get_status_display()
     payment_status.short_description = 'Status'
@@ -138,10 +136,10 @@ class PaymentManagementAdmin(admin.ModelAdmin):
             confirm_url = reverse('admin:confirm_payment', args=[obj.pk])
             reject_url = reverse('admin:reject_payment', args=[obj.pk])
             return format_html(
-                '<a class="button" style="background-color: green; color: white; padding: 3px 8px; '
-                'border-radius: 4px; text-decoration: none; margin-right: 5px;" href="{}">Confirm</a>'
-                '<a class="button" style="background-color: red; color: white; padding: 3px 8px; '
-                'border-radius: 4px; text-decoration: none;" href="{}">Reject</a>',
+                '<div class="btn-group space-x-2">'
+                '<a class="btn primary-content btn-sm btn-primary" href="{}">Confirm</a>'
+                '<a class="btn primary-content btn-sm btn-error" href="{}">Reject</a>'
+                '</div>',
                 confirm_url, reject_url
             )
         return "Already processed"

@@ -134,8 +134,8 @@ export default function BookingsPage() {
                                     <div className="flex items-center gap-4">
                                         <IndianRupee className="h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <p className="font-medium text-card-foreground">₹{booking.hostel.amount * 12}</p>
-                                            <p className="text-sm text-muted-foreground">Annual Amount</p>
+                                            <p className="font-medium text-card-foreground">₹{booking.hostel.amount}</p>
+                                            <p className="text-sm text-muted-foreground">Additional Fees</p>
                                         </div>
                                     </div>
                                 </div>

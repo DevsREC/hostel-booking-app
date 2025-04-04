@@ -206,7 +206,7 @@ export default function ProfilePage() {
                                                     <p className="font-medium text-card-foreground">{booking.hostel.food_type}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-muted-foreground">Amount</p>
+                                                    <p className="text-muted-foreground">Fees</p>
                                                     <p className="font-medium text-card-foreground">₹{booking.hostel.amount}</p>
                                                 </div>
                                                 <div>

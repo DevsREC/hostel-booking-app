@@ -220,9 +220,9 @@ export default function BookingDetail() {
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <IndianRupee className="h-4 w-4" />
-                                    <span className="text-sm">Annual Amount</span>
+                                    <span className="text-sm">Additional Fees</span>
                                 </div>
-                                <p className="font-medium text-xl text-primary">₹{booking.hostel.amount * 12}</p>
+                                <p className="font-medium text-xl text-primary">₹{booking.hostel.amount}</p>
                             </div>
                             {booking.payment_link && booking.status === 'payment_pending' && (
                                 <div className="space-y-2">
@@ -319,7 +319,7 @@ export default function BookingDetail() {
                                                 <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                                                     <p className="font-medium">Hostel: {booking.hostel?.name}</p>
                                                     <p className="font-medium">Room Type: {booking.hostel?.room_type}</p>
-                                                    <p className="font-medium text-primary text-xl">Annual Price: ₹{(booking.hostel?.amount || 0) * 12}</p>
+                                                    <p className="font-medium text-primary text-xl">Additional Fees: ₹{(booking.hostel?.amount || 0)}</p>
                                                 </div>
                                                 <InputOTP
                                                     maxLength={6}
@@ -366,14 +366,15 @@ export default function BookingDetail() {
                             </div>
                                 :
                                 (booking.status === 'payment_pending') ?
-                                    <Button
-                                        variant="destructive"
-                                        onClick={handleCancelBooking}
-                                        className="flex items-center gap-2"
-                                    >
-                                        <XCircle className="h-4 w-4" />
-                                        Cancel Booking
-                                    </Button>
+                                <></>
+                                    // <Button
+                                    //     variant="destructive"
+                                    //     onClick={handleCancelBooking}
+                                    //     className="flex items-center gap-2"
+                                    // >
+                                    //     <XCircle className="h-4 w-4" />
+                                    //     Cancel Booking
+                                    // </Button>
                                     :
                                 <></>
                     }

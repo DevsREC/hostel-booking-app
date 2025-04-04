@@ -20,6 +20,10 @@ class Hostel(models.Model):
         ('M', 'Male'),
         ('F', 'Female')
     ]
+    BATHROOM_CHOICES = [
+        ('Attached', 'Attached'),
+        ('Common', 'Common')
+    ]
 
     name = models.CharField('Hostel Name', blank=False, max_length=50)
     location = models.CharField('Location', blank=False,max_length=50)
@@ -30,9 +34,14 @@ class Hostel(models.Model):
     no_of_rooms = models.IntegerField(blank=False)
     total_capacity = models.IntegerField(editable=False)
     room_description = models.CharField(max_length=100, blank=False)
-    amount = models.IntegerField(blank=False)
+    # amount = models.IntegerField(blank=False)
     image = models.ImageField(upload_to='rooms/')
     enable = models.BooleanField(default=False)
+    bathroom_type = models.CharField(max_length=20, choices=BATHROOM_CHOICES, default='Common')
+    first_year_fee = models.IntegerField(blank=False, null=False)
+    second_year_fee = models.IntegerField(blank=False, null=False)
+    third_year_fee = models.IntegerField(blank=False, null=False)
+    fourth_year_fee = models.IntegerField(blank=False, null=False)
 
     def __str__(self):
         return f"{self.name}-{self.location}-{self.room_type}-{self.food_type}-{self.person_per_room}"
@@ -171,7 +180,7 @@ class RoomBooking(models.Model):
         
         self.otp_verified_at = timezone.now()
         self.status = 'payment_pending'
-        self.payment_expiry = timezone.now() + timezone.timedelta(hours=24)
+        self.payment_expiry = timezone.now() + timezone.timedelta(hours=24 * 7)
         self.payment_link = f"https://payment.link.should.be.pasted.here"
         self.save()
         self.send_payment_instructions()

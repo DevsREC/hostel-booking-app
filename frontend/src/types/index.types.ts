@@ -62,6 +62,7 @@ export interface Hostel {
   name: string;
   location: string;
   room_type: 'AC' | 'NON-AC';
+  bathroom_type: 'Attached' | 'Common';
   food_type: 'Veg' | 'Non-veg';
   gender: 'M' | 'F';
   person_per_room: number;

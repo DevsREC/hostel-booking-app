@@ -202,11 +202,11 @@ def seed_hostels():
     """
     Seed the database with hostel data
     """
+    print("This is running")
     try:
         with transaction.atomic():
             # Clear existing hostels
             Hostel.objects.all().delete()
-            
             # Add boys hostels
             for hostel_data in BOYS_HOSTELS:
                 Hostel.objects.create(
@@ -229,5 +229,4 @@ def seed_hostels():
     except Exception as e:
         print(f"Error seeding hostel data: {str(e)}")
 
-if __name__ == "__main__":
-    seed_hostels() 
+seed_hostels() 

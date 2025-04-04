@@ -164,8 +164,11 @@ class GetHostelDataAPI(generics.CreateAPIView):
     queryset = Hostel.objects.filter(enable=True)
 
     def get(self, request, *args, **kwargs):
+        user = User.objects.get(email=request.user);
+        print(user.year)
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        print(queryset)
+        serializer = self.get_serializer(queryset, many=True, context={"year": user.year})
         return Response({
             "message": "Fetched data successfully",
             "data": serializer.data

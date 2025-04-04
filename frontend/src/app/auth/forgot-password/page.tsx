@@ -49,7 +49,7 @@ export default function ForgotPassword() {
     const onSubmit = async (data: ForgotPasswordFormValues) => {
         setIsSubmitting(true);
         try {
-            const response = await api.post('/auth/forgot-password/', data);
+            const response = await api.post('/authenticate/forgot_password/', data);
 
             if (response.status === 200) {
                 toast.success(

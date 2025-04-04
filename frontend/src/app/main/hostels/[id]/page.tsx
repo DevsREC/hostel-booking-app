@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Building2, MapPin, Users, Utensils, User2, BedDouble, AlertCircle } from "lucide-react";
+import { Building2, MapPin, Users, Utensils, User2, BedDouble, AlertCircle, Bath } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -152,30 +152,19 @@ export default function HostelDetail() {
     return (
         <div className="container mx-auto px-4 py-8">
             <Card className="overflow-hidden">
-                <div className="relative h-[500px]">
-                    <img
-                        src={`${hostel?.image}` || "https://placehold.co/1200x500"}
-                        alt={hostel?.name}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                    <div className="absolute top-6 right-6 flex gap-3">
-                        <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm text-lg px-4 py-1.5">
-                            {hostel?.room_type}
-                        </Badge>
-                        <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm text-lg px-4 py-1.5">
-                            {hostel?.food_type}
-                        </Badge>
-                    </div>
-                </div>
-
                 <CardHeader className="space-y-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div>
+                        <div className="relative">
                             <CardTitle className="text-4xl font-bold text-foreground">{hostel?.name}</CardTitle>
                             <div className="flex items-center gap-2 text-muted-foreground mt-2">
                                 <MapPin className="h-5 w-5" />
                                 <span className="text-lg">{hostel?.location}</span>
+                                <Badge variant="secondary" className="bg-muted/50 backdrop-blur-sm text-xs px-4 py-1">
+                                    {hostel?.room_type}
+                                </Badge>
+                                <Badge variant="secondary" className="bg-muted/50 backdrop-blur-sm text-xs px-4 py-1">
+                                    {hostel?.food_type}
+                                </Badge>
                             </div>
                         </div>
                         <div className="bg-muted/50 p-4 rounded-lg">
@@ -221,6 +210,13 @@ export default function HostelDetail() {
                                     </div>
                                     <div className="bg-muted/50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                                            <Bath className="h-4 w-4" />
+                                            <span className="text-sm">Restroom</span>
+                                        </div>
+                                        <p className="font-medium text-lg">{hostel?.bathroom_type}</p>
+                                    </div>
+                                    <div className="bg-muted/50 p-4 rounded-lg">
+                                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
                                             <Users className="h-4 w-4" />
                                             <span className="text-sm">Persons per Room</span>
                                         </div>
@@ -248,8 +244,8 @@ export default function HostelDetail() {
                             <h3 className="text-2xl font-semibold text-foreground mb-6">Book Now</h3>
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-muted-foreground mb-2">Annual Price</p>
-                                    <p className="text-3xl font-bold text-primary">₹{(hostel?.amount || 0) * 12}</p>
+                                    <p className="text-muted-foreground mb-2">Additional Fees</p>
+                                    <p className="text-3xl font-bold text-primary">₹{(hostel?.amount || 0)}</p>
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground mb-2">Available</p>
@@ -293,7 +289,7 @@ export default function HostelDetail() {
                                 <p className="font-medium">Hostel: {hostel?.name}</p>
                                 <p className="font-medium">Room Type: {hostel?.room_type}</p>
                                 <p className="font-medium">Food Type: {hostel?.food_type}</p>
-                                <p className="font-medium text-primary text-xl">Annual Price: ₹{(hostel?.amount || 0) * 12}</p>
+                                <p className="font-medium text-primary text-xl">Additional Fees: ₹{(hostel?.amount || 0)}</p>
                             </div>
 
                             <div className="space-y-3">
@@ -303,7 +299,7 @@ export default function HostelDetail() {
                                     <p>2. The OTP is valid for 10 minutes only.</p>
                                     <p>3. After OTP verification, you must complete the payment within 24 hours.</p>
                                     <p>4. Your booking will be automatically cancelled if payment is not received within 24 hours.</p>
-                                    <p>5. The amount shown is for the entire academic year.</p>
+                                    <p>5. The Fees shown is for the entire academic year.</p>
                                 </div>
                             </div>
 
@@ -342,7 +338,7 @@ export default function HostelDetail() {
                             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                                 <p className="font-medium">Hostel: {hostel?.name}</p>
                                 <p className="font-medium">Room Type: {hostel?.room_type}</p>
-                                <p className="font-medium text-primary text-xl">Annual Price: ₹{(hostel?.amount || 0) * 12}</p>
+                                <p className="font-medium text-primary text-xl">Additional Fees: ₹{(hostel?.amount || 0)}</p>
                             </div>
                             <InputOTP
                                 maxLength={6}

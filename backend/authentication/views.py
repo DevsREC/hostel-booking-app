@@ -70,7 +70,6 @@ class ProfileAPIView(generics.CreateAPIView):
         user_bookings = RoomBooking.objects.filter(user=user)
         bookings_serializer = self.serializer_class(user_bookings, many=True)
         
-        # Create user data dictionary
         user_data = {
             "id": user.id,
             "email": user.email,

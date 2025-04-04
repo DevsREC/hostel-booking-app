@@ -98,7 +98,7 @@
         <p>Thank you for verifying your OTP. Your booking is now on hold and waiting for payment.</p>
         
         <div class="timer">
-            <p style="margin: 0;"><strong>Important:</strong> Please complete your payment within 24 hours (expires on {{payment_expiry_date}}). After this time, your booking will be automatically cancelled.</p>
+            <p style="margin: 0;"><strong>Important:</strong> Please complete your payment within 1 Week (expires on {{payment_expiry_date}}).</p>
         </div>
         
         <div class="details">
@@ -108,17 +108,17 @@
             <p><strong>Amount to Pay:</strong> ₹{{amount}}</p>
         </div>
         
-        <div class="payment-button">
+        {% comment %} <div class="payment-button">
             <a href="{{payment_link}}">Pay Now</a>
-        </div>
+        </div> {% endcomment %}
         
         <div class="steps">
             <h3 style="color: #2c3e50;">Payment Steps:</h3>
             <ol>
-                <li>Click the "Pay Now" button above</li>
+                <li>Payment link will be sent in following mail</li>
                 <li>You will be redirected to our secure payment gateway</li>
                 <li>Complete the payment process</li>
-                <li>You will receive a confirmation email once payment is processed</li>
+                {% comment %} <li>You will receive a confirmation email once payment is processed</li> {% endcomment %}
             </ol>
         </div>
         
