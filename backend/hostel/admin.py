@@ -36,9 +36,9 @@ class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'verified_by')
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
-    actions = ['confirm_payment',   'cancel_booking']
+    # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
-
+    
     def save_model(self, request, obj, form, change):
         if change:
             original_obj = self.model.objects.get(pk=obj.pk)
@@ -47,15 +47,15 @@ class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
                 obj.verified_by = request.user
         super().save_model(request, obj, form, change)
 
-    def confirm_payment(self, request, queryset):
-        queryset.filter(status='payment_verified').update(status='confirmed')
-        self.message_user(request, "Selected bookings confirmed")
-    confirm_payment.short_description = "Confirm payment for selected bookings"
+    # def confirm_payment(self, request, queryset):
+    #     queryset.filter(status='payment_verified').update(status='confirmed')
+    #     self.message_user(request, "Selected bookings confirmed")
+    # confirm_payment.short_description = "Confirm payment for selected bookings"
     
-    def cancel_booking(self, request, queryset):
-        queryset.update(status='cancelled')
-        self.message_user(request, "Selected bookings cancelled")
-    cancel_booking.short_description = "Cancel selected bookings"
+    # def cancel_booking(self, request, queryset):
+    #     queryset.update(status='cancelled')
+    #     self.message_user(request, "Selected bookings cancelled")
+    # cancel_booking.short_description = "Cancel selected bookings"
 
 class RoomStats(Hostel):
     class Meta:
@@ -81,7 +81,7 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         return False
     
     def booking_count(self, hostel):
-        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_verified', 'payment_pending']).count()
+        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_verified', 'payment_pending', 'payment_not_done']).count()
     
     def rooms_booked(self, hostel: Hostel):
         no_of_rooms_booked = self.booking_count(hostel)
@@ -160,12 +160,14 @@ class PaymentManagementAdmin(ModelAdmin):
             confirm_url = reverse('admin:confirm_payment', args=[obj.pk])
             reject_url = reverse('admin:reject_payment', args=[obj.pk])
             return format_html(
-                '<div class="btn-group space-x-2">'
-                '<a class="btn primary-content btn-sm btn-primary" href="{}">Confirm</a>'
-                '<a class="btn primary-content btn-sm btn-error" href="{}">Reject</a>'
+                '<div>'
+                '<a style="padding: 4px 8px; background-color: rgba(168, 85, 247, .4); color: rgb(168, 85, 247); border-radius: 4px; margin: 2px 4px;" href="{}">Confirm</a>'
+                '<a style="padding: 4px 8px; background-color: rgba(239, 68, 68, .4); color: rgba(239, 68, 68, 1); border-radius: 4px; margin: 2px 4px;" href="{}">Reject</a>'
                 '</div>',
                 confirm_url, reject_url
             )
+        elif obj.status == 'otp_pending':
+            return "Verification Pending"
         return "Already processed"
     payment_actions.short_description = 'Actions'
 

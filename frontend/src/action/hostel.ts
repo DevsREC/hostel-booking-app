@@ -79,7 +79,7 @@ export const useCreateBooking = (onSuccess?: (response: ApiResponse<{ booking_id
                     const errorData = error.response.data;
                     return {
                         status: error.response.status,
-                        data: errorData.detail || 'Booking failed',
+                        data: errorData.message || 'Booking failed',
                         code: errorData.code || 'booking_failed'
                     };
                 }

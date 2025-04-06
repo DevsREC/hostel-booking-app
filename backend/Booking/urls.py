@@ -30,8 +30,8 @@ admin.site.site_title = "Hostel Booking Admin Portal"
 admin.site.index_title = "Welcome to Hostel Booking Admin Portal"
 
 urlpatterns = [
-    # path('swagger/', schema_view),
-    path('admin/', admin.site.urls),
+    path("admin/", include("admin_honeypot.urls", namespace="admin_honeypot")),
+    path('hostel-back-office/', admin.site.urls),
     path('authenticate/', include('authentication.urls')),
     path('hostel/',include('hostel.urls'))
 ]

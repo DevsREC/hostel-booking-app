@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db import IntegrityError
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from authentication.authentication import IsAuthenticated
@@ -10,46 +11,64 @@ from .models import *
 class InitiateBookingAPI(generics.CreateAPIView):
     authentication_classes = [IsAuthenticated]
     permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, hostel_id):
-        hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
-        print(request.user.id)
-        if RoomBooking.objects.filter(
-            user = request.user,
-            status__in = ['otp_pending', 'payment_pending', 'confirmed']
-        ).exists():
-            booking = RoomBooking.objects.get(user=request.user)
+        try:
+            hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
+            user = User.objects.filter(email=request.user).first()
+            if RoomBooking.objects.filter(
+                user = user
+            ).exists():
+                booking = RoomBooking.objects.get(user=request.user)
+                return Response(
+                    {
+                        "message": "You have already booked a hostel",
+                        "data": {
+                            "booking_id": booking.id
+                        }
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if not hostel.is_available():
+                return Response(
+                    {
+                        "message": "No rooms available"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            booking = RoomBooking.objects.create(
+                user = request.user,
+                hostel = hostel
+            )
+
+            booking.generate_otp()
+
             return Response(
                 {
-                    "message": "You have already booked a hostel",
-                    "data": {
-                        "booking_id": booking.id
-                    }
+                    "message": "OTP sent to your email",
+                    "booking_id": booking.id
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        except IntegrityError as e:
+            return Response(
+                {
+                    "message": "An failed booking for the hostel has been found, cancel that booking book this again"
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        if not hostel.is_available():
+
+        except Exception as e:
+            print(e)
             return Response(
                 {
-                    "message": "No rooms available"
+                    "message": "Something went wrong, try again later!"
                 },
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
-        booking = RoomBooking.objects.create(
-            user = request.user,
-            hostel = hostel
-        )
-
-        booking.generate_otp()
-
-        return Response(
-            {
-                "message": "OTP sent to your email",
-                "booking_id": booking.id
-            },
-            status=status.HTTP_201_CREATED
-        )
 
 class GetBookingAPI(generics.CreateAPIView):
     authentication_classes=[IsAuthenticated]
@@ -93,6 +112,13 @@ class CancelBookingAPI(generics.CreateAPIView):
             booking_id = request.data.get('booking_id')
             if booking_id:
                 booking = RoomBooking.objects.get(id=booking_id, user=request.user)
+                if booking.status in ['confirmed', 'payment_pending', 'payment_not_done', 'cancelled']:
+                    return Response(
+                        {
+                            "message": "Booking can't be cancelled"
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
                 booking.delete()
                 return Response(
                     {

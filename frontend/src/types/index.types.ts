@@ -91,7 +91,7 @@ export interface Booking {
   id: string;
   user: User;
   hostel: Hostel;
-  status: 'otp_pending' | 'payment_pending' | 'confirmed' | 'cancelled';
+  status: 'otp_pending' | 'payment_pending' | 'confirmed' | 'cancelled' | 'payment_not_done';
   booked_at: string;
   otp_verified_at: string | null;
   payment_completed_at: string | null;

@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from authentication.models import User
 from authentication.utils import send_email
+from django.contrib.auth.hashers import make_password
 
 INTERNAL_RESERVATION_PERCENT = 25
 
@@ -50,6 +51,8 @@ class Hostel(models.Model):
         self.total_capacity = self.person_per_room * self.no_of_rooms
 
     def save(self, force_insert = ..., force_update = ..., using = ..., update_fields = ...):
+        if not self.password.startswith('pbkdf2_sha256$'):
+            self.password = make_password(self.password)
         self.clean()
         return super().save()
     
@@ -158,6 +161,15 @@ class RoomBooking(models.Model):
     def send_otp_email(self):
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
+        amount = 0
+        if self.user.year == 1:
+            amount = self.hostel.first_year_fee
+        elif self.user.year == 2:
+            amount = self.hostel.second_year_fee
+        elif self.user.year == 3:
+            amount = self.hostel.third_year_fee
+        elif self.user.year == 4:
+            amount = self.hostel.fourth_year_fee
         
         send_email(
             subject=subject,
@@ -166,7 +178,7 @@ class RoomBooking(models.Model):
                 "otp_code": self.otp_code,
                 "hostel_name": self.hostel.name,
                 "room_type": self.hostel.room_type,
-                "amount": self.hostel.amount
+                "amount": amount
             },
             template_name='otp_email.html'
         )
@@ -189,7 +201,15 @@ class RoomBooking(models.Model):
     def send_payment_instructions(self):
         subject = "Complete Your Hostel Booking Payment"
         to_email = self.user.email
-        
+        amount = 0
+        if self.user.year == 1:
+            amount = self.hostel.first_year_fee
+        elif self.user.year == 2:
+            amount = self.hostel.second_year_fee
+        elif self.user.year == 3:
+            amount = self.hostel.third_year_fee
+        elif self.user.year == 4:
+            amount = self.hostel.fourth_year_fee
         payment_expiry_formatted = self.payment_expiry.strftime("%d %b %Y, %I:%M %p")
         
         send_email(
@@ -198,7 +218,7 @@ class RoomBooking(models.Model):
             context={
                 "hostel_name": self.hostel.name,
                 "room_type": self.hostel.room_type,
-                "amount": self.hostel.amount,
+                "amount": amount,
                 "payment_link": self.payment_link,
                 "payment_expiry_date": payment_expiry_formatted
             },

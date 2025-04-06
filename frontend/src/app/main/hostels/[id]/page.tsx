@@ -16,6 +16,7 @@ import { toast } from "sonner";
 interface BookingResponse {
     booking_id?: string;
     message?: string;
+    data?: string
 }
 
 export default function HostelDetail() {
@@ -48,23 +49,29 @@ export default function HostelDetail() {
     const hasActiveBooking = userBookings?.some(booking =>
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending' ||
-        booking.status === 'confirmed'
+        booking.status === 'confirmed' ||
+        booking.status == 'payment_not_done'
     );
 
     const { mutate: createBooking, isPending: isCreatingBooking } = useCreateBooking((response) => {
-        const bookingResponse = response.data as BookingResponse;
-        if (bookingResponse.booking_id) {
-            setBookingId(bookingResponse.booking_id);
-            setShowConfirmDialog(false);
-            setShowOTPDialog(true);
-            toast.success("OTP sent to your email!");
-        } else if (bookingResponse.message === "You have already booked a hostel") {
-            toast.error("You already have an active booking!");
+        try {
+            const bookingResponse = response.data as BookingResponse;
             if (bookingResponse.booking_id) {
-                navigate(`/bookings/${bookingResponse.booking_id}`);
-            } else {
-                navigate('/bookings');
+                setBookingId(bookingResponse.booking_id);
+                setShowConfirmDialog(false);
+                setShowOTPDialog(true);
+                toast.success("OTP sent to your email!");
+            } else if (response.data === "You have already booked a hostel") {
+                toast.error("You already have an active booking!");
+                if (bookingResponse.booking_id) {
+                    navigate(`/bookings/${bookingResponse.booking_id}`);
+                } else {
+                    navigate('/bookings');
+                }
             }
+        } catch (error) {
+            console.error("Error parsing booking response:", error);
+            alert(error)
         }
     });
 
@@ -256,7 +263,7 @@ export default function HostelDetail() {
                                         <AlertCircle className="h-5 w-5" />
                                         <p className="text-sm">
                                             {hasActiveBooking
-                                                ? "You already have an active booking. Complete or cancel it before booking another room."
+                                                ? "You already have an active booking."
                                                 : "Book now to secure your room. Limited slots available!"}
                                         </p>
                                     </div>
@@ -297,8 +304,8 @@ export default function HostelDetail() {
                                 <div className="bg-yellow-50 p-4 rounded-lg space-y-2 text-sm text-yellow-800">
                                     <p>1. An OTP will be sent to your email for verification.</p>
                                     <p>2. The OTP is valid for 10 minutes only.</p>
-                                    <p>3. After OTP verification, you must complete the payment within 24 hours.</p>
-                                    <p>4. Your booking will be automatically cancelled if payment is not received within 24 hours.</p>
+                                    <p>3. After OTP verification, you must complete the payment within a week</p>
+                                    <p>4. If failed to pay 1.5 times the amount will be added to your no-due.</p>
                                     <p>5. The Fees shown is for the entire academic year.</p>
                                 </div>
                             </div>

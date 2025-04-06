@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'authentication',
     'hostel',
+    'admin_honeypot',
     'column_toggle',
     'django_crontab',
 ]
@@ -242,6 +243,19 @@ UNFOLD = {
         "show_search": True,
         "show_all_applications": False,
         "navigation": [
+                        {
+                "title": "Honeypot",
+                "seperator": True,
+                "collapsible": True,
+                "icon": "hive",
+                "items": [
+                    {
+                        "title": "Login Attempts",
+                        "icon": "warning",
+                        "link": reverse_lazy("admin:admin_honeypot_loginattempt_changelist"),
+                    },
+                ]
+            },
             {
                 "title": "Users And Groups",
                 "seperator": True,
@@ -286,8 +300,8 @@ UNFOLD = {
                         "link": reverse_lazy("admin:hostel_paymentmanagement_changelist"),
                     },
                    {
-                       "title": "Confirmed",
-                       "icon": "check_circle",
+                       "title": "All Bookings",
+                       "icon": "quick_reference_all",
                        "link": reverse_lazy("admin:hostel_roombooking_changelist"),
                    } 
                 ]
