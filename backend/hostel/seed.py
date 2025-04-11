@@ -11,7 +11,6 @@ sys.path.append(project_root)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Booking.settings')
 django.setup() 
 
-
 from hostel.models import Hostel
 
 # Sample image URLs for hostels
@@ -31,8 +30,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 30,
         "person_per_room": 2,
         "gender": "M",
-        "amount": 15000,  # Monthly amount (example)
         "room_description": "2-person AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 150000,
+        "second_year_fee": 140000,
+        "third_year_fee": 130000,
+        "fourth_year_fee": 120000,
     },
     {
         "name": "Category B - 3 Non AC C",
@@ -42,8 +45,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 2,
         "person_per_room": 3,
         "gender": "M",
-        "amount": 8000,  # Monthly amount (example)
         "room_description": "3-person Non-AC room with basic amenities and non-vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 120000,
+        "second_year_fee": 110000,
+        "third_year_fee": 100000,
+        "fourth_year_fee": 90000,
     },
     {
         "name": "Category C - 4 AC A",
@@ -53,8 +60,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 79,
         "person_per_room": 4,
         "gender": "M",
-        "amount": 12000,  # Monthly amount (example)
         "room_description": "4-person AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 100000,
+        "second_year_fee": 90000,
+        "third_year_fee": 80000,
+        "fourth_year_fee": 70000,
     },
     {
         "name": "Category D - 4 Non AC A",
@@ -64,8 +75,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 152,
         "person_per_room": 4,
         "gender": "M",
-        "amount": 10000,  # Monthly amount (example)
         "room_description": "4-person Non-AC room with premium amenities and non-vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 90000,
+        "second_year_fee": 80000,
+        "third_year_fee": 70000,
+        "fourth_year_fee": 60000,
     },
     {
         "name": "Category E - 5 Non AC C",
@@ -75,8 +90,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 27,
         "person_per_room": 5,
         "gender": "M",
-        "amount": 7000,  # Monthly amount (example)
         "room_description": "5-person Non-AC room with basic amenities and non-vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 80000,
+        "second_year_fee": 70000,
+        "third_year_fee": 60000,
+        "fourth_year_fee": 50000,
     },
     {
         "name": "Category F - 6 Non AC C",
@@ -86,8 +105,12 @@ BOYS_HOSTELS = [
         "no_of_rooms": 240,
         "person_per_room": 6,
         "gender": "M",
-        "amount": 6000,  # Monthly amount (example)
         "room_description": "6-person Non-AC room with basic amenities and non-vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 70000,
+        "second_year_fee": 60000,
+        "third_year_fee": 50000,
+        "fourth_year_fee": 40000,
     },
 ]
 
@@ -100,8 +123,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 6,
         "person_per_room": 2,
         "gender": "F",
-        "amount": 15000,  # Monthly amount (example)
         "room_description": "2-person AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 150000,
+        "second_year_fee": 140000,
+        "third_year_fee": 130000,
+        "fourth_year_fee": 120000,
     },
     {
         "name": "Category A - 2 AC A (GH2)",
@@ -111,8 +138,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 27,
         "person_per_room": 2,
         "gender": "F",
-        "amount": 15000,  # Monthly amount (example)
         "room_description": "2-person AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 150000,
+        "second_year_fee": 140000,
+        "third_year_fee": 130000,
+        "fourth_year_fee": 120000,
     },
     {
         "name": "Category A - 2 AC A (GH3)",
@@ -122,8 +153,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 6,
         "person_per_room": 2,
         "gender": "F",
-        "amount": 15000,  # Monthly amount (example)
         "room_description": "2-person AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 150000,
+        "second_year_fee": 140000,
+        "third_year_fee": 130000,
+        "fourth_year_fee": 120000,
     },
     {
         "name": "Category B - 2 Non AC C (GH1)",
@@ -133,8 +168,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 118,
         "person_per_room": 2,
         "gender": "F",
-        "amount": 10000,  # Monthly amount (example)
         "room_description": "2-person Non-AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 120000,
+        "second_year_fee": 110000,
+        "third_year_fee": 100000,
+        "fourth_year_fee": 90000,
     },
     {
         "name": "Category B - 2 Non AC C (GH3)",
@@ -144,8 +183,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 43,
         "person_per_room": 2,
         "gender": "F",
-        "amount": 10000,  # Monthly amount (example)
         "room_description": "2-person Non-AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 120000,
+        "second_year_fee": 110000,
+        "third_year_fee": 100000,
+        "fourth_year_fee": 90000,
     },
     {
         "name": "Category C - 3 AC A",
@@ -155,8 +198,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 12,
         "person_per_room": 3,
         "gender": "F",
-        "amount": 12000,  # Monthly amount (example)
         "room_description": "3-person AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Attached",
+        "first_year_fee": 100000,
+        "second_year_fee": 90000,
+        "third_year_fee": 80000,
+        "fourth_year_fee": 70000,
     },
     {
         "name": "Category D - 3 Non AC C",
@@ -166,8 +213,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 80,
         "person_per_room": 3,
         "gender": "F",
-        "amount": 9000,  # Monthly amount (example)
         "room_description": "3-person Non-AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 90000,
+        "second_year_fee": 80000,
+        "third_year_fee": 70000,
+        "fourth_year_fee": 60000,
     },
     {
         "name": "Category E - 4 Non AC C",
@@ -177,8 +228,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 19,
         "person_per_room": 4,
         "gender": "F",
-        "amount": 8000,  # Monthly amount (example)
         "room_description": "4-person Non-AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 80000,
+        "second_year_fee": 70000,
+        "third_year_fee": 60000,
+        "fourth_year_fee": 50000,
     },
     {
         "name": "Category F - 4 Non AC A",
@@ -188,8 +243,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 178,
         "person_per_room": 4,
         "gender": "F",
-        "amount": 10000,  # Monthly amount (example)
         "room_description": "4-person Non-AC room with premium amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 90000,
+        "second_year_fee": 80000,
+        "third_year_fee": 70000,
+        "fourth_year_fee": 60000,
     },
     {
         "name": "Category G - 6 Non AC C",
@@ -199,8 +258,12 @@ GIRLS_HOSTELS = [
         "no_of_rooms": 13,
         "person_per_room": 6,
         "gender": "F",
-        "amount": 6000,  # Monthly amount (example)
         "room_description": "6-person Non-AC room with basic amenities and vegetarian food option",
+        "bathroom_type": "Common",
+        "first_year_fee": 70000,
+        "second_year_fee": 60000,
+        "third_year_fee": 50000,
+        "fourth_year_fee": 40000,
     },
 ]
 

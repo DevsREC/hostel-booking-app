@@ -125,7 +125,7 @@ class VerifyTokenAPIView(APIView):
         except:
             return Response({'detail': 'Invalid Code.'}, status=status.HTTP_400_BAD_REQUEST)
 
-class ForgotPasswordAPI(generics.GenericAPIView):
+class  ForgotPasswordAPI(generics.GenericAPIView):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return LoginSerializer
