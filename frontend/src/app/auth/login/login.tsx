@@ -20,21 +20,23 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const carouselImages = [
   "/images/banner-1.jpg",
-  "/images/images (1).jpeg",
-  "/images/1551372417phpw6JY3j.jpeg",
-  "/images/cafe.jpeg"
+  "/images/banner-2.jpg",
+  "/images/banner-3.jpg"
 ];
 
 export default function Login() {
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [nextImageIndex, setNextImageIndex] = useState(1);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 5000); // Change image every 5 seconds
+      setCurrentImageIndex((prevIndex) => {
+        const newIndex = prevIndex === carouselImages.length - 1 ? 0 : prevIndex + 1;
+        setNextImageIndex(newIndex === carouselImages.length - 1 ? 0 : newIndex + 1);
+        return newIndex;
+      });
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
@@ -112,12 +114,12 @@ export default function Login() {
   return (
     <div className="flex h-screen relative">
       {/* Carousel Section */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0">
           {carouselImages.map((image, index) => (
             <div
               key={image}
-              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
                 }`}
               style={{
                 backgroundImage: `url(${image})`,
@@ -129,15 +131,6 @@ export default function Login() {
             </div>
           ))}
         </div>
-        <div className="relative z-10 flex flex-col justify-center items-center text-white p-8 w-full h-full">
-          <img
-            src="/images/images.jpeg"
-            alt="REC Hostel Logo"
-            className="w-32 h-32 mb-8 object-contain"
-          />
-          <h1 className="text-4xl font-bold mb-4 text-center">Welcome to REC Hostel</h1>
-          <p className="text-xl text-center max-w-md">Your home away from home</p>
-        </div>
       </div>
 
       {/* Login Form Section */}
@@ -145,9 +138,9 @@ export default function Login() {
         <Card className="w-full max-w-md shadow-lg bg-background/80 backdrop-blur-sm border-border/50">
           <CardHeader className="text-center space-y-4">
             <img
-              src="/images/images.jpeg"
+              src="/images/rec_logo.png"
               alt="REC Hostel Logo"
-              className="w-24 h-24 mx-auto object-contain"
+              className="w-60 h-24 mx-auto object-contain"
             />
             <div className="space-y-2">
               <CardTitle className="text-2xl font-bold">Login</CardTitle>

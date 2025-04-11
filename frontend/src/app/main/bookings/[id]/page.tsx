@@ -200,22 +200,22 @@ export default function BookingDetail() {
                 booking.status === "otp_pending"
                   ? "outline"
                   : booking.status === "payment_pending"
-                  ? "secondary"
-                  : booking.status === "confirmed"
-                  ? "default"
-                  : "destructive"
+                    ? "secondary"
+                    : booking.status === "confirmed"
+                      ? "default"
+                      : "destructive"
               }
               className="capitalize"
             >
               {booking.status === "otp_pending"
                 ? "OTP Verification Pending"
                 : booking.status === "payment_pending"
-                ? "Payment Pending"
-                : booking.status === "confirmed"
-                ? "Confirmed"
-                : booking.status === "payment_not_done"
-                ? "Payment Not Done"
-                : "Canceled"}
+                  ? "Payment Pending"
+                  : booking.status === "confirmed"
+                    ? "Confirmed"
+                    : booking.status === "payment_not_done"
+                      ? "Payment Not Done"
+                      : "Canceled"}
             </Badge>
           </div>
         </CardHeader>
@@ -305,32 +305,26 @@ export default function BookingDetail() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  <span className="text-sm">Booked On</span>
+                  <span className="text-sm">Booked At</span>
                 </div>
-                <p className="font-medium">
-                  {formatDate(booking.booked_at)}
-                </p>
+                <p className="font-medium">{formatDate(booking.booked_at)}</p>
               </div>
-              {booking.otp_verified_at && (
+              {booking.payment_expiry && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <User className="h-4 w-4" />
-                    <span className="text-sm">OTP Verified</span>
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm">Payment Due By</span>
                   </div>
-                  <p className="font-medium">
-                    {new Date(booking.otp_verified_at).toLocaleString()}
-                  </p>
+                  <p className="font-medium">{formatDate(booking.payment_expiry)}</p>
                 </div>
               )}
               {booking.payment_completed_at && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <IndianRupee className="h-4 w-4" />
-                    <span className="text-sm">Payment Completed</span>
+                    <VerifiedIcon className="h-4 w-4" />
+                    <span className="text-sm">Payment Completed At</span>
                   </div>
-                  <p className="font-medium">
-                    {new Date(booking.payment_completed_at).toLocaleString()}
-                  </p>
+                  <p className="font-medium">{formatDate(booking.payment_completed_at)}</p>
                 </div>
               )}
             </div>

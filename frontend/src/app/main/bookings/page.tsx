@@ -126,22 +126,22 @@ export default function BookingsPage() {
                       booking.status === "otp_pending"
                         ? "outline"
                         : booking.status === "payment_pending"
-                        ? "secondary"
-                        : booking.status === "confirmed"
-                        ? "default"
-                        : "destructive"
+                          ? "secondary"
+                          : booking.status === "confirmed"
+                            ? "default"
+                            : "destructive"
                     }
                     className="capitalize"
                   >
                     {booking.status === "otp_pending"
                       ? "OTP Verification Pending"
                       : booking.status === "payment_pending"
-                      ? "Payment Pending"
-                      : booking.status === "confirmed"
-                      ? "Confirmed"
-                      : booking.status === "payment_not_done"
-                      ? "Payment Not Done"
-                      : "Canceled"}
+                        ? "Payment Pending"
+                        : booking.status === "confirmed"
+                          ? "Confirmed"
+                          : booking.status === "payment_not_done"
+                            ? "Payment Not Done"
+                            : "Canceled"}
                   </Badge>
                 </div>
               </CardHeader>
@@ -169,6 +169,18 @@ export default function BookingsPage() {
                       </p>
                     </div>
                   </div>
+                  {booking.status === "payment_pending" && booking.payment_expiry && (
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <p className="font-medium text-card-foreground">
+                          Payment Due: {formatDate(booking.payment_expiry)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Complete payment before expiry
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between items-center">
