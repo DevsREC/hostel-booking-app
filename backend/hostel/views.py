@@ -199,6 +199,7 @@ class GetHostelDataAPI(generics.CreateAPIView):
         user = User.objects.get(email=request.user);
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True, context={"year": user.year})
+        print(serializer.data)
         return Response({
             "message": "Fetched data successfully",
             "data": serializer.data

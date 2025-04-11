@@ -17,13 +17,24 @@ const requestResetSchema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters")
 });
 
+const otpVerificationSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+    otp: z.string().min(4, "OTP must be at least 4 characters")
+});
+
 const resetPasswordSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters")
 });
 
 type RequestResetFormValues = z.infer<typeof requestResetSchema>;
+type OtpVerificationFormValues = z.infer<typeof otpVerificationSchema>;
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+// Constants for localStorage keys
+const RESET_STATE_KEY = "password_reset_state";
+const RESET_EMAIL_KEY = "password_reset_email";
+const RESET_PASSWORD_KEY = "password_reset_password";
 
 const carouselImages = [
     "/images/banner-1.jpg",
@@ -41,6 +52,9 @@ export default function ForgotPassword() {
     
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isTokenMode, setIsTokenMode] = useState(false);
+    const [isOtpMode, setIsOtpMode] = useState(false);
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
 
     // Setup react-query mutations
     const passwordResetMutation = useRequestPasswordReset(() => {
@@ -48,15 +62,23 @@ export default function ForgotPassword() {
             <div className="space-y-2">
                 <p>Password reset instructions sent!</p>
                 <p className="text-sm text-muted-foreground">
-                    Please check your email for verification code.
+                    Please check your email for verification code or enter the OTP below.
                 </p>
             </div>,
             { duration: 6000 }
         );
+        // Save state to localStorage
+        localStorage.setItem(RESET_STATE_KEY, "otp_verification");
+        localStorage.setItem(RESET_EMAIL_KEY, userEmail);
+        localStorage.setItem(RESET_PASSWORD_KEY, userPassword);
+        setIsOtpMode(true);
     });
 
     const resetPasswordMutation = useResetPassword(() => {
         toast.success("Password reset successful!");
+        
+        // Clear localStorage when reset is complete
+        clearResetState();
         
         // Redirect to login after successful reset
         setTimeout(() => {
@@ -64,10 +86,32 @@ export default function ForgotPassword() {
         }, 2000);
     });
 
+    // Check localStorage on initial load
     useEffect(() => {
         // If token and email are in URL, we're in the reset confirmation mode
         if (token && email) {
             setIsTokenMode(true);
+            setUserEmail(email);
+            return;
+        }
+        
+        // Check if we have an ongoing reset process
+        const savedState = localStorage.getItem(RESET_STATE_KEY);
+        const savedEmail = localStorage.getItem(RESET_EMAIL_KEY);
+        const savedPassword = localStorage.getItem(RESET_PASSWORD_KEY);
+        
+        if (savedState === "otp_verification" && savedEmail) {
+            setIsOtpMode(true);
+            setUserEmail(savedEmail);
+            if (savedPassword) {
+                setUserPassword(savedPassword);
+            }
+            
+            // Update the form defaults
+            otpForm.reset({ 
+                email: savedEmail,
+                otp: ""
+            });
         }
     }, [token, email]);
 
@@ -81,9 +125,25 @@ export default function ForgotPassword() {
         return () => clearInterval(timer);
     }, []);
 
+    // Function to clear reset state from localStorage
+    const clearResetState = () => {
+        localStorage.removeItem(RESET_STATE_KEY);
+        localStorage.removeItem(RESET_EMAIL_KEY);
+        localStorage.removeItem(RESET_PASSWORD_KEY);
+    };
+
     // Form for requesting password reset
     const requestForm = useForm<RequestResetFormValues>({
         resolver: zodResolver(requestResetSchema)
+    });
+
+    // Form for OTP verification
+    const otpForm = useForm<OtpVerificationFormValues>({
+        resolver: zodResolver(otpVerificationSchema),
+        defaultValues: {
+            email: userEmail,
+            otp: ""
+        }
     });
 
     // Form for setting new password
@@ -96,11 +156,37 @@ export default function ForgotPassword() {
 
     // Handle request password reset
     const onRequestReset = async (data: RequestResetFormValues) => {
+        // Save user email and password for OTP verification
+        setUserEmail(data.email);
+        setUserPassword(data.password);
+        
         // Pass both email and password as per backend requirements
         passwordResetMutation.mutate({
             email: data.email,
             password: data.password
         });
+    };
+
+    // Handle OTP verification
+    const onVerifyOtp = async (data: OtpVerificationFormValues) => {
+        try {
+            const response = await api.get(`/authenticate/forgot_password/?email=${data.email}&token=${data.otp}`);
+            
+            if (response.status === 200) {
+                toast.success("Password reset successful!");
+                
+                // Clear localStorage when reset is complete
+                clearResetState();
+                
+                // Redirect to login after successful reset
+                setTimeout(() => {
+                    navigate('/auth/login');
+                }, 2000);
+            }
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.detail || error?.message;
+            toast.error(errorMessage || "Invalid OTP. Please try again.");
+        }
     };
 
     // Handle confirm reset with token
@@ -117,6 +203,12 @@ export default function ForgotPassword() {
     };
 
     const isSubmitting = passwordResetMutation.isPending || resetPasswordMutation.isPending;
+
+    // Reset to request mode and clear persisted state
+    const resetForm_back = () => {
+        setIsOtpMode(false);
+        clearResetState();
+    };
 
     return (
         <div className="flex h-screen relative">
@@ -160,19 +252,21 @@ export default function ForgotPassword() {
                         />
                         <div className="space-y-2">
                             <CardTitle className="text-2xl font-bold">
-                                {isTokenMode ? "Reset Password" : "Forgot Password"}
+                                {isTokenMode ? "Reset Password" : isOtpMode ? "Verify OTP" : "Forgot Password"}
                             </CardTitle>
                             <CardDescription className="text-base">
                                 {isTokenMode 
                                     ? "Enter your new password to complete the reset process" 
-                                    : "Enter your email address and we'll send you instructions to reset your password"
+                                    : isOtpMode
+                                    ? "Enter the verification code sent to your email"
+                                    : "Enter your email address and new password to start the reset process"
                                 }
                             </CardDescription>
                         </div>
                     </CardHeader>
                     
                     {isTokenMode ? (
-                        // Reset password form with token
+                        // Reset password form with token from URL
                         <form onSubmit={resetForm.handleSubmit(onConfirmReset)}>
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">
@@ -215,8 +309,60 @@ export default function ForgotPassword() {
                                 </p>
                             </CardFooter>
                         </form>
+                    ) : isOtpMode ? (
+                        // OTP verification form
+                        <form onSubmit={otpForm.handleSubmit(onVerifyOtp)}>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="otp-email" className="text-base">Email</Label>
+                                    <Input
+                                        id="otp-email"
+                                        type="email"
+                                        value={userEmail}
+                                        readOnly
+                                        className="h-11 bg-muted"
+                                        {...otpForm.register("email")}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="otp" className="text-base">Verification Code (OTP)</Label>
+                                    <Input
+                                        id="otp"
+                                        type="text"
+                                        placeholder="Enter OTP sent to your email"
+                                        className="h-11"
+                                        {...otpForm.register("otp")}
+                                    />
+                                    {otpForm.formState.errors.otp && (
+                                        <p className="text-sm text-destructive mt-1">{otpForm.formState.errors.otp.message}</p>
+                                    )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    Please check your email for the verification code. You can navigate away to check and come back.
+                                </p>
+                            </CardContent>
+                            <CardFooter className="flex flex-col space-y-4 mt-4">
+                                <Button type="submit" className="w-full h-11 text-base" disabled={isSubmitting}>
+                                    {isSubmitting ? "Verifying..." : "Verify OTP"}
+                                </Button>
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    className="w-full h-11 text-base"
+                                    onClick={resetForm_back}
+                                >
+                                    Back
+                                </Button>
+                                <p className="text-sm text-muted-foreground text-center">
+                                    Remember your password?{" "}
+                                    <Link to="/auth/login" className="text-primary hover:underline font-medium">
+                                        Sign in
+                                    </Link>
+                                </p>
+                            </CardFooter>
+                        </form>
                     ) : (
-                        // Request reset form
+                        // Initial request reset form
                         <form onSubmit={requestForm.handleSubmit(onRequestReset)}>
                             <CardContent className="space-y-6">
                                 <div className="space-y-2">

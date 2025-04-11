@@ -184,7 +184,7 @@ class RoomBooking(models.Model):
     
         midnight_today = datetime.combine(now.date(), datetime.min.time())
     
-        expiry_date = midnight_today + timedelta(days=3, hours=23, minutes=59, seconds=59)
+        expiry_date = midnight_today + timedelta(days=5, hours=23, minutes=59, seconds=59)
     
         if timezone.is_aware(now):
             expiry_date = timezone.make_aware(expiry_date)
