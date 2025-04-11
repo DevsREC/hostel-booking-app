@@ -204,7 +204,7 @@ class PaymentManagementAdmin(ModelAdmin):
     def reject_payment(self, request, object_id):
         booking = self.get_object(request, object_id)
         if booking:
-            booking.update_status('payment_not_done', verified_by_user=request.user)
+            booking.update_status('cancelled', verified_by_user=request.user)
             self.send_rejection_email(booking)
         return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
 

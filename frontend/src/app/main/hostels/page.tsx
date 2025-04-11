@@ -99,7 +99,7 @@ export default function HostelsPage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                     <IndianRupee className="h-5 w-5" />
-                                    <span className="text-base">Additional Fees</span>
+                                    <span className="text-base">Total Fees</span>
                                 </div>
                                 <span className="font-semibold text-lg text-card-foreground">₹{hostel.amount}</span>
                             </div>

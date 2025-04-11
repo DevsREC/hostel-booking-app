@@ -254,7 +254,7 @@ export default function HostelDetail() {
                             <h3 className="text-2xl font-semibold text-foreground mb-6">Book Now</h3>
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-muted-foreground mb-2">Additional Fees</p>
+                                    <p className="text-muted-foreground mb-2">Total Fees</p>
                                     <p className="text-3xl font-bold text-primary">₹{(hostel?.amount || 0)}</p>
                                 </div>
                                 <div>
