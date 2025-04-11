@@ -45,4 +45,4 @@ class RoomBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomBooking
-        fields = ['id', 'user', 'hostel', 'status', 'payment_expiry']
+        fields = ['id', 'user', 'hostel', 'status', 'payment_expiry', "booked_at"]

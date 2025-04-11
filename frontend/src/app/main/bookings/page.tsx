@@ -117,9 +117,9 @@ export default function BookingsPage() {
                     <CardTitle className="text-card-foreground">
                       Booking #{booking.id}
                     </CardTitle>
-                    {/* <CardDescription className="text-muted-foreground">
-                                            Booked on {formatDate(booking.booked_at)}
-                                        </CardDescription> */}
+                    <CardDescription className="text-muted-foreground">
+                      Booked on {formatDate(booking.booked_at)}
+                    </CardDescription>
                   </div>
                   <Badge
                     variant={
@@ -165,7 +165,7 @@ export default function BookingsPage() {
                         ₹{booking.hostel.amount}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Additional Fees
+                        Total Fees
                       </p>
                     </div>
                   </div>
