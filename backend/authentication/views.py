@@ -148,6 +148,7 @@ class  ForgotPasswordAPI(generics.GenericAPIView):
                     'code': 'account_inactive'
                 }, status=status.HTTP_400_BAD_REQUEST)
             user.new_password=password
+            user.send_forgot_password_mail(user.new_password)
             return Response({
                 'detail': 'Verification code sent to your email',
                 'code': 'reset_email_sent'

@@ -127,6 +127,7 @@ class User(AbstractUser):
             },
             template_name="forgot_password_template.html"  # Path to your HTML template
         )
+        print("Mail data", )
 
 
 class BookingOTP(models.Model):
