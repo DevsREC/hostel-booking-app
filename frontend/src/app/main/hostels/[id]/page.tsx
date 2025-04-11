@@ -304,8 +304,9 @@ export default function HostelDetail() {
                                 <div className="bg-yellow-50 p-4 rounded-lg space-y-2 text-sm text-yellow-800">
                                     <p>1. An OTP will be sent to your email for verification.</p>
                                     <p>2. The OTP is valid for 10 minutes only.</p>
-                                    <p>3. After OTP verification, you must complete the payment within a week</p>
-                                    <p>4. If failed to pay 1.5 times the amount will be added to your no-due.</p>
+                                    <p>3. After OTP verification, you must complete the payment within 3 Days.</p>
+                                    <p>4. If failed to pay within given deadline, booking will be cancelled.</p>
+                                    <p>4. If failed to pay Rs.10,000 penalty will be added</p>
                                     <p>5. The Fees shown is for the entire academic year.</p>
                                 </div>
                             </div>
