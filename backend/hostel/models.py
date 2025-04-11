@@ -133,17 +133,52 @@ class RoomBooking(models.Model):
 
     def save(self, *args, **kwargs):
         self.clean()
+        if self.status == 'payment_not_done':
+            Penalty.objects.create(
+                user=self.user,
+                hostel=self.hostel,
+                status=self.status,
+                is_internal_booking=self.is_internal_booking,
+                booked_at=self.booked_at,
+                otp_verified_at=self.otp_verified_at,
+                payment_completed_at=self.payment_completed_at,
+                payment_link=self.payment_link,
+                payment_reference=self.payment_reference,
+                otp_code=self.otp_code,
+                otp_expiry=self.otp_expiry,
+                payment_expiry=self.payment_expiry,
+                admin_notes=self.admin_notes,
+            )
+            self.delete()
+            return
         super().save(*args, **kwargs)
 
     def update_status(self, new_status, verified_by_user=None):
         old_status = self.status
         self.status = new_status
-        
+        print("Updated status", new_status)
         if old_status != new_status and verified_by_user is not None:
             if verified_by_user.is_staff or verified_by_user.is_superuser:
                 self.verified_by = verified_by_user
-        
-        self.save()
+        if self.status == 'payment_not_done':
+            Penalty.objects.create(
+                user=self.user,
+                hostel=self.hostel,
+                status=self.status,
+                is_internal_booking=self.is_internal_booking,
+                booked_at=self.booked_at,
+                otp_verified_at=self.otp_verified_at,
+                payment_completed_at=self.payment_completed_at,
+                payment_link=self.payment_link,
+                payment_reference=self.payment_reference,
+                otp_code=self.otp_code,
+                otp_expiry=self.otp_expiry,
+                payment_expiry=self.payment_expiry,
+                admin_notes=self.admin_notes,
+            )
+            self.delete()
+        else:
+            self.save()
         return True
 
     def generate_otp(self):
@@ -240,3 +275,38 @@ class RoomBooking(models.Model):
 
     # def notify_admin(self):
     #     print(f"Admin notification: Payment reference {self.payment_reference} submitted for booking {self.id}")
+
+class Penalty(models.Model):
+    BOOKING_STATUS = [
+        ('otp_pending', 'OTP Pending'),
+        ('payment_pending', 'Payment Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+        ('payment_not_done', 'Payment Not Done'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20, 
+        default='otp_pending', 
+        choices=BOOKING_STATUS
+    )
+    is_internal_booking = models.BooleanField(default=False)
+    booked_at = models.DateTimeField(auto_now_add=True)
+    otp_verified_at = models.DateTimeField(null=True, blank=True)
+    payment_completed_at = models.DateTimeField(null=True, blank=True)
+    payment_link = models.URLField(max_length=255, blank=True, null=True)
+    payment_reference = models.CharField(max_length=100, blank=True, null=True)
+    otp_code = models.CharField(max_length=10, blank=True, null=True)
+    otp_expiry = models.DateTimeField(null=True, blank=True)
+    payment_expiry = models.DateTimeField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            raise ValidationError("Penalty records cannot be modified once created")
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValidationError("Penalty records cannot be deleted")

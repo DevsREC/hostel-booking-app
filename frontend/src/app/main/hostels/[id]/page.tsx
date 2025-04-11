@@ -51,7 +51,9 @@ export default function HostelDetail() {
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending' ||
         booking.status === 'confirmed' ||
-        booking.status == 'payment_not_done'
+        booking.status === 'cancelled'
+        // ||
+        // booking.status == 'payment_not_done'
     );
 
     const { mutate: createBooking, isPending: isCreatingBooking } = useCreateBooking((response) => {

@@ -238,3 +238,10 @@ class PaymentManagementAdmin(ModelAdmin):
             },
             template_name="payment_rejection_template.html"
         )
+
+@admin.register(Penalty)
+class PenaltyAdmin(ModelAdmin):
+    list_display = ['user', 'hostel', 'payment_expiry', 'status']
+    list_filter = list_display
+    search_fields = ['user', 'hostel']
+    # readonly_fields = list_display

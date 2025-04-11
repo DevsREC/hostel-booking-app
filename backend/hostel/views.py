@@ -25,12 +25,12 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     'code': 'user_not_found'
                 }, status=status.HTTP_401_UNAUTHORIZED)
             print("Bookings")
-            print(RoomBooking.objects.filter(user=user, status__in=['payment_not_done']))
+            print(RoomBooking.objects.filter(user=user).exclude(status__in=['payment_not_done']))
             if RoomBooking.objects.filter(
                 user = user,
-            ).exists():
+            ).exclude(status__in=['payment_not_done']).exists():
                 booking = RoomBooking.objects.get(user=request.user)
-                return Response(
+                return Response(    
                     {
                         "message": "You have already booked a hostel",
                         "data": {
@@ -48,8 +48,6 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-
-
             booking = RoomBooking.objects.create(
                 user = request.user,
                 hostel = hostel

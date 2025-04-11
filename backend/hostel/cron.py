@@ -1,5 +1,5 @@
 from django.utils import timezone
-from .models import RoomBooking
+from .models import *
 from authentication.utils import send_email
 
 def cancel_expired_bookings():
@@ -27,9 +27,24 @@ def mark_expired_payment():
     count = expired_payment_bookings.count()
     
     for booking in expired_payment_bookings:
+        Penalty.objects.create(
+            user=booking.user,
+            hostel=booking.hostel,
+            status=booking.status,
+            is_internal_booking=booking.is_internal_booking,
+            booked_at=booking.booked_at,
+            otp_verified_at=booking.otp_verified_at,
+            payment_completed_at=booking.payment_completed_at,
+            payment_link=booking.payment_link,
+            payment_reference=booking.payment_reference,
+            otp_code=booking.otp_code,
+            otp_expiry=booking.otp_expiry,
+            payment_expiry=booking.payment_expiry,
+            admin_notes=booking.admin_notes,
+        )
         send_payment_expired_email(booking)
         booking.status = 'payment_not_done'
-        booking.save()
+        booking.delete()
     
     print(f"[{timezone.now()}] Marked {count} bookings as 'payment_not_done' due to expired payment")
     return count

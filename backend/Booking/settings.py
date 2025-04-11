@@ -281,7 +281,7 @@ UNFOLD = {
                         "title": "Forgot Password",
                         "icon": "password",
                         "link": reverse_lazy("admin:authentication_forgetpassword_changelist"),
-                    }
+                    },
                 ]
             },
             {
@@ -304,11 +304,16 @@ UNFOLD = {
                         "icon": "pending",
                         "link": reverse_lazy("admin:hostel_paymentmanagement_changelist"),
                     },
-                   {
+                    {
                        "title": "All Bookings",
                        "icon": "quick_reference_all",
                        "link": reverse_lazy("admin:hostel_roombooking_changelist"),
-                   } 
+                    },
+                    {
+                        "title": "Penalty",
+                        "icon": "av_timer",
+                        "link": reverse_lazy("admin:hostel_penalty_changelist"),
+                    }
                 ]
             }
         ]
