@@ -197,7 +197,7 @@
         </div>
         
         <p>Hello {{user_name}},</p>
-        <p>We noticed that the payment for your hostel booking was not completed within the required 24-hour window after OTP verification. As a result, your booking has now expired and the status has been changed to <strong>"Payment Not Done"</strong>.</p>
+        <p>We noticed that the payment for your hostel booking was not completed within the required 5 days window after OTP verification. As a result, your booking has now expired and the status has been changed to <strong>"Payment Not Done"</strong>.</p>
         <p>You can cancel your old booking before booking new one.</p>
         <div class="booking-details">
             <h3>Booking Information</h3>
@@ -258,7 +258,7 @@
         <p>If you still wish to stay with us, we'd be happy to help you make a new booking. Simply restart the booking process.</p>
         
         {% comment %} <div class="action-button">
-            <a href="{{booking_url}}">Create New Booking</a>
+        <a href="{{booking_url}}">Create New Booking</a>
         </div> {% endcomment %}
         
         <p>If you have any questions or need assistance, please don't hesitate to contact our customer support team.</p>

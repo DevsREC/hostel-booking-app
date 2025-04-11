@@ -9,3 +9,4 @@ urlpatterns = [
     path('forgot_password/', ForgotPasswordAPI.as_view(), name='forget-password'),
     path('logout/', LogoutAPIView.as_view(), name="logout"),
 ]
+
