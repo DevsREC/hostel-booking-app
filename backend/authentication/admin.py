@@ -69,6 +69,12 @@ class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
                 action_flag=CHANGE if change else ADDITION,
                 change_message=change_message,
             )
+        
+@admin.register(BlockedStudents)
+class DebarredAdmin(ModelAdmin):
+    list_display = ['name', 'email', 'dept', 'year']
+    search_fields = ['name', 'email']
+
 # @admin.register(BookingOTP)
 class VerificationCodeAdmin(ModelAdmin):
     list_display = ['user', 'code']

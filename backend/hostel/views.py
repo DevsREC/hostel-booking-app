@@ -6,6 +6,7 @@ from authentication.authentication import IsAuthenticated
 from .serializers import *
 
 from .models import *
+from authentication.models import BlockedStudents
 
 # Create your views here.
 class InitiateBookingAPI(generics.CreateAPIView):
@@ -16,8 +17,17 @@ class InitiateBookingAPI(generics.CreateAPIView):
         try:
             hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
             user = User.objects.filter(email=request.user).first()
+
+            is_blocked = BlockedStudents.objects.filter(email=user.email).exists()
+            if is_blocked:
+                return Response({
+                    'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
+                    'code': 'user_not_found'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            print("Bookings")
+            print(RoomBooking.objects.filter(user=user, status__in=['payment_not_done']))
             if RoomBooking.objects.filter(
-                user = user
+                user = user,
             ).exists():
                 booking = RoomBooking.objects.get(user=request.user)
                 return Response(
@@ -38,6 +48,8 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
+
+
             booking = RoomBooking.objects.create(
                 user = request.user,
                 hostel = hostel
@@ -196,7 +208,13 @@ class GetHostelDataAPI(generics.CreateAPIView):
         return queryset
 
     def get(self, request, *args, **kwargs):
-        user = User.objects.get(email=request.user);
+        user = User.objects.get(email=request.user)
+        is_blocked = BlockedStudents.objects.filter(email=user.email).exists()
+        if is_blocked:
+            return Response({
+                'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
+                'code': 'user_not_found'
+            }, status=status.HTTP_401_UNAUTHORIZED)
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True, context={"year": user.year})
         return Response({

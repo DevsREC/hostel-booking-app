@@ -268,6 +268,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:auth_group_changelist"),
                     },
                     {
+                        "title": "Debarred",
+                        "icon": "block",
+                        "link": reverse_lazy("admin:authentication_blockedstudents_changelist")
+                    },
+                    {
                         "title": "Users",
                         "icon": "dashboard",
                         "link": reverse_lazy("admin:authentication_user_changelist"),

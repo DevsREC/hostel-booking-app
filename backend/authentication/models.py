@@ -58,7 +58,7 @@ class User(AbstractUser):
     parent_phone_number = models.CharField('Parent Ph. No.', max_length=20)
     gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER_CHOICES)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    tution_fee = models.BooleanField(default=False)
+    tution_fee = models.BooleanField(default=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -137,7 +137,6 @@ class BookingOTP(models.Model):
 
     def __str__(self):
         return f"{self.user}"
-    
 
 class ForgetPassword(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -151,3 +150,9 @@ class ForgetPassword(models.Model):
         if not self.new_password.startswith('pbkdf2_sha256$'):
             self.new_password = make_password(self.new_password)
         super().save(*args, **kwargs)
+
+class BlockedStudents(models.Model):
+    email = models.CharField(unique=True, blank=False,max_length=200)
+    name = models.CharField(max_length=200, blank=False)
+    dept = models.CharField(max_length=50, blank=False)
+    year = models.IntegerField(blank=False)
