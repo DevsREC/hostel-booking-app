@@ -176,7 +176,7 @@ export default function HostelDetail() {
                         </div>
                         <div className="bg-muted/50 p-4 rounded-lg">
                             <p className="text-3xl font-bold text-primary">₹{hostel?.amount}</p>
-                            <p className="text-sm text-muted-foreground">per month</p>
+                            {/* <p className="text-sm text-muted-foreground">per month</p> */}
                         </div>
                     </div>
                 </CardHeader>
