@@ -47,7 +47,7 @@ export default function BookingDetail() {
   const [otp, setOtp] = useState("");
   const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
   const navigate = useNavigate();
-
+  console.log(bookings)
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -369,7 +369,7 @@ export default function BookingDetail() {
                             Room Type: {booking.hostel?.room_type}
                           </p>
                           <p className="font-medium text-primary text-xl">
-                            Additional Fees: ₹{booking.hostel?.amount || 0}
+                            Total Fees: ₹{booking.hostel?.amount || 0}
                           </p>
                         </div>
                         <InputOTP
