@@ -58,7 +58,10 @@ export const useRequestPasswordReset = (onSuccess?: () => void) => {
     ['requestPasswordReset'],
     async (data: PasswordResetRequest): Promise<ApiResponse<string>> => {
       try {
-        const response = await api.post('/authenticate/forgot_password/', data);
+        const response = await api.post('/authenticate/forgot_password/', {
+          email: data.email,
+          password: data.password
+        });
         return {
           status: response.status,
           data: response.data.detail || 'Password reset instructions sent successfully',
@@ -86,16 +89,17 @@ export const useRequestPasswordReset = (onSuccess?: () => void) => {
 };
 
 // Reset password
-export const useResetPassword = (token: string, onSuccess?: () => void) => {
+export const useResetPassword = (onSuccess?: () => void) => {
   return useMutationData<string, ResetPasswordRequest>(
-    ['resetPassword', token],
+    ['resetPassword'],
     async (data: ResetPasswordRequest): Promise<ApiResponse<string>> => {
       try {
-        const response = await api.get(`/authenticate/forgot_password/?email=${data.email}&token=${token}`);
+        const response = await api.get(`/authenticate/forgot_password/?email=${data.email}&token=${data.token}`);
         return {
           status: response.status,
           data: response.data.detail || 'Password reset successful',
           code: response.data.code,
+          user: response.data.user,
         };
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -113,7 +117,7 @@ export const useResetPassword = (token: string, onSuccess?: () => void) => {
         };
       }
     },
-    undefined,
+    'currentUser',
     onSuccess
   );
 };

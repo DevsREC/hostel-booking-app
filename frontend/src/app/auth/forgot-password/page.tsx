@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,15 +8,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "@/action/user";
+import { api, useRequestPasswordReset, useResetPassword } from "@/action/user";
 import { toast } from "sonner";
 
 // Define the forgot password schema with Zod
-const forgotPasswordSchema = z.object({
+const requestResetSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters")
 });
 
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+const resetPasswordSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters")
+});
+
+type RequestResetFormValues = z.infer<typeof requestResetSchema>;
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const carouselImages = [
     "/images/banner-1.jpg",
@@ -25,8 +33,43 @@ const carouselImages = [
 ];
 
 export default function ForgotPassword() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get('token');
+    const email = searchParams.get('email');
+    
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isTokenMode, setIsTokenMode] = useState(false);
+
+    // Setup react-query mutations
+    const passwordResetMutation = useRequestPasswordReset(() => {
+        toast.success(
+            <div className="space-y-2">
+                <p>Password reset instructions sent!</p>
+                <p className="text-sm text-muted-foreground">
+                    Please check your email for verification code.
+                </p>
+            </div>,
+            { duration: 6000 }
+        );
+    });
+
+    const resetPasswordMutation = useResetPassword(() => {
+        toast.success("Password reset successful!");
+        
+        // Redirect to login after successful reset
+        setTimeout(() => {
+            navigate('/auth/login');
+        }, 2000);
+    });
+
+    useEffect(() => {
+        // If token and email are in URL, we're in the reset confirmation mode
+        if (token && email) {
+            setIsTokenMode(true);
+        }
+    }, [token, email]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -38,46 +81,42 @@ export default function ForgotPassword() {
         return () => clearInterval(timer);
     }, []);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<ForgotPasswordFormValues>({
-        resolver: zodResolver(forgotPasswordSchema)
+    // Form for requesting password reset
+    const requestForm = useForm<RequestResetFormValues>({
+        resolver: zodResolver(requestResetSchema)
     });
 
-    const onSubmit = async (data: ForgotPasswordFormValues) => {
-        setIsSubmitting(true);
-        try {
-            const response = await api.post('/authenticate/forgot_password/', data);
-
-            if (response.status === 200) {
-                toast.success(
-                    <div className="space-y-2">
-                        <p>Password reset instructions sent!</p>
-                        <p className="text-sm text-muted-foreground">
-                            Please check your email for further instructions.
-                        </p>
-                    </div>,
-                    { duration: 6000 }
-                );
-            }
-        } catch (error: any) {
-            const errorMessage = error?.response?.data?.message || error?.message;
-
-            if (errorMessage?.toLowerCase().includes('not found')) {
-                toast.error("Email address not found. Please check your email or sign up.");
-            } else if (errorMessage?.toLowerCase().includes('network')) {
-                toast.error("Network error. Please check your internet connection.");
-            } else if (errorMessage?.toLowerCase().includes('verify')) {
-                toast.error("Please verify your email before resetting password.");
-            } else {
-                toast.error(errorMessage || "Failed to send reset instructions. Please try again.");
-            }
-        } finally {
-            setIsSubmitting(false);
+    // Form for setting new password
+    const resetForm = useForm<ResetPasswordFormValues>({
+        resolver: zodResolver(resetPasswordSchema),
+        defaultValues: {
+            email: email || ""
         }
+    });
+
+    // Handle request password reset
+    const onRequestReset = async (data: RequestResetFormValues) => {
+        // Pass both email and password as per backend requirements
+        passwordResetMutation.mutate({
+            email: data.email,
+            password: data.password
+        });
     };
+
+    // Handle confirm reset with token
+    const onConfirmReset = async (data: ResetPasswordFormValues) => {
+        if (!token) {
+            toast.error("Reset token is missing. Please try again or request a new reset link.");
+            return;
+        }
+        
+        resetPasswordMutation.mutate({
+            email: data.email,
+            token: token
+        });
+    };
+
+    const isSubmitting = passwordResetMutation.isPending || resetPasswordMutation.isPending;
 
     return (
         <div className="flex h-screen relative">
@@ -120,40 +159,106 @@ export default function ForgotPassword() {
                             className="w-24 h-24 mx-auto object-contain"
                         />
                         <div className="space-y-2">
-                            <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
+                            <CardTitle className="text-2xl font-bold">
+                                {isTokenMode ? "Reset Password" : "Forgot Password"}
+                            </CardTitle>
                             <CardDescription className="text-base">
-                                Enter your email address and we'll send you instructions to reset your password
+                                {isTokenMode 
+                                    ? "Enter your new password to complete the reset process" 
+                                    : "Enter your email address and we'll send you instructions to reset your password"
+                                }
                             </CardDescription>
                         </div>
                     </CardHeader>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="email" className="text-base">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="your.email@example.com"
-                                    className="h-11"
-                                    {...register("email")}
-                                />
-                                {errors.email && (
-                                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
-                                )}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="flex flex-col space-y-4 mt-4">
-                            <Button type="submit" className="w-full h-11 text-base" disabled={isSubmitting}>
-                                {isSubmitting ? "Sending Instructions..." : "Send Reset Instructions"}
-                            </Button>
-                            <p className="text-sm text-muted-foreground text-center">
-                                Remember your password?{" "}
-                                <Link to="/auth/login" className="text-primary hover:underline font-medium">
-                                    Sign in
-                                </Link>
-                            </p>
-                        </CardFooter>
-                    </form>
+                    
+                    {isTokenMode ? (
+                        // Reset password form with token
+                        <form onSubmit={resetForm.handleSubmit(onConfirmReset)}>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="reset-email" className="text-base">Email</Label>
+                                    <Input
+                                        id="reset-email"
+                                        type="email"
+                                        readOnly={!!email}
+                                        placeholder="your.email@example.com"
+                                        className="h-11"
+                                        {...resetForm.register("email")}
+                                    />
+                                    {resetForm.formState.errors.email && (
+                                        <p className="text-sm text-destructive mt-1">{resetForm.formState.errors.email.message}</p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="new-password" className="text-base">New Password</Label>
+                                    <Input
+                                        id="new-password"
+                                        type="password"
+                                        placeholder="********"
+                                        className="h-11"
+                                        {...resetForm.register("password")}
+                                    />
+                                    {resetForm.formState.errors.password && (
+                                        <p className="text-sm text-destructive mt-1">{resetForm.formState.errors.password.message}</p>
+                                    )}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex flex-col space-y-4 mt-4">
+                                <Button type="submit" className="w-full h-11 text-base" disabled={isSubmitting}>
+                                    {isSubmitting ? "Resetting Password..." : "Reset Password"}
+                                </Button>
+                                <p className="text-sm text-muted-foreground text-center">
+                                    Remember your password?{" "}
+                                    <Link to="/auth/login" className="text-primary hover:underline font-medium">
+                                        Sign in
+                                    </Link>
+                                </p>
+                            </CardFooter>
+                        </form>
+                    ) : (
+                        // Request reset form
+                        <form onSubmit={requestForm.handleSubmit(onRequestReset)}>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email" className="text-base">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="your.email@example.com"
+                                        className="h-11"
+                                        {...requestForm.register("email")}
+                                    />
+                                    {requestForm.formState.errors.email && (
+                                        <p className="text-sm text-destructive mt-1">{requestForm.formState.errors.email.message}</p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="password" className="text-base">New Password</Label>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        placeholder="********"
+                                        className="h-11"
+                                        {...requestForm.register("password")}
+                                    />
+                                    {requestForm.formState.errors.password && (
+                                        <p className="text-sm text-destructive mt-1">{requestForm.formState.errors.password.message}</p>
+                                    )}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex flex-col space-y-4 mt-4">
+                                <Button type="submit" className="w-full h-11 text-base" disabled={isSubmitting}>
+                                    {isSubmitting ? "Sending Instructions..." : "Send Reset Instructions"}
+                                </Button>
+                                <p className="text-sm text-muted-foreground text-center">
+                                    Remember your password?{" "}
+                                    <Link to="/auth/login" className="text-primary hover:underline font-medium">
+                                        Sign in
+                                    </Link>
+                                </p>
+                            </CardFooter>
+                        </form>
+                    )}
                 </Card>
             </div>
         </div>
