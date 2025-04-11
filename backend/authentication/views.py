@@ -147,7 +147,7 @@ class ForgotPasswordAPI(generics.GenericAPIView):
                     'detail': 'Your account is not active. Please verify your email first.',
                     'code': 'account_inactive'
                 }, status=status.HTTP_400_BAD_REQUEST)
-            user.send_forgot_password_mail(new_password=password)
+            user.new_password=password
             return Response({
                 'detail': 'Verification code sent to your email',
                 'code': 'reset_email_sent'
@@ -158,6 +158,7 @@ class ForgotPasswordAPI(generics.GenericAPIView):
                 'code': 'user_not_found'
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response({
                 'detail': 'An error occurred while processing your request. Please try again.',
                 'code': 'server_error'

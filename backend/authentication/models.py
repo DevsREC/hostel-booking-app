@@ -108,25 +108,25 @@ class User(AbstractUser):
     #         "startingcontent": start_content,
     #     })
 
-def send_forgot_password_mail(self, new_password):
-    verification_code = get_random_string(length=8)
-    
-    subject = "Password Reset - Hostel Room Booking"
-    to_email = self.email
-    
-    verification, created = ForgetPassword.objects.get_or_create(user=self)
-    verification.code = verification_code
-    verification.new_password = new_password
-    verification.save()
-    
-    send_email(
-        subject=subject, 
-        to_email=to_email, 
-        context={
-            "verification_code": verification_code,
-        },
-        template_name="forgot_password_template.html"  # Path to your HTML template
-    )
+    def send_forgot_password_mail(self, new_password):
+        verification_code = get_random_string(length=8)
+        
+        subject = "Password Reset - Hostel Room Booking"
+        to_email = self.email
+        
+        verification, created = ForgetPassword.objects.get_or_create(user=self)
+        verification.code = verification_code
+        verification.new_password = new_password
+        verification.save()
+        
+        send_email(
+            subject=subject, 
+            to_email=to_email, 
+            context={
+                "verification_code": verification_code,
+            },
+            template_name="forgot_password_template.html"  # Path to your HTML template
+        )
 
 
 class BookingOTP(models.Model):

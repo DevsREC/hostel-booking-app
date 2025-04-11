@@ -55,7 +55,7 @@ def send_cancellation_email(self, booking):
 def send_payment_expired_email(self, booking):
     subject = "Payment Deadline Expired - Hostel Booking"
     to_email = booking.user.email
-    )
+    
     booking_url = "https://yourhostelbooking.com/booking/new"
     
     send_email(
