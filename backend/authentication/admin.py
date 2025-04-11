@@ -25,29 +25,21 @@ class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'parent_phone_number', 'gender')}),
-        ('Tution Fee', {'fields': ('tution_fee',)}),
+        ('Student info', {'fields': ('tution_fee', 'student_type')}),
         ('Academic Info', {'fields': ('year', 'dept', 'roll_no')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser','groups', 'user_permissions')}),
         ('Other Info', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_filter = ['is_active', 'is_staff', 'is_superuser', 'year', 'dept', 'gender', 'tution_fee']
+    list_filter = ['is_active', 'is_staff', 'is_superuser', 'year', 'dept', 'gender', 'tution_fee', 'student_type']
     search_fields = ['email', 'first_name', 'last_name', 'phone_number']
-    list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'tution_fee','gender']
+    list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'tution_fee','gender', 'student_type']
     resource_classes = [UserResource]
     
     def _create_log_entry(self, request, obj, change_message, change=False):
-        """
-        Final robust version that handles:
-        - Request objects vs user IDs
-        - Single objects vs lists
-        """
-        # Handle case where request is actually the user_id (integer)
         user_id = request if isinstance(request, int) else request.user.pk
         
-        # Handle case where obj is actually a list/queryset
         if isinstance(obj, (list, tuple, QuerySet)):
-            # Create log entries for all objects in the list
             return [
                 LogEntry.objects.log_action(
                     user_id=user_id,
@@ -60,7 +52,6 @@ class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
                 for item in obj
             ]
         else:
-            # Single object case
             return LogEntry.objects.log_action(
                 user_id=user_id,
                 content_type_id=ContentType.objects.get_for_model(obj).pk,

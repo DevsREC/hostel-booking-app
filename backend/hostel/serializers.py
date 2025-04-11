@@ -14,17 +14,27 @@ class HostelSerializer(serializers.ModelSerializer):
     
     def get_amount(self, obj):
         year = self.context.get('year')
+        std_type = self.context.get('quota')
+        return obj.get_amount(year, std_type)
+        # # 3 : Govt
+        # # 3 : Mgmt
+        # print(f"{year} : {std_type}")
+        # amounts = {
+        #     1: {
+        #         "govt": obj.first_year_fee_mgmt
+        #     }
+        # }
+        # return 0
+        # if year == 1:
+        #     return obj.first_year_fee
+        # elif year == 2:
+        #     return obj.second_year_fee
+        # elif year == 3:
+        #     return obj.third_year_fee
+        # elif year == 4:
+        #     return obj.fourth_year_fee
         
-        if year == 1:
-            return obj.first_year_fee
-        elif year == 2:
-            return obj.second_year_fee
-        elif year == 3:
-            return obj.third_year_fee
-        elif year == 4:
-            return obj.fourth_year_fee
-        
-        return obj.first_year_fee
+        # return obj.first_year_fee
 
     def get_available_rooms(self, obj):
         return obj.available_rooms()

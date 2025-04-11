@@ -41,17 +41,45 @@ class Hostel(models.Model):
     enable = models.BooleanField(default=False)
     allow_bookings = models.BooleanField(default=False)
     bathroom_type = models.CharField(max_length=20, choices=BATHROOM_CHOICES, default='Common')
-    first_year_fee = models.IntegerField(blank=False, null=False)
-    second_year_fee = models.IntegerField(blank=False, null=False)
-    third_year_fee = models.IntegerField(blank=False, null=False)
-    fourth_year_fee = models.IntegerField(blank=False, null=False)
+    first_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
+    first_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
 
     def __str__(self):
         return f"{self.name}-{self.location}-{self.room_type}-{self.food_type}-{self.person_per_room}"
     
     def clean(self):
         self.total_capacity = self.person_per_room * self.no_of_rooms
-    
+
+    def get_amount(self, year, quota):
+        if not year or not quota:
+            year = self.context.get('year')
+            quota = self.context.get('quota')
+        amounts = {
+            1: {
+                "Govt": self.first_year_fee_govt,
+                "Mgmt": self.first_year_fee_mgmt,
+            },
+            2: {
+                "Govt": self.second_year_fee_govt,
+                "Mgmt": self.second_year_fee_mgmt,
+            },
+            3: {
+                "Govt": self.third_year_fee_govt,
+                "Mgmt": self.third_year_fee_mgmt,
+            },
+            4: {
+                "Govt": self.fourth_year_fee_govt,
+                "Mgmt": self.fourth_year_fee_mgmt,
+            },
+        }
+        print(year, quota)
+        return amounts[year][quota]
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
@@ -117,7 +145,7 @@ class RoomBooking(models.Model):
         return f'{self.user.email} - {self.hostel.name} - {self.status}'
 
     class Meta:
-        unique_together = ('user', 'hostel')
+        unique_together = ('user', 'hostel', 'status', 'booked_at')
 
     def clean(self):
         if self.user.gender != self.hostel.gender:
@@ -152,6 +180,31 @@ class RoomBooking(models.Model):
             self.delete()
             return
         super().save(*args, **kwargs)
+
+    def get_amount(self):
+        amounts = {
+            1: {
+                "Govt": self.hostel.first_year_fee_govt,
+                "Mgmt": self.hostel.first_year_fee_mgmt,
+            },
+            2: {
+                "Govt": self.hostel.second_year_fee_govt,
+                "Mgmt": self.hostel.second_year_fee_mgmt,
+            },
+            3: {
+                "Govt": self.hostel.third_year_fee_govt,
+                "Mgmt": self.hostel.third_year_fee_mgmt,
+            },
+            4: {
+                "Govt": self.hostel.fourth_year_fee_govt,
+                "Mgmt": self.hostel.fourth_year_fee_mgmt,
+            },
+        }
+
+        year = self.user.year
+        quota = self.user.student_type.title()
+        print(year, quota)
+        return amounts[year][quota]
 
     def update_status(self, new_status, verified_by_user=None):
         old_status = self.status
@@ -192,15 +245,7 @@ class RoomBooking(models.Model):
     def send_otp_email(self):
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
-        amount = 0
-        if self.user.year == 1:
-            amount = self.hostel.first_year_fee
-        elif self.user.year == 2:
-            amount = self.hostel.second_year_fee
-        elif self.user.year == 3:
-            amount = self.hostel.third_year_fee
-        elif self.user.year == 4:
-            amount = self.hostel.fourth_year_fee
+        amount = self.get_amount()
         
         send_email(
             subject=subject,
@@ -243,15 +288,8 @@ class RoomBooking(models.Model):
     def send_payment_instructions(self):
         subject = "Complete Your Hostel Booking Payment"
         to_email = self.user.email
-        amount = 0
-        if self.user.year == 1:
-            amount = self.hostel.first_year_fee
-        elif self.user.year == 2:
-            amount = self.hostel.second_year_fee
-        elif self.user.year == 3:
-            amount = self.hostel.third_year_fee
-        elif self.user.year == 4:
-            amount = self.hostel.fourth_year_fee
+        amount = self.get_amount()
+        
         payment_expiry_formatted = self.payment_expiry.strftime("%d %b %Y, %I:%M %p")
         
         send_email(
@@ -277,6 +315,7 @@ class RoomBooking(models.Model):
     #     print(f"Admin notification: Payment reference {self.payment_reference} submitted for booking {self.id}")
 
 class Penalty(models.Model):
+
     BOOKING_STATUS = [
         ('otp_pending', 'OTP Pending'),
         ('payment_pending', 'Payment Pending'),

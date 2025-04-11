@@ -93,8 +93,8 @@ class ProfileAPIView(generics.CreateAPIView):
     def get(self, request):
         user = get_object_or_404(User, id=request.user.id)
         user_bookings = RoomBooking.objects.filter(user=user)
-        bookings_serializer = self.serializer_class(user_bookings, many=True)
-        
+        bookings_serializer = self.serializer_class(user_bookings, many=True, context={"year": user.year, "quota": user.student_type})
+
         user_data = {
             "id": user.id,
             "email": user.email,

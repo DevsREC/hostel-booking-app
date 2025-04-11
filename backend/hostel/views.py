@@ -25,10 +25,10 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     'code': 'user_not_found'
                 }, status=status.HTTP_401_UNAUTHORIZED)
             print("Bookings")
-            print(RoomBooking.objects.filter(user=user).exclude(status__in=['payment_not_done']))
+            print(RoomBooking.objects.filter(user=user).exclude(status__in=['payment_not_done', 'cancelled']))
             if RoomBooking.objects.filter(
                 user = user,
-            ).exclude(status__in=['payment_not_done']).exists():
+            ).exclude(status__in=['payment_not_done', 'cancelled']).exists():
                 booking = RoomBooking.objects.get(user=request.user)
                 return Response(    
                     {
@@ -87,8 +87,9 @@ class GetBookingAPI(generics.CreateAPIView):
 
     def get(self, request):
         try:
-            bookings = RoomBooking.objects.filter(user=request.user)
-            serializer = self.serializer_class(bookings, many=True)
+            user = User.objects.get(email = request.user)
+            bookings = RoomBooking.objects.filter(user=user)
+            serializer = self.serializer_class(bookings, many=True, context={"year": user.year, "quota": user.student_type})
             return Response(
                 {
                     "message": "Success!",
@@ -214,7 +215,7 @@ class GetHostelDataAPI(generics.CreateAPIView):
                 'code': 'user_not_found'
             }, status=status.HTTP_401_UNAUTHORIZED)
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={"year": user.year})
+        serializer = self.get_serializer(queryset, many=True, context={"year": user.year, "quota": user.student_type})
         print(serializer.data)
         return Response({
             "message": "Fetched data successfully",

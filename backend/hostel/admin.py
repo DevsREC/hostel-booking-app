@@ -15,20 +15,32 @@ INTERNAL_RESERVATION_PERCENT = 25
 # Register your models here.
 @admin.register(Hostel)
 class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
-    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'amount' ,'total_capacity', 'gender')
+    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'mgmt_amount', 'govt_amount' ,'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type', 'food_type')
     resource_classes = [HostelResource]
 
-    def amount(self, obj):
+    def mgmt_amount(self, obj):
         return format_html(
             '<p class="text-xs">1 - ₹{}</p>'
             '<p class="text-xs">2 - ₹{}</p>'
             '<p class="text-xs">3 - ₹{}</p>'
             '<p class="text-xs">4 - ₹{}</p>',
-            obj.first_year_fee,
-            obj.second_year_fee,
-            obj.third_year_fee,
-            obj.fourth_year_fee,
+            obj.first_year_fee_mgmt,
+            obj.second_year_fee_mgmt,
+            obj.third_year_fee_mgmt,
+            obj.fourth_year_fee_mgmt,
+        )
+
+    def govt_amount(self, obj):
+        return format_html(
+            '<p class="text-xs">1 - ₹{}</p>'
+            '<p class="text-xs">2 - ₹{}</p>'
+            '<p class="text-xs">3 - ₹{}</p>'
+            '<p class="text-xs">4 - ₹{}</p>',
+            obj.first_year_fee_govt,
+            obj.second_year_fee_govt,
+            obj.third_year_fee_govt,
+            obj.fourth_year_fee_govt,
         )
 
 @admin.register(RoomBooking)
@@ -114,7 +126,7 @@ class PaymentManagement(RoomBooking):
 
 @admin.register(PaymentManagement)
 class PaymentManagementAdmin(ModelAdmin):
-    list_display = ('user', 'user_year', 'user_gender', 'hostel_name', 'amount', 'payment_reference', 'payment_status', 'payment_actions')
+    list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'amount', 'payment_status', 'payment_actions')
     list_filter = ('status', 'hostel')
     search_fields = ('user__email', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
@@ -134,16 +146,12 @@ class PaymentManagementAdmin(ModelAdmin):
     def hostel_name(self, obj):
         return obj.hostel.name
     hostel_name.short_description = 'Hostel'
+
+    def student_type(self, obj):
+        return obj.user.student_type
     
     def amount(self, obj):
-        if self.user_year(obj) == 1:
-            return f"₹{obj.hostel.first_year_fee}"
-        elif self.user_year(obj) == 2:
-            return f"₹{obj.hostel.second_year_fee}"
-        elif self.user_year(obj) == 3:
-            return f"₹{obj.hostel.third_year_fee}"
-        elif self.user_year(obj) == 4:
-            return f"₹{obj.hostel.fourth_year_fee}"
+        return obj.hostel.get_amount(self.user_year(obj),self.student_type(obj))
     amount.short_description = 'Amount'
 
     def payment_status(self, obj):
@@ -204,7 +212,7 @@ class PaymentManagementAdmin(ModelAdmin):
     def reject_payment(self, request, object_id):
         booking = self.get_object(request, object_id)
         if booking:
-            booking.update_status('payment_not_done', verified_by_user=request.user)
+            booking.update_status('cancelled', verified_by_user=request.user)
             self.send_rejection_email(booking)
         return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
 

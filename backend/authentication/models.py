@@ -45,6 +45,10 @@ class User(AbstractUser):
         ('M', "Male"),
         ('F', 'Female')
     ]
+    STUDENT_TYPE = [
+        ('Mgmt', 'Management'),
+        ('Govt', 'Govt'),
+    ]
 
     username = None
 
@@ -59,6 +63,7 @@ class User(AbstractUser):
     gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER_CHOICES)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tution_fee = models.BooleanField(default=True)
+    student_type = models.CharField(default='Mgmt', max_length=10, choices=STUDENT_TYPE)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

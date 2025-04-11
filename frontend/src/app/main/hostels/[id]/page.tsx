@@ -50,8 +50,9 @@ export default function HostelDetail() {
     const hasActiveBooking = userBookings?.some(booking =>
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending' ||
-        booking.status === 'confirmed' ||
-        booking.status === 'cancelled'
+        booking.status === 'confirmed' 
+        // ||
+        // booking.status === 'cancelled'
         // ||
         // booking.status == 'payment_not_done'
     );
