@@ -1,5 +1,6 @@
 from import_export import resources
 from .models import *
+from unfold.admin import ModelAdmin
 
 class RoomBookingResource(resources.ModelResource):
     class Meta:

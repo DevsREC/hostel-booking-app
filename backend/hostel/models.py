@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from authentication.models import User
 from authentication.utils import send_email
 from django.contrib.auth.hashers import make_password
+from datetime import timedelta, time, datetime
 
 INTERNAL_RESERVATION_PERCENT = 25
 
@@ -36,8 +37,9 @@ class Hostel(models.Model):
     total_capacity = models.IntegerField(editable=False)
     room_description = models.CharField(max_length=100, blank=False)
     # amount = models.IntegerField(blank=False)
-    image = models.ImageField(upload_to='rooms/')
+    image = models.ImageField(upload_to='rooms/', blank=True, default=None)
     enable = models.BooleanField(default=False)
+    allow_bookings = models.BooleanField(default=False)
     bathroom_type = models.CharField(max_length=20, choices=BATHROOM_CHOICES, default='Common')
     first_year_fee = models.IntegerField(blank=False, null=False)
     second_year_fee = models.IntegerField(blank=False, null=False)
@@ -49,12 +51,6 @@ class Hostel(models.Model):
     
     def clean(self):
         self.total_capacity = self.person_per_room * self.no_of_rooms
-
-    def save(self, force_insert = ..., force_update = ..., using = ..., update_fields = ...):
-        if not self.password.startswith('pbkdf2_sha256$'):
-            self.password = make_password(self.password)
-        self.clean()
-        return super().save()
     
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
@@ -182,8 +178,19 @@ class RoomBooking(models.Model):
             },
             template_name='otp_email.html'
         )
-
-
+   
+    def calculate_payment_expiry(self):
+        now = timezone.now()
+    
+        midnight_today = datetime.combine(now.date(), datetime.min.time())
+    
+        expiry_date = midnight_today + timedelta(days=3, hours=23, minutes=59, seconds=59)
+    
+        if timezone.is_aware(now):
+            expiry_date = timezone.make_aware(expiry_date)
+    
+        return expiry_date
+    
     def verify_otp(self, otp_code):
         if (self.status != 'otp_pending' or 
             timezone.now() > self.otp_expiry or 
@@ -192,7 +199,7 @@ class RoomBooking(models.Model):
         
         self.otp_verified_at = timezone.now()
         self.status = 'payment_pending'
-        self.payment_expiry = timezone.now() + timezone.timedelta(hours=24 * 7)
+        self.payment_expiry = self.calculate_payment_expiry()
         self.payment_link = f"https://payment.link.should.be.pasted.here"
         self.save()
         self.send_payment_instructions()

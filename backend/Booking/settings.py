@@ -206,7 +206,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CRONJOBS = [
     ('*/10 * * * *', 'hostel.cron.cancel_expired_bookings'),
-    # ('0 * * * *', 'hostel.cron.mark_expired_payment'),
+    ('0 0 * * *', 'hostel.cron.mark_expired_payment')
 ]
 
 CRONTAB_COMMAND_PREFIX = BASE_DIR

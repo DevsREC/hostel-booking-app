@@ -58,6 +58,8 @@ class User(AbstractUser):
     parent_phone_number = models.CharField('Parent Ph. No.', max_length=20)
     gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER_CHOICES)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    tution_fee = models.BooleanField(default=False)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
