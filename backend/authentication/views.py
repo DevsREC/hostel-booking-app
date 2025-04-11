@@ -40,23 +40,37 @@ class LoginAPIView(generics.CreateAPIView):
             
         user = authenticate(request, email=email, password=password)
 
+        
         if user:
+            if not user.tution_fee:
+                return Response({
+                    'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
+                    'code': 'user_not_found'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            
             if not user.is_active:
                 return Response({
-                    'detail': 'Your account is not active. Please verify your email first.',
+                    'detail': 'Your account is not active.',
                     'code': 'account_inactive'
                 }, status=status.HTTP_401_UNAUTHORIZED)
             return user.generate_login_response()
+            
         else:
             try:
                 user = User.objects.get(email=email)
+                
+                if not user.tution_fee:
+                    return Response({
+                        'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
+                        'code': 'user_not_found'
+                    }, status=status.HTTP_401_UNAUTHORIZED)
                 return Response({
                     'detail': 'Invalid password. Please try again.',
                     'code': 'invalid_password'
                 }, status=status.HTTP_401_UNAUTHORIZED)
             except User.DoesNotExist:
                 return Response({
-                    'detail': 'No account found with this email. Please sign up first.',
+                    'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
                     'code': 'user_not_found'
                 }, status=status.HTTP_401_UNAUTHORIZED)
         
