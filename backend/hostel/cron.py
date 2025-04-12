@@ -1,24 +1,37 @@
 from django.utils import timezone
-from .models import *
 from authentication.utils import send_email
+import logging
+
+logger = logging.getLogger(__name__)
 
 def cancel_expired_bookings():
+    from .models import RoomBooking
     expired_otp_bookings = RoomBooking.objects.filter(
         status='otp_pending',
         otp_expiry__lt=timezone.now()
     )
 
     count = expired_otp_bookings.count()
-    
+    logger.info(f"Count: {count}")
     for booking in expired_otp_bookings:
-        send_cancellation_email(booking)
+        send_cancellation_email(booking=booking)
     
+    send_email(
+        subject="OTP Cleanup",
+        to_email="220701317@rajalakshmi.edu.in",
+        context={
+            "hi": 'hello'
+        },
+        template_name="otp_expired.html"
+    )
     expired_otp_bookings.delete()
-    
+
     print(f"[{timezone.now()}] Cancelled and deleted {count} expired OTP bookings.")
     return count
 
 def mark_expired_payment():
+    from .models import RoomBooking, Penalty
+    
     expired_payment_bookings = RoomBooking.objects.filter(
         status='payment_pending',
         payment_expiry__lt=timezone.now()
@@ -46,10 +59,10 @@ def mark_expired_payment():
         booking.status = 'payment_not_done'
         booking.delete()
     
-    print(f"[{timezone.now()}] Marked {count} bookings as 'payment_not_done' due to expired payment")
+    logger.info(f"[{timezone.now()}] Marked {count} bookings as 'payment_not_done' due to expired payment")
     return count
 
-def send_cancellation_email(self, booking):
+def send_cancellation_email(booking):
     subject = "Booking Cancellation - OTP Verification Timeout"
     to_email = booking.user.email
     
@@ -67,7 +80,7 @@ def send_cancellation_email(self, booking):
         template_name="booking_cancellation_template.html"
     )
 
-def send_payment_expired_email(self, booking):
+def send_payment_expired_email(booking):
     subject = "Payment Deadline Expired - Hostel Booking"
     to_email = booking.user.email
     

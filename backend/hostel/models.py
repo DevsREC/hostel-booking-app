@@ -115,7 +115,7 @@ class RoomBooking(models.Model):
         ('payment_not_done', 'Payment Not Done'), # Worst case scenario
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)
     hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=20, 

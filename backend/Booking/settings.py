@@ -204,7 +204,7 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CRONJOBS = [
-    ('*/10 * * * *', 'hostel.cron.cancel_expired_bookings'),
+    ('*/1 * * * *', 'hostel.cron.cancel_expired_bookings','>>' + os.path.join(BASE_DIR,'log/debug7.log')),
     ('0 0 * * *', 'hostel.cron.mark_expired_payment'),
 ]
 
@@ -320,3 +320,34 @@ UNFOLD = {
 }
 
 FORCE_SCRIPT_NAME = '/api'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',  # Log level
+            'class': 'logging.FileHandler',  # Use FileHandler
+            'filename': os.path.join(BASE_DIR, 'log/debug7.log'),  # Log file path
+            'formatter': 'verbose',  # Formatter (defined below)
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',  # Log format
+            'style': '{',  # Use curly braces for formatting
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],  # Use the 'file' handler
+            'level': 'INFO',  # Log level
+            'propagate': True,  # Propagate logs to parent loggers
+        },
+        'hostel': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
