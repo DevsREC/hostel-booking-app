@@ -12,7 +12,11 @@ import { toast } from "sonner";
 
 // Define the login schema with Zod
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string()
+    .min(1, "Roll number is required")
+    .refine((rollNo) => /^\d+$/.test(rollNo), {
+      message: "Roll number should contain only numbers"
+    }),
   password: z.string().min(1, "Password is required")
 });
 
@@ -56,7 +60,12 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      mutate(data, {
+      // Add the domain to the roll number before sending
+      const emailData = {
+        ...data,
+        email: `${data.email}@rajalakshmi.edu.in`
+      };
+      mutate(emailData, {
         onSuccess: (result) => {
           if (result?.status === 200 && typeof result.data !== 'string') {
             // Store user data in localStorage
@@ -152,14 +161,19 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  className="h-11"
-                  {...register("email")}
-                />
+                <Label htmlFor="email" className="text-base">Roll Number</Label>
+                <div className="flex items-center">
+                  <Input
+                    id="email"
+                    type="text"
+                    placeholder="Roll No"
+                    className="h-11 rounded-r-none"
+                    {...register("email")}
+                  />
+                  <div className="h-11 px-3 flex items-center bg-muted border border-l-0 rounded-r-md">
+                    @rajalakshmi.edu.in
+                  </div>
+                </div>
                 {errors.email && (
                   <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
                 )}

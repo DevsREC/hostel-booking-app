@@ -23,7 +23,7 @@ class UserResource(resources.ModelResource):
         # Store password in the row data to be used later
         if not User.objects.filter(email=email).exists():
             # For new users, set password
-            row['password'] = f"{first_name}@{phone_number}"
+            row['password'] = "changeme@123"
             print(f"Password will be: {row['password']}")
 
     def import_row(self, row, instance_loader, **kwargs):
