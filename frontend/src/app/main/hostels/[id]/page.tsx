@@ -50,7 +50,7 @@ export default function HostelDetail() {
     const hasActiveBooking = userBookings?.some(booking =>
         booking.status === 'otp_pending' ||
         booking.status === 'payment_pending' ||
-        booking.status === 'confirmed' 
+        booking.status === 'confirmed'
         // ||
         // booking.status === 'cancelled'
         // ||
@@ -300,7 +300,7 @@ export default function HostelDetail() {
                                 <p className="font-medium">Hostel: {hostel?.name}</p>
                                 <p className="font-medium">Room Type: {hostel?.room_type}</p>
                                 <p className="font-medium">Food Type: {hostel?.food_type}</p>
-                                <p className="font-medium text-primary text-xl">Additional Fees: ₹{(hostel?.amount || 0)}</p>
+                                <p className="font-medium text-primary text-xl">Total Fees: ₹{(hostel?.amount || 0)}</p>
                             </div>
 
                             <div className="space-y-3">
@@ -349,7 +349,7 @@ export default function HostelDetail() {
                             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
                                 <p className="font-medium">Hostel: {hostel?.name}</p>
                                 <p className="font-medium">Room Type: {hostel?.room_type}</p>
-                                <p className="font-medium text-primary text-xl">Additional Fees: ₹{(hostel?.amount || 0)}</p>
+                                <p className="font-medium text-primary text-xl">Total Fees: ₹{(hostel?.amount || 0)}</p>
                             </div>
                             <InputOTP
                                 maxLength={6}
