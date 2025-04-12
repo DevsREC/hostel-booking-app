@@ -4,7 +4,7 @@ import axios from "axios";
 import { LoginRequest, PasswordResetRequest, ResetPasswordRequest, LoginResponse, ApiResponse, User } from "@/types/index.types";
 import { QueryClient } from "@tanstack/react-query";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_BACKEND_ENDPOINT;
 
 // Create a new instance of QueryClient
 const queryClient = new QueryClient();
