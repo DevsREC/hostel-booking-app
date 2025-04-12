@@ -115,24 +115,24 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Dev
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# Production
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Production
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': '5432',
+#     }
+# }
 
 
 
@@ -319,6 +319,7 @@ UNFOLD = {
     }
 }
 
+<<<<<<< HEAD
 FORCE_SCRIPT_NAME = '/api'
 
 LOGGING = {
@@ -351,3 +352,6 @@ LOGGING = {
         },
     },
 }
+=======
+# FORCE_SCRIPT_NAME = '/api'
+>>>>>>> b570155e809e37395a4877548de45c99c4148fee
