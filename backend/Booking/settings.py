@@ -18,17 +18,15 @@ from django.urls import reverse_lazy
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-print("See here", BASE_DIR)
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-mu5evx(9jz)9ej7gee0bm599@05))hp23kskvi(1!1mj$p9)f5'
+SECRET_KEY = config('SECRET_KEY')
 JWT_KEY = config('JWT_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", False)
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']
@@ -72,6 +70,7 @@ AUTH_USER_MODEL = 'authentication.User'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -110,30 +109,30 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'Booking.wsgi.application'
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 # Dev
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Production
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('PSQL_DATABASE'),
-#         'USER': config('PSQL_USERNAME'),
-#         'PASSWORD': config('PSQL_PASSWORD'),
-#         'HOST': config('PSQL_HOST'),
-#         'PORT': '5432',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+# Production
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': '5432',
+    }
+}
 
 
 
@@ -176,7 +175,7 @@ STATIC_URL = '/static/'
 if DEBUG:
     STATICFILES_DIRS=[os.path.join(BASE_DIR, "static"),]
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -206,10 +205,10 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CRONJOBS = [
     ('*/10 * * * *', 'hostel.cron.cancel_expired_bookings'),
-    ('0 0 * * *', 'hostel.cron.mark_expired_payment')
+    ('0 0 * * *', 'hostel.cron.mark_expired_payment'),
 ]
 
-CRONTAB_COMMAND_PREFIX = BASE_DIR
+CRONTAB_COMMAND_PREFIX = str(BASE_DIR)
 CRONTAB_DJANGO_SETTINGS_MODULE = 'Booking.settings'
 
 DAISY_SETTINGS = {
@@ -319,3 +318,5 @@ UNFOLD = {
         ]
     }
 }
+
+FORCE_SCRIPT_NAME = '/api'
