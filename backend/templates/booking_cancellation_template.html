@@ -115,14 +115,18 @@
             padding-top: 20px;
             border-top: 1px solid #eaeaea;
         }
+        .contact-support {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .contact-support a {
+            color: #2196f3;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        {% comment %} <div class="logo">
-            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
-        </div> {% endcomment %}
-        
         <div class="header">
             <h2>Booking Cancellation Notice</h2>
         </div>
@@ -136,11 +140,6 @@
         
         <div class="booking-details">
             <h3>Booking Information</h3>
-            
-            {% comment %} <div class="item">
-                <span class="label">Booking Reference:</span>
-                <span class="value">{{booking_id}}</span>
-            </div> {% endcomment %}
             
             <div class="item">
                 <span class="label">Hostel:</span>
@@ -170,16 +169,15 @@
         
         <p>We understand that timing issues can happen, and we'd be happy to assist you in making a new booking. Simply click the button below to restart the booking process.</p>
         
-        {% comment %} <div class="action-button">
-            <a href="{{booking_url}}">Start New Booking</a>
-        </div> {% endcomment %}
-        
-        <p>If you have any questions or need assistance, please don't hesitate to contact our customer support team.</p>
-        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+        <div class="contact-support">
+            <a href="mailto:rhms.admin@rajalakshmi.edu.in">Contact Support</a>
+        </div>
         <div class="footer">
             <p>We apologize for any inconvenience caused.</p>
             <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
             <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking.</p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">Made with 💖 By DEVS REC</p>
         </div>
     </div>
 </body>

@@ -3,9 +3,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.conf import settings
 
-def send_email(subject, to_email, context, template_name):
+def send_email(subject, to_email, context, template_name, attachments=None):
     html_content = render_to_string(template_name, context)
-
     text_content = strip_tags(html_content)
 
     email = EmailMultiAlternatives(
@@ -16,4 +15,10 @@ def send_email(subject, to_email, context, template_name):
     )
 
     email.attach_alternative(html_content, "text/html")
+    
+    if attachments:
+        for attachment in attachments:
+            filename, content, mime_type = attachment
+            email.attach(filename, content, mime_type)
+
     email.send()

@@ -85,6 +85,14 @@
         .steps li {
             margin-bottom: 10px;
         }
+        .contact-support {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .contact-support a {
+            color: #2196f3;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -108,26 +116,23 @@
             <p><strong>Amount to Pay:</strong> ₹{{amount}}</p>
         </div>
         
-        {% comment %} <div class="payment-button">
-            <a href="{{payment_link}}">Pay Now</a>
-        </div> {% endcomment %}
-        
         <div class="steps">
             <h3 style="color: #2c3e50;">Payment Steps:</h3>
             <ol>
                 <li>Payment link will be sent in few hours.</li>
                 <li>Kindly make payment within 5 Days, else Rs. 10,000 will be added as penalty</li>
-                <!-- <li>Kindly make payment within 3 Days, else 1.5 times the amount will be added to no-due.</li> -->
                 <li>Complete the payment process before deadline.</li>
                 {% comment %} <li>You will receive a confirmation email once payment is processed</li> {% endcomment %}
             </ol>
         </div>
         
-        <p>If you have any questions or need assistance, please contact our support team at <a href="mailto:support@hostelbooking.com">support@hostelbooking.com</a>.</p>
-        
+        <div class="contact-support">
+            <a href="mailto:rhms.admin@rajalakshmi.edu.in">Contact Support</a>
+        </div>
         <div class="footer">
             <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
             <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking.</p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">Made with 💖 By DEVS REC</p>
         </div>
     </div>
 </body>

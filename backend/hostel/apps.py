@@ -21,7 +21,8 @@ class HostelConfig(AppConfig):
         scheduler.add_job(
             create_db_dump_and_send_email,
             'cron',
-            minute=1,
+            hour=1,
+            minute=0,
             next_run_time=timezone.now()
         )
 

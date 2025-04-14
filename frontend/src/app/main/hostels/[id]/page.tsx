@@ -367,7 +367,7 @@ export default function HostelDetail() {
                             </InputOTP>
                             <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 p-3 rounded-lg">
                                 <AlertCircle className="h-5 w-5" />
-                                <p className="text-sm">The OTP will expire in 10 minutes. Please complete the payment within 24 hours after verification.</p>
+                                <p className="text-sm">The OTP will expire in 10 minutes. Please complete the payment within 5 Days after verification.</p>
                             </div>
                         </div>
                     </div>

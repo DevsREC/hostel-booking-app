@@ -209,10 +209,12 @@ class RoomBooking(models.Model):
     def update_status(self, new_status, verified_by_user=None):
         old_status = self.status
         self.status = new_status
-        print("Updated status", new_status)
         if old_status != new_status and verified_by_user is not None:
             if verified_by_user.is_staff or verified_by_user.is_superuser:
                 self.verified_by = verified_by_user
+        if self.status == 'confirmed':
+            self.payment_completed_at = timezone.now()
+            
         if self.status == 'payment_not_done':
             Penalty.objects.create(
                 user=self.user,

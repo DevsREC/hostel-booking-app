@@ -180,14 +180,18 @@
             padding-top: 20px;
             border-top: 1px solid #eaeaea;
         }
+        .contact-support {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .contact-support a {
+            color: #2196f3;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        {% comment %} <div class="logo">
-            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
-        </div> {% endcomment %}
-        
         <div class="header">
             <h2>Payment Deadline Expired</h2>
         </div>
@@ -201,11 +205,6 @@
         <p>You can cancel your old booking before booking new one.</p>
         <div class="booking-details">
             <h3>Booking Information</h3>
-            
-            {% comment %} <div class="item">
-                <span class="label">Booking Reference:</span>
-                <span class="value">{{booking_id}}</span>
-            </div> {% endcomment %}
             
             <div class="item">
                 <span class="label">Hostel:</span>
@@ -221,11 +220,6 @@
                 <span class="label">Food Type:</span>
                 <span class="value">{{food_type}}</span>
             </div>
-            
-            {% comment %} <div class="item" style="font-weight: bold; color: #2c3e50;">
-                <span class="label">Amount:</span>
-                <span class="value">₹{{amount}}</span>
-            </div> {% endcomment %}
         </div>
         
         <div class="status-timeline">
@@ -252,21 +246,20 @@
         
         <div class="info-box">
             <h4>Payment Policy</h4>
-            <p>Our system automatically releases rooms for booking if payment is not completed within <strong>24 hours</strong> after OTP verification. This ensures fair availability for all users.</p>
+            <p>Our system automatically releases rooms for booking if payment is not completed within <strong>5 Days</strong> after OTP verification. This ensures fair availability for all users.</p>
         </div>
         
         <p>If you still wish to stay with us, we'd be happy to help you make a new booking. Simply restart the booking process.</p>
         
-        {% comment %} <div class="action-button">
-        <a href="{{booking_url}}">Create New Booking</a>
-        </div> {% endcomment %}
-        
         <p>If you have any questions or need assistance, please don't hesitate to contact our customer support team.</p>
-        
+        <div class="contact-support">
+            <a href="mailto:rhms.admin@rajalakshmi.edu.in">Contact Support</a>
+        </div>
         <div class="footer">
             <p>Thank you for your interest in our services.</p>
             <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
             <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">Made with 💖 By DEVS REC</p>
         </div>
     </div>
 </body>

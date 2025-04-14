@@ -390,7 +390,7 @@ export default function BookingDetail() {
                           <AlertCircle className="h-5 w-5" />
                           <p className="text-sm">
                             The OTP will expire in 10 minutes. Please complete
-                            the payment within 24 hours after verification.
+                            the payment within 5 Days after verification.
                           </p>
                         </div>
                       </div>

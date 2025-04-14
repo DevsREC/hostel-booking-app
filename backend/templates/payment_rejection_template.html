@@ -131,14 +131,18 @@
             padding-top: 20px;
             border-top: 1px solid #eaeaea;
         }
-    </style>
+        .contact-support {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .contact-support a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+        </style>
 </head>
 <body>
     <div class="container">
-        {% comment %} <div class="logo">
-            <img src="/api/placeholder/150/50" alt="Hostel Booking Logo">
-        </div> {% endcomment %}
-        
         <div class="header">
             <h2>Payment Status Update</h2>
         </div>
@@ -152,12 +156,6 @@
         
         <div class="booking-details">
             <h3>Booking Details</h3>
-            
-            {% comment %} <div class="item">
-                <span class="label">Reference ID:</span>
-                <span class="value">{{booking_id}}</span>
-            </div> {% endcomment %}
-            
             <div class="item">
                 <span class="label">Hostel:</span>
                 <span class="value">{{hostel_name}}</span>
@@ -167,11 +165,6 @@
                 <span class="label">Room Type:</span>
                 <span class="value">{{room_type}}</span>
             </div>
-            
-            {% comment %} <div class="item" style="font-weight: bold; color: #2c3e50;">
-                <span class="label">Amount:</span>
-                <span class="value">₹{{amount}}</span>
-            </div> {% endcomment %}
         </div>
         
         <div class="reasons">
@@ -185,17 +178,8 @@
             </ul>
         </div>
         
-        <p>Don't worry - this is not uncommon, and we're here to help you resolve this issue quickly. You can try making the payment again or contact our support team for assistance.</p>
-        
-        {% comment %} <div class="action-button">
-            <a href="{{retry_payment_link}}">Try Payment Again</a>
-        </div> {% endcomment %}
-        
-        <div class="contact-info">
-            <h3 style="margin-top: 0; color: #2c3e50;">Need Help?</h3>
-            <p>Email: <a href="mailto:support@hostelbooking.com">support@hostelbooking.com</a></p>
-            {% comment %} <p>Phone: +91 98765 43210</p>
-            <p>Support Hours: 9 AM - 6 PM, Monday to Saturday</p> {% endcomment %}
+        <div class="contact-support">
+            <a href="mailto:rhms.admin@rajalakshmi.edu.in">Contact Support</a>
         </div>
         
         <p>We apologize for any inconvenience this may have caused and look forward to helping you complete your booking.</p>
@@ -203,6 +187,7 @@
         <div class="footer">
             <p>Best Regards,<br><strong>Hostel Booking Team</strong></p>
             <p style="font-size: 12px; margin-top: 15px; color: #999;">© 2025 Hostel Booking. All rights reserved.</p>
+            <p style="font-size: 12px; margin-top: 15px; color: #999;">Made with 💖 By DEVS REC</p>
         </div>
     </div>
 </body>
