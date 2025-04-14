@@ -8,8 +8,18 @@ import AuthLayout from './app/auth/layout'
 import { ProtectedRoute, PublicOnlyRoute } from './components/auth/protected-route'
 import DashboardLayout from './app/main/layout'
 import ForgotPassword from './app/auth/forgot-password/page'
+import { fetchCSRFToken, setupCSRF } from './utils/csrf'
+import { useEffect } from 'react'
 
 function App() {
+  useEffect(() => {
+    setupCSRF();
+    
+    fetchCSRFToken().catch(error => {
+      console.error('Failed to fetch CSRF token:', error);
+    });
+  }, []);
+
   return (
     <MainLayout>
       <Routes>

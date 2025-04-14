@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.utils import timezone
-from .cron import cancel_expired_bookings, mark_expired_payment
+from .cron import cancel_expired_bookings, mark_expired_payment, create_db_dump_and_send_email
 
 class HostelConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -15,6 +15,13 @@ class HostelConfig(AppConfig):
             cancel_expired_bookings,
             'interval',
             minutes=10,
+            next_run_time=timezone.now()
+        )
+
+        scheduler.add_job(
+            create_db_dump_and_send_email,
+            'cron',
+            minute=1,
             next_run_time=timezone.now()
         )
 

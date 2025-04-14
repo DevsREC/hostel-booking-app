@@ -13,10 +13,7 @@ import { toast } from "sonner";
 // Define the login schema with Zod
 const loginSchema = z.object({
   email: z.string()
-    .min(1, "Roll number is required")
-    .refine((rollNo) => /^\d+$/.test(rollNo), {
-      message: "Roll number should contain only numbers"
-    }),
+    .min(1, "Roll number is required"),
   password: z.string().min(1, "Password is required")
 });
 

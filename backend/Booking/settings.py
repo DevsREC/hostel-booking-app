@@ -24,13 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 JWT_KEY = config('JWT_KEY')
+ENVIRONMENT = config('ENVIRONMENT')
+
+is_dev = ENVIRONMENT == 'development'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", False)
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']
-
+CSRF_COOKIE_NAME="csrftoken"
+CSRF_COOKIE_HTTPONLY=True
+CSRF_COOKIE_SECURE=False
+CSRF_COOKIE_SAMESITE='Lax'
+CSRF_USE_SESSIONS=False
+CSRF_COOKIE_DOMAIN= config('COOKIE_DOMAIN')
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,6 +64,7 @@ INSTALLED_APPS = [
     'admin_honeypot',
     'column_toggle',
     'django_crontab',
+    'gmailapi_backend',
 ]
 
 # X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -109,30 +118,32 @@ REST_FRAMEWORK = {
 }
 
 WSGI_APPLICATION = 'Booking.wsgi.application'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if not is_dev:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# Dev
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if is_dev:
+    # Dev
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
-# Production
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST'),
-#         'PORT': '5432',
-#     }
-# }
+else:
+    # Production
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': '5432',
+        }
+    }
 
 
 
@@ -183,21 +194,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 
 COOKIE_DOMAIN = config('COOKIE_DOMAIN')
 
 
-# CORS_ALLOWED_ORIGINS = [
-#   "http://localhost:3000",  
-# ]
+CORS_ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  'http://localhost:5173'  
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.zeptomail.in'
+EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
+GMAIL_API_CLIENT_ID=config("GMAIL_API_CLIENT_ID")
+GMAIL_API_CLIENT_SECRET=config("GMAIL_API_CLIENT_SECRET")
+GMAIL_API_REFRESH_TOKEN=config("GMAIL_API_REFRESH_TOKEN")
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.zeptomail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
@@ -319,8 +335,8 @@ UNFOLD = {
     }
 }
 
-<<<<<<< HEAD
-FORCE_SCRIPT_NAME = '/api'
+if not is_dev:
+    FORCE_SCRIPT_NAME = '/api'
 
 LOGGING = {
     'version': 1,
@@ -352,6 +368,3 @@ LOGGING = {
         },
     },
 }
-=======
-# FORCE_SCRIPT_NAME = '/api'
->>>>>>> b570155e809e37395a4877548de45c99c4148fee

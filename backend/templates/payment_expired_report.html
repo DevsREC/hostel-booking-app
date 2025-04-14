@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hostel Booking OTP Expired Report</title>
+    <title>Hostel Booking Payment Expired Report</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -35,14 +35,14 @@
             margin: 0;
         }
         .summary {
-            background-color: #f1f8e9;
+            background-color: #fff3e0;
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 25px;
             text-align: center;
             font-size: 18px;
             font-weight: 600;
-            color: #33691e;
+            color: #e65100;
         }
         .details {
             background-color: #f7f9fa;
@@ -99,15 +99,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>OTP Expired Bookings Report</h2>
+            <h2>Payment Expired Bookings Report</h2>
         </div>
         
         <div class="summary">
-            <p>Cleaned <strong>{{ count }}</strong> unverified bookings</p>
+            <p>Processed <strong>{{ count }}</strong> expired payment bookings</p>
         </div>
         
         <div class="details">
-            <div class="details-title">Expired Booking Details:</div>
+            <div class="details-title">Payment Expired Booking Details:</div>
             
             {% if expired_bookings %}
             <table>
@@ -116,7 +116,9 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Roll No.</th>
-                        <th>OTP Expired At</th>
+                        <th>Hostel</th>
+                        <th>Payment Link</th>
+                        <th>Payment Expired At</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,14 +127,16 @@
                         <td>{{ booking.user_name }}</td>
                         <td>{{ booking.user_email }}</td>
                         <td>{{ booking.roll_no }}</td>
-                        <td>{{ booking.otp_expiry }}</td>
+                        <td>{{ booking.hostel_name }}</td>
+                        <td>{% if booking.payment_link %}<a href="{{ booking.payment_link }}">View</a>{% else %}N/A{% endif %}</td>
+                        <td>{{ booking.payment_expiry }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% else %}
             <div class="no-records">
-                No expired bookings to display.
+                No expired payment bookings to display.
             </div>
             {% endif %}
         </div>
