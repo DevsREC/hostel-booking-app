@@ -18,6 +18,9 @@ import {
   XCircle,
   VerifiedIcon,
   AlertCircle,
+  MapPin,
+  BedDouble,
+  Utensils,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -233,21 +236,21 @@ export default function BookingDetail() {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Building2 className="h-4 w-4" />
+                  <MapPin className="h-4 w-4" />
                   <span className="text-sm">Location</span>
                 </div>
                 <p className="font-medium">{booking.hostel.location}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Building2 className="h-4 w-4" />
+                  <BedDouble className="h-4 w-4" />
                   <span className="text-sm">Room Type</span>
                 </div>
                 <p className="font-medium">{booking.hostel.room_type}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Building2 className="h-4 w-4" />
+                  <Utensils className="h-4 w-4" />
                   <span className="text-sm">Food Type</span>
                 </div>
                 <p className="font-medium">{booking.hostel.food_type}</p>
