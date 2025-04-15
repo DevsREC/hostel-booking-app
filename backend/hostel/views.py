@@ -17,7 +17,16 @@ class InitiateBookingAPI(generics.CreateAPIView):
         try:
             hostel = get_object_or_404(Hostel, id=hostel_id, enable=True)
             user = User.objects.filter(email=request.user).first()
+            food_type = request.data.get('food_type')
 
+            if not food_type or food_type not in ['veg', 'non_veg']:
+                return Response(
+                    {
+                        'detail': "Invalid food type",
+                        'code': 'wrong_food_type'
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             is_blocked = BlockedStudents.objects.filter(email=user.email).exists()
             if is_blocked:
                 return Response({
@@ -50,7 +59,8 @@ class InitiateBookingAPI(generics.CreateAPIView):
             
             booking = RoomBooking.objects.create(
                 user = request.user,
-                hostel = hostel
+                hostel = hostel,
+                food_type = food_type
             )
 
             booking.generate_otp()

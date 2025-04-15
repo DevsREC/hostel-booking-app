@@ -225,27 +225,50 @@ class RoomBooking(models.Model):
     def get_amount(self):
         amounts = {
             1: {
-                "Govt": self.hostel.first_year_fee_govt,
-                "Mgmt": self.hostel.first_year_fee_mgmt,
+                "Govt": {
+                    "veg": self.first_year_fee_govt_veg,
+                    "non_veg": self.first_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "veg": self.first_year_fee_mgmt_veg,
+                    "non_veg": self.first_year_fee_mgmt_non_veg,
+                }
             },
             2: {
-                "Govt": self.hostel.second_year_fee_govt,
-                "Mgmt": self.hostel.second_year_fee_mgmt,
+                "Govt": {
+                    "veg": self.second_year_fee_govt_veg,
+                    "non_veg": self.second_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "veg": self.second_year_fee_mgmt_veg,
+                    "non_veg": self.second_year_fee_mgmt_non_veg,
+                }
             },
             3: {
-                "Govt": self.hostel.third_year_fee_govt,
-                "Mgmt": self.hostel.third_year_fee_mgmt,
+                "Govt": {
+                    "veg": self.third_year_fee_govt_veg,
+                    "non_veg": self.third_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "veg": self.third_year_fee_mgmt_veg,
+                    "non_veg": self.third_year_fee_mgmt_non_veg,
+                }
             },
             4: {
-                "Govt": self.hostel.fourth_year_fee_govt,
-                "Mgmt": self.hostel.fourth_year_fee_mgmt,
+                "Govt": {
+                    "veg": self.fourth_year_fee_govt_veg,
+                    "non_veg": self.fourth_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "veg": self.fourth_year_fee_mgmt_veg,
+                    "non_veg": self.fourth_year_fee_mgmt_non_veg,
+                }
             },
         }
 
         year = self.user.year
         quota = self.user.student_type.title()
-        print(year, quota)
-        return amounts[year][quota]
+        return amounts[year][quota][self.food_type]
 
     def update_status(self, new_status, verified_by_user=None):
         old_status = self.status
