@@ -3,13 +3,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Users, IndianRupee } from "lucide-react";
+import { MapPin, Users, IndianRupee, Utensils } from "lucide-react";
 import { Link } from "react-router";
 import { useCurrentUser } from "@/action/user";
 
 export default function HostelsPage() {
     const { data: hostels, isLoading } = useGetHostels();
     const { data: currentUser } = useCurrentUser();
+    console.log(hostels)
 
     if (isLoading) {
         return (
@@ -77,7 +78,9 @@ export default function HostelsPage() {
                                     {hostel.room_type}
                                 </Badge>
                                 <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
-                                    {hostel.food_type}
+                                    {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
+                                     hostel.is_veg ? "Veg" : 
+                                     hostel.is_non_veg ? "Non-veg" : "No food"}
                                 </Badge>
                             </div>
                         </div>
@@ -98,10 +101,25 @@ export default function HostelsPage() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                    <IndianRupee className="h-5 w-5" />
-                                    <span className="text-base">Total Fees</span>
+                                    <Utensils className="h-5 w-5" />
+                                    <span className="text-base">Food Options</span>
                                 </div>
-                                <span className="font-semibold text-lg text-card-foreground">₹{hostel.amount}</span>
+                                <span className="font-semibold text-lg text-card-foreground">
+                                    {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
+                                     hostel.is_veg ? "Veg only" : 
+                                     hostel.is_non_veg ? "Non-veg only" : "No food"}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <IndianRupee className="h-5 w-5" />
+                                    <span className="text-base">Starting From</span>
+                                </div>
+                                <span className="font-semibold text-lg text-card-foreground">
+                                    ₹{hostel.amount && Object.values(hostel.amount).length > 0 
+                                        ? Math.min(...Object.values(hostel.amount).filter(val => val > 0)) || "N/A" 
+                                        : "N/A"}
+                                </span>
                             </div>
                         </CardContent>
                         <CardFooter>

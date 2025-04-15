@@ -1,6 +1,6 @@
 import { useQueryData } from "@/hooks/useQueryData";
 import { useMutationData } from "@/hooks/useMutationData";
-import { Hostel, Room, Booking, HostelResponse, RoomResponse, BookingResponse, ApiResponse } from "@/types/index.types";
+import { Hostel, Room, Booking, HostelResponse, RoomResponse, BookingResponse, ApiResponse, CreateBookingRequest } from "@/types/index.types";
 import { api } from "./user";
 import { useCurrentUser } from "./user";
 import axios from "axios";
@@ -64,9 +64,9 @@ export const useGetRoomsByHostel = (hostelId: string) => {
 
 // Create booking
 export const useCreateBooking = (onSuccess?: (response: ApiResponse<{ booking_id?: string; message?: string }>) => void) => {
-    return useMutationData<{ booking_id?: string; message?: string }, { hostel: number }>(
+    return useMutationData<{ booking_id?: string; message?: string }, CreateBookingRequest>(
         ['createBooking'],
-        async (data: { hostel: number }): Promise<ApiResponse<{ booking_id?: string; message?: string }>> => {
+        async (data: CreateBookingRequest): Promise<ApiResponse<{ booking_id?: string; message?: string }>> => {
             try {
                 const response = await api.post<{ booking_id?: string; message?: string }>(`/hostel/book/${data.hostel}/`, data);
                 return {

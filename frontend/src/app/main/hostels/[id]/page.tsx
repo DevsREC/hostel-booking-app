@@ -12,6 +12,9 @@ import { useState } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { api } from "@/action/user";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface BookingResponse {
     booking_id?: string;
@@ -27,10 +30,18 @@ export default function HostelDetail() {
     const [otp, setOtp] = useState("");
     const [bookingId, setBookingId] = useState<string | null>(null);
     const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
+    const [selectedFoodType, setSelectedFoodType] = useState<"Veg" | "Non-veg">("Veg");
 
     const { data: hostel, isLoading: isLoadingHostel } = useGetHostelById(id || "");
     const { data: userBookings } = useGetUserBookings();
 
+    // Calculate the price based on the selected food type
+    const getPrice = () => {
+        if (!hostel?.amount) return "N/A";
+        return selectedFoodType === "Veg" 
+            ? hostel.amount.Mgmt_veg || "N/A" 
+            : hostel.amount.Mgmt_non_veg || "N/A";
+    };
 
     const formatDate = (dateString: string) => {
         try {
@@ -87,6 +98,7 @@ export default function HostelDetail() {
         if (!id) return;
         createBooking({
             hostel: parseInt(id),
+            food_type: selectedFoodType
         });
     };
 
@@ -174,13 +186,15 @@ export default function HostelDetail() {
                                     {hostel?.room_type}
                                 </Badge>
                                 <Badge variant="secondary" className="bg-muted/50 backdrop-blur-sm text-xs px-4 py-1">
-                                    {hostel?.food_type}
+                                    {hostel?.is_veg && hostel?.is_non_veg ? "Veg & Non-veg" : 
+                                     hostel?.is_veg ? "Veg" : 
+                                     hostel?.is_non_veg ? "Non-veg" : "No food"}
                                 </Badge>
                             </div>
                         </div>
                         <div className="bg-muted/50 p-4 rounded-lg">
-                            <p className="text-3xl font-bold text-primary">₹{hostel?.amount}</p>
-                            {/* <p className="text-sm text-muted-foreground">per month</p> */}
+                            <p className="text-3xl font-bold text-primary">₹{getPrice()}</p>
+                            <p className="text-sm text-muted-foreground">{selectedFoodType} option</p>
                         </div>
                     </div>
                 </CardHeader>
@@ -208,9 +222,13 @@ export default function HostelDetail() {
                                     <div className="bg-muted/50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2 text-muted-foreground mb-2">
                                             <Utensils className="h-4 w-4" />
-                                            <span className="text-sm">Food Type</span>
+                                            <span className="text-sm">Food Options</span>
                                         </div>
-                                        <p className="font-medium text-lg">{hostel?.food_type}</p>
+                                        <p className="font-medium text-lg">
+                                            {hostel?.is_veg && hostel?.is_non_veg ? "Veg & Non-veg" : 
+                                             hostel?.is_veg ? "Veg only" : 
+                                             hostel?.is_non_veg ? "Non-veg only" : "No food"}
+                                        </p>
                                     </div>
                                     <div className="bg-muted/50 p-4 rounded-lg">
                                         <div className="flex items-center gap-2 text-muted-foreground mb-2">
@@ -254,9 +272,38 @@ export default function HostelDetail() {
                         <div className="bg-muted/50 p-6 rounded-lg">
                             <h3 className="text-2xl font-semibold text-foreground mb-6">Book Now</h3>
                             <div className="space-y-6">
+                                {/* Food Type Selection */}
+                                {(hostel?.is_veg || hostel?.is_non_veg) && (
+                                    <div className="mb-6">
+                                        <h4 className="text-lg font-medium mb-3">Select Food Type</h4>
+                                        <RadioGroup 
+                                            value={selectedFoodType} 
+                                            onValueChange={(value) => setSelectedFoodType(value as "Veg" | "Non-veg")}
+                                            className="space-y-3"
+                                        >
+                                            {hostel?.is_veg && (
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="veg" id="veg" disabled={!hostel?.is_veg} />
+                                                    <Label htmlFor="veg" className="cursor-pointer">
+                                                        Vegetarian (₹{hostel?.amount?.Mgmt_veg || "N/A"})
+                                                    </Label>
+                                                </div>
+                                            )}
+                                            {hostel?.is_non_veg && (
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="non_veg" id="nonveg" disabled={!hostel?.is_non_veg} />
+                                                    <Label htmlFor="nonveg" className="cursor-pointer">
+                                                        Non-Vegetarian (₹{hostel?.amount?.Mgmt_non_veg || "N/A"})
+                                                    </Label>
+                                                </div>
+                                            )}
+                                        </RadioGroup>
+                                    </div>
+                                )}
+
                                 <div>
                                     <p className="text-muted-foreground mb-2">Total Fees</p>
-                                    <p className="text-3xl font-bold text-primary">₹{(hostel?.amount || 0)}</p>
+                                    <p className="text-3xl font-bold text-primary">₹{getPrice()}</p>
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground mb-2">Available</p>
@@ -287,39 +334,41 @@ export default function HostelDetail() {
 
             {/* Confirmation Dialog */}
             <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-primary">Confirm Booking</DialogTitle>
-                        <DialogDescription className="text-base">
-                            Please review the booking details and important notes before proceeding.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <div className="space-y-4">
-                            <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                                <p className="font-medium">Hostel: {hostel?.name}</p>
-                                <p className="font-medium">Room Type: {hostel?.room_type}</p>
-                                <p className="font-medium">Food Type: {hostel?.food_type}</p>
-                                <p className="font-medium text-primary text-xl">Total Fees: ₹{(hostel?.amount || 0)}</p>
-                            </div>
+                <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
+                    <ScrollArea className="h-full max-h-[80vh]">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-bold text-primary">Confirm Booking</DialogTitle>
+                            <DialogDescription className="text-base">
+                                Please review the booking details and important notes before proceeding.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <div className="space-y-4">
+                                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                                    <p className="font-medium">Hostel: {hostel?.name}</p>
+                                    <p className="font-medium">Room Type: {hostel?.room_type}</p>
+                                    <p className="font-medium">Food Type: {selectedFoodType}</p>
+                                    <p className="font-medium text-primary text-xl">Total Fees: ₹{getPrice()}</p>
+                                </div>
 
-                            <div className="space-y-3">
-                                <p className="font-semibold">Important Notes:</p>
-                                <div className="bg-yellow-50 p-4 rounded-lg space-y-2 text-sm text-yellow-800">
-                                    <p>1. An OTP will be sent to your email for verification.</p>
-                                    <p>2. The OTP is valid for 10 minutes only.</p>
-                                    <p>3. After OTP verification, you must complete the payment within 5 days.</p>
-                                    <p>4. If failed to pay within given deadline, booking will be cancelled and a Rs.10,000 penalty will be added.</p>
-                                    <p>5. The Fees shown is for the entire academic year.</p>
+                                <div className="space-y-3">
+                                    <p className="font-semibold">Important Notes:</p>
+                                    <div className="bg-yellow-50 p-4 rounded-lg space-y-2 text-sm text-yellow-800">
+                                        <p>1. An OTP will be sent to your email for verification.</p>
+                                        <p>2. The OTP is valid for 10 minutes only.</p>
+                                        <p>3. After OTP verification, you must complete the payment within 5 days.</p>
+                                        <p>4. If failed to pay within given deadline, booking will be cancelled and a Rs.10,000 penalty will be added.</p>
+                                        <p>5. The Fees shown is for the entire academic year.</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+                                    <AlertCircle className="h-5 w-5" />
+                                    <p className="text-sm">Make sure you have access to your email before proceeding.</p>
                                 </div>
                             </div>
-
-                            <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
-                                <AlertCircle className="h-5 w-5" />
-                                <p className="text-sm">Make sure you have access to your email before proceeding.</p>
-                            </div>
                         </div>
-                    </div>
+                    </ScrollArea>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
                             Cancel
@@ -337,40 +386,43 @@ export default function HostelDetail() {
 
             {/* OTP Dialog */}
             <Dialog open={showOTPDialog} onOpenChange={setShowOTPDialog}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-primary">Verify OTP</DialogTitle>
-                        <DialogDescription className="text-base">
-                            Please enter the 6-digit OTP sent to your email address to confirm your booking.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <div className="space-y-4">
-                            <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                                <p className="font-medium">Hostel: {hostel?.name}</p>
-                                <p className="font-medium">Room Type: {hostel?.room_type}</p>
-                                <p className="font-medium text-primary text-xl">Total Fees: ₹{(hostel?.amount || 0)}</p>
-                            </div>
-                            <InputOTP
-                                maxLength={6}
-                                value={otp}
-                                onChange={(value) => setOtp(value)}
-                            >
-                                <InputOTPGroup>
-                                    <InputOTPSlot index={0} />
-                                    <InputOTPSlot index={1} />
-                                    <InputOTPSlot index={2} />
-                                    <InputOTPSlot index={3} />
-                                    <InputOTPSlot index={4} />
-                                    <InputOTPSlot index={5} />
-                                </InputOTPGroup>
-                            </InputOTP>
-                            <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 p-3 rounded-lg">
-                                <AlertCircle className="h-5 w-5" />
-                                <p className="text-sm">The OTP will expire in 10 minutes. Please complete the payment within 5 Days after verification.</p>
+                <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
+                    <ScrollArea className="h-full max-h-[80vh]">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-bold text-primary">Verify OTP</DialogTitle>
+                            <DialogDescription className="text-base">
+                                Please enter the 6-digit OTP sent to your email address to confirm your booking.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="py-4">
+                            <div className="space-y-4">
+                                <div className="bg-muted/50 p-4 rounded-lg space-y-2">
+                                    <p className="font-medium">Hostel: {hostel?.name}</p>
+                                    <p className="font-medium">Room Type: {hostel?.room_type}</p>
+                                    <p className="font-medium">Food Type: {selectedFoodType}</p>
+                                    <p className="font-medium text-primary text-xl">Total Fees: ₹{getPrice()}</p>
+                                </div>
+                                <InputOTP
+                                    maxLength={6}
+                                    value={otp}
+                                    onChange={(value) => setOtp(value)}
+                                >
+                                    <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                    </InputOTPGroup>
+                                </InputOTP>
+                                <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 p-3 rounded-lg">
+                                    <AlertCircle className="h-5 w-5" />
+                                    <p className="text-sm">The OTP will expire in 10 minutes. Please complete the payment within 5 Days after verification.</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </ScrollArea>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setShowOTPDialog(false)}>
                             Cancel

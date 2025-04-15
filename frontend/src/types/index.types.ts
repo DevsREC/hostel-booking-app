@@ -63,13 +63,19 @@ export interface Hostel {
   location: string;
   room_type: 'AC' | 'NON-AC';
   bathroom_type: 'Attached' | 'Common';
-  food_type: 'Veg' | 'Non-veg';
+  is_veg: boolean;
+  is_non_veg: boolean;
   gender: 'M' | 'F';
   person_per_room: number;
   no_of_rooms: number;
   total_capacity: number;
   room_description: string;
-  amount: number;
+  amount: {
+    Mgmt_veg: number;
+    Mgmt_non_veg: number;
+    Govt_veg?: number;
+    Govt_non_veg?: number;
+  };
   image: string;
   available_rooms: number;
 }
@@ -81,7 +87,12 @@ export interface Room {
   floor: number;
   capacity: number;
   occupied: number;
-  price: number;
+  price: {
+    Mgmt_veg: number;
+    Mgmt_non_veg: number;
+    Govt_veg?: number;
+    Govt_non_veg?: number;
+  };
   is_available: boolean;
   created_at: string;
   updated_at: string;
@@ -92,6 +103,7 @@ export interface Booking {
   user: User;
   hostel: Hostel;
   status: 'otp_pending' | 'payment_pending' | 'confirmed' | 'cancelled' | 'payment_not_done';
+  food_type: 'Veg' | 'Non-veg';
   booked_at: string;
   otp_verified_at: string | null;
   payment_completed_at: string | null;
@@ -117,4 +129,9 @@ export interface RoomResponse {
 export interface BookingResponse {
   status: number;
   data: Booking[];
+}
+
+export interface CreateBookingRequest {
+  hostel: number;
+  food_type: 'Veg' | 'Non-veg';
 }
