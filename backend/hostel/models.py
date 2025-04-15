@@ -321,7 +321,6 @@ class RoomBooking(models.Model):
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
         amount = self.get_amount()
-        print("Amount", amount)
         send_email(
             subject=subject,
             to_email=to_email,
@@ -329,7 +328,8 @@ class RoomBooking(models.Model):
                 "otp_code": self.otp_code,
                 "hostel_name": self.hostel.name,
                 "room_type": self.hostel.room_type,
-                "amount": amount
+                "amount": amount,
+                "food_type": self.food_type
             },
             template_name='otp_email.html'
         )
@@ -375,6 +375,7 @@ class RoomBooking(models.Model):
                 "room_type": self.hostel.room_type,
                 "amount": amount,
                 "payment_link": self.payment_link,
+                'food_type': self.food_type,
                 "payment_expiry_date": payment_expiry_formatted
             },
             template_name="payment_instructions_template.html"  # Path to the HTML template
