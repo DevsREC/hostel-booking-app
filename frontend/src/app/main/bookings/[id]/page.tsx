@@ -367,13 +367,13 @@ export default function BookingDetail() {
                   {booking.user.first_name} {booking.user.last_name}
                 </p>
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <User className="h-4 w-4" />
                   <span className="text-sm">Roll Number</span>
                 </div>
                 <p className="font-medium">{booking.user.roll_no}</p>
-              </div>
+              </div> */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <User className="h-4 w-4" />

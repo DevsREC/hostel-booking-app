@@ -17,6 +17,19 @@ export default function ProfilePage() {
         booking.status === 'payment_pending'
     );
 
+    // Function to get the correct amount based on food type
+    const getBookingAmount = (booking: any) => {
+        if (!booking?.hostel?.amount) return "N/A";
+        return booking.food_type === "veg" 
+            ? booking.hostel.amount.Mgmt_veg 
+            : booking.hostel.amount.Mgmt_non_veg;
+    };
+
+    // Function to format food type for display
+    const formatFoodType = (foodType: string) => {
+        return foodType === "veg" ? "Vegetarian" : "Non-Vegetarian";
+    };
+
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -192,7 +205,10 @@ export default function ProfilePage() {
                                                             booking.status === 'confirmed' ? 'default' :
                                                                 'destructive'
                                                 }>
-                                                    {booking.status}
+                                                    {booking.status === 'otp_pending' ? 'OTP Pending' :
+                                                     booking.status === 'payment_pending' ? 'Payment Pending' :
+                                                     booking.status === 'confirmed' ? 'Confirmed' :
+                                                     booking.status === 'cancelled' ? 'Cancelled' : 'Payment Not Done'}
                                                 </Badge>
                                             </div>
                                             <Separator />
@@ -203,11 +219,11 @@ export default function ProfilePage() {
                                                 </div>
                                                 <div>
                                                     <p className="text-muted-foreground">Food Type</p>
-                                                    <p className="font-medium text-card-foreground">{booking.hostel.food_type}</p>
+                                                    <p className="font-medium text-card-foreground">{formatFoodType(booking.food_type)}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-muted-foreground">Fees</p>
-                                                    <p className="font-medium text-card-foreground">₹{booking.hostel.amount}</p>
+                                                    <p className="font-medium text-card-foreground">₹{getBookingAmount(booking)}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-muted-foreground">Booked On</p>
