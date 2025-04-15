@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Building2, MapPin, Users, Utensils, User2, BedDouble, AlertCircle, Bath } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { api } from "@/action/user";
 import { toast } from "sonner";
@@ -30,15 +30,29 @@ export default function HostelDetail() {
     const [otp, setOtp] = useState("");
     const [bookingId, setBookingId] = useState<string | null>(null);
     const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
-    const [selectedFoodType, setSelectedFoodType] = useState<"Veg" | "Non-veg">("Veg");
+    const [selectedFoodType, setSelectedFoodType] = useState<"veg" | "non_veg">("veg");
 
     const { data: hostel, isLoading: isLoadingHostel } = useGetHostelById(id || "");
     const { data: userBookings } = useGetUserBookings();
 
+    // Set default food type based on available options
+    useEffect(() => {
+        if (hostel) {
+            // If both options are available, default to veg
+            if (hostel.is_veg && hostel.is_non_veg) {
+                setSelectedFoodType("veg");
+            } else if (hostel.is_veg) {
+                setSelectedFoodType("veg");
+            } else if (hostel.is_non_veg) {
+                setSelectedFoodType("non_veg");
+            }
+        }
+    }, [hostel]);
+
     // Calculate the price based on the selected food type
     const getPrice = () => {
         if (!hostel?.amount) return "N/A";
-        return selectedFoodType === "Veg" 
+        return selectedFoodType === "veg" 
             ? hostel.amount.Mgmt_veg || "N/A" 
             : hostel.amount.Mgmt_non_veg || "N/A";
     };
@@ -278,7 +292,7 @@ export default function HostelDetail() {
                                         <h4 className="text-lg font-medium mb-3">Select Food Type</h4>
                                         <RadioGroup 
                                             value={selectedFoodType} 
-                                            onValueChange={(value) => setSelectedFoodType(value as "Veg" | "Non-veg")}
+                                            onValueChange={(value) => setSelectedFoodType(value as "veg" | "non_veg")}
                                             className="space-y-3"
                                         >
                                             {hostel?.is_veg && (

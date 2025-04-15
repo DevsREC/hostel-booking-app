@@ -162,10 +162,12 @@ export default function BookingsPage() {
                     <IndianRupee className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-card-foreground">
-                        ₹{booking.hostel.amount}
+                        ₹{booking.food_type === "veg" 
+                          ? booking.hostel.amount.Mgmt_veg 
+                          : booking.hostel.amount.Mgmt_non_veg}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Total Fees
+                        Total Fees ({booking.food_type === "veg" ? "Vegetarian" : "Non-Vegetarian"})
                       </p>
                     </div>
                   </div>
