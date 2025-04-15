@@ -110,7 +110,7 @@ export default function HostelDetail() {
 
     const confirmBooking = () => {
         if (!id) return;
-        console.log(selectedFoodType)
+        
         createBooking({
             hostel: parseInt(id),
             food_type: selectedFoodType
