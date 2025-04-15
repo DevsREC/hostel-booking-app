@@ -17,6 +17,7 @@ INTERNAL_RESERVATION_PERCENT = 25
 class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
     list_display = ('name', 'enable', 'location', 'room_type', 'is_veg', 'is_non_veg','person_per_room', 'no_of_rooms' ,'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type')
+    list_search = ('name', 'location')
     resource_classes = [HostelResource]
 # 'mgmt_amount', 'govt_amount'
     def mgmt_amount(self, obj):
@@ -45,12 +46,16 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
-    list_display = ('user', 'hostel', 'status', 'booked_at', 'verified_by')
+    list_display = ('user', 'hostel', 'status', 'booked_at','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
+    search_fields = ('user__username', 'hostel__name', 'verified_by__username')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
     
+    def amount(self, obj):
+        return obj.get_amount()
+
     def save_model(self, request, obj, form, change):
         if change:
             original_obj = self.model.objects.get(pk=obj.pk)
