@@ -103,7 +103,7 @@ export interface Booking {
   user: User;
   hostel: Hostel;
   status: 'otp_pending' | 'payment_pending' | 'confirmed' | 'cancelled' | 'payment_not_done';
-  food_type: 'veg' | 'non_veg';
+  food_type: 'Veg' | 'Non_veg';
   booked_at: string;
   otp_verified_at: string | null;
   payment_completed_at: string | null;

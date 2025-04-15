@@ -16,6 +16,7 @@ import { Building2, IndianRupee } from "lucide-react";
 export default function BookingsPage() {
   const navigate = useNavigate();
   const { data: bookings, isLoading } = useGetUserBookings();
+  console.log(bookings)
 
   const hasActiveBooking = bookings?.some(
     (booking) =>
@@ -162,12 +163,12 @@ export default function BookingsPage() {
                     <IndianRupee className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-card-foreground">
-                        ₹{booking.food_type === "veg" 
+                        ₹{booking.food_type === "Veg" 
                           ? booking.hostel.amount.Mgmt_veg 
                           : booking.hostel.amount.Mgmt_non_veg}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Total Fees ({booking.food_type === "veg" ? "Vegetarian" : "Non-Vegetarian"})
+                        Total Fees ({booking.food_type === "Veg" ? "Vegetarian" : "Non-Vegetarian"})
                       </p>
                     </div>
                   </div>
