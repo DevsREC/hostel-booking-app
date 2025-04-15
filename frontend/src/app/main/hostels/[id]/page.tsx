@@ -383,8 +383,7 @@ export default function HostelDetail() {
                                 </div>
                             </div>
                         </div>
-                    </ScrollArea>
-                    <DialogFooter>
+                        <DialogFooter>
                         <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
                             Cancel
                         </Button>
@@ -396,6 +395,7 @@ export default function HostelDetail() {
                             {isCreatingBooking ? "Processing..." : "Proceed with Booking"}
                         </Button>
                     </DialogFooter>
+                    </ScrollArea>
                 </DialogContent>
             </Dialog>
 
@@ -437,8 +437,7 @@ export default function HostelDetail() {
                                 </div>
                             </div>
                         </div>
-                    </ScrollArea>
-                    <DialogFooter>
+                         <DialogFooter>
                         <Button variant="outline" onClick={() => setShowOTPDialog(false)}>
                             Cancel
                         </Button>
@@ -450,6 +449,8 @@ export default function HostelDetail() {
                             {isVerifyingOTP ? "Verifying..." : "Verify OTP"}
                         </Button>
                     </DialogFooter>
+                    </ScrollArea>
+                   
                 </DialogContent>
             </Dialog>
         </div>
