@@ -10,7 +10,6 @@ import { useCurrentUser } from "@/action/user";
 export default function HostelsPage() {
     const { data: hostels, isLoading } = useGetHostels();
     const { data: currentUser } = useCurrentUser();
-    console.log(hostels)
 
     if (isLoading) {
         return (
@@ -18,7 +17,6 @@ export default function HostelsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <Card key={i} className="overflow-hidden border-0 shadow-lg">
-                            <Skeleton className="h-56 w-full" />
                             <CardHeader className="space-y-3">
                                 <Skeleton className="h-7 w-3/4" />
                                 <Skeleton className="h-5 w-1/2" />
@@ -65,46 +63,41 @@ export default function HostelsPage() {
                 {hostels.map((hostel) => (
                     <Card
                         key={hostel.id}
-                        className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
+                        className="overflow-hidden border border-border shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
                     >
-                        <div className="relative group">
-                            {/* <img
-                                src={hostel.image || "https://placehold.co/600x400"}
-                                alt={hostel.name}
-                                className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                            /> */}
-                            <div className="absolute top-7 right-4 flex gap-2">
-                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
-                                    {hostel.room_type}
-                                </Badge>
-                                <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm px-3 py-1 text-secondary-foreground">
-                                    {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
-                                     hostel.is_veg ? "Veg" : 
-                                     hostel.is_non_veg ? "Non-veg" : "No food"}
-                                </Badge>
+                        <CardHeader className="relative pt-6 pb-4">
+                            <div className="flex justify-between items-start mb-2">
+                                <CardTitle className="text-xl font-semibold text-card-foreground">{hostel.name}</CardTitle>
+                                <div className="flex gap-1.5">
+                                    <Badge variant="default" className="bg-primary text-primary-foreground px-2 py-0.5 text-xs">
+                                        {hostel.room_type}
+                                    </Badge>
+                                </div>
                             </div>
-                        </div>
-                        <CardHeader className="space-y-3">
-                            <CardTitle className="text-2xl font-semibold text-card-foreground">{hostel.name}</CardTitle>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-5 w-5" />
-                                <span className="text-base">{hostel.location}</span>
+                                <MapPin className="h-4 w-4 shrink-0" />
+                                <span className="text-sm">{hostel.location}</span>
                             </div>
+                            <Badge variant="outline" className="mt-2 bg-background/90 px-2 py-0.5 text-xs border-primary/50 text-primary">
+                                {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
+                                 hostel.is_veg ? "Veg" : 
+                                 hostel.is_non_veg ? "Non-veg" : "No food"}
+                            </Badge>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 pt-0">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Users className="h-5 w-5" />
-                                    <span className="text-base">Available</span>
+                                    <Users className="h-4 w-4" />
+                                    <span className="text-sm">Available</span>
                                 </div>
-                                <span className="font-semibold text-lg text-card-foreground">{hostel.available_rooms}</span>
+                                <span className="font-semibold text-card-foreground">{hostel.available_rooms}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Utensils className="h-5 w-5" />
-                                    <span className="text-base">Food Options</span>
+                                    <Utensils className="h-4 w-4" />
+                                    <span className="text-sm">Food Options</span>
                                 </div>
-                                <span className="font-semibold text-lg text-card-foreground">
+                                <span className="font-semibold text-card-foreground">
                                     {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
                                      hostel.is_veg ? "Veg only" : 
                                      hostel.is_non_veg ? "Non-veg only" : "No food"}
@@ -112,19 +105,19 @@ export default function HostelsPage() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                    <IndianRupee className="h-5 w-5" />
-                                    <span className="text-base">Starting From</span>
+                                    <IndianRupee className="h-4 w-4" />
+                                    <span className="text-sm">Starting From</span>
                                 </div>
-                                <span className="font-semibold text-lg text-card-foreground">
+                                <span className="font-semibold text-card-foreground">
                                     ₹{hostel.amount && Object.values(hostel.amount).length > 0 
                                         ? Math.min(...Object.values(hostel.amount).filter(val => val > 0)) || "N/A" 
                                         : "N/A"}
                                 </span>
                             </div>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="pt-2 pb-6">
                             <Link to={`/hostels/${hostel.id}`} className="w-full">
-                                <Button className="w-full h-11 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90" variant="default">
+                                <Button className="w-full h-10 text-sm font-medium" variant="default">
                                     View Details
                                 </Button>
                             </Link>

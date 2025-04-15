@@ -392,8 +392,7 @@ export default function BookingDetail() {
           </div>
 
           {/* Actions */}
-          {(booking.status === "otp_pending" ||
-            booking.status === "payment_pending") && (
+          {booking.status === "otp_pending" && (
             <div className="flex justify-center pt-4">
               <Button
                 variant="destructive"
