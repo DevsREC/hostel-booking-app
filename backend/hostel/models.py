@@ -152,7 +152,7 @@ class RoomBooking(models.Model):
     ]
     FOOD_TYPE = [
         ('Veg', "Veg"),
-        ('Non-veg', 'Non-Veg'),
+        ('Non_veg', 'Non-Veg'),
     ]
 
     user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)

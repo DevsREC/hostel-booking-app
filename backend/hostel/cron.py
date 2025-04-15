@@ -126,7 +126,7 @@ def send_cancellation_email(booking):
             "user_name": booking.user.first_name or "Valued Guest",
             "hostel_name": booking.hostel.name,
             "room_type": booking.hostel.room_type,
-            "food_type": "booking.hostel.food_type",
+            "food_type": booking.food_type,
         },
         template_name="booking_cancellation_template.html"
     )
@@ -144,7 +144,7 @@ def send_payment_expired_email(booking):
             "user_name": booking.user.first_name or "Valued Guest",
             "hostel_name": booking.hostel.name,
             "room_type": booking.hostel.room_type,
-            "food_type": 'booking.hostel.food_type',
+            "food_type": booking.food_type,
         },
         template_name="payment_expired.html"
     )
