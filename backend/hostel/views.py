@@ -27,7 +27,7 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            food_type = 'Veg' if food_type.lower() == 'veg' else 'Non-veg'
+            food_type = 'Veg' if food_type.lower() == 'veg' else 'Non_veg'
 
             is_blocked = BlockedStudents.objects.filter(email=user.email).exists()
             if is_blocked:

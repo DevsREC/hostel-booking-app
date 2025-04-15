@@ -16,7 +16,7 @@ class Hostel(models.Model):
     ]
     FOOD_TYPE = [
         ('Veg', "Veg"),
-        ('Non-veg', 'Non-Veg'),
+        ('Non_veg', 'Non-Veg'),
     ]
     GENDER = [
         ('M', 'Male'),
