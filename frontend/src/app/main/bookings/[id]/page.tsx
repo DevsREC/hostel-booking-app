@@ -69,8 +69,8 @@ export default function BookingDetail() {
   const getAmount = (booking: any) => {
     if (!booking?.hostel?.amount) return "N/A";
     return booking.food_type === "veg" 
-      ? booking.hostel.amount.Mgmt_veg 
-      : booking.hostel.amount.Mgmt_non_veg;
+      ? booking.hostel.amount.Mgmt_veg || booking.hostel.amount.Govt_veg
+      : booking.hostel.amount.Mgmt_non_veg || booking.hostel.amount.Govt_non_veg;
   };
   
   const handleOTPVerification = async () => {

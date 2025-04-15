@@ -53,8 +53,8 @@ export default function HostelDetail() {
     const getPrice = () => {
         if (!hostel?.amount) return "N/A";
         return selectedFoodType === "veg" 
-            ? hostel.amount.Mgmt_veg || "N/A" 
-            : hostel.amount.Mgmt_non_veg || "N/A";
+            ? hostel.amount.Mgmt_veg || hostel.amount.Govt_veg || "N/A" 
+            : hostel.amount.Mgmt_non_veg || hostel.amount.Govt_non_veg || "N/A";
     };
 
     const formatDate = (dateString: string) => {
@@ -300,7 +300,7 @@ export default function HostelDetail() {
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="veg" id="veg" disabled={!hostel?.is_veg} />
                                                     <Label htmlFor="veg" className="cursor-pointer">
-                                                        Vegetarian (₹{hostel?.amount?.Mgmt_veg || "N/A"})
+                                                        Vegetarian (₹{hostel?.amount?.Mgmt_veg || hostel?.amount?.Govt_veg || "N/A"})
                                                     </Label>
                                                 </div>
                                             )}
@@ -308,7 +308,7 @@ export default function HostelDetail() {
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="non_veg" id="nonveg" disabled={!hostel?.is_non_veg} />
                                                     <Label htmlFor="nonveg" className="cursor-pointer">
-                                                        Non-Vegetarian (₹{hostel?.amount?.Mgmt_non_veg || "N/A"})
+                                                        Non-Vegetarian (₹{hostel?.amount?.Mgmt_non_veg || hostel?.amount?.Govt_non_veg || "N/A"})
                                                     </Label>
                                                 </div>
                                             )}

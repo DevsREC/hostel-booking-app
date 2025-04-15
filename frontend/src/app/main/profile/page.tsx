@@ -21,8 +21,8 @@ export default function ProfilePage() {
     const getBookingAmount = (booking: any) => {
         if (!booking?.hostel?.amount) return "N/A";
         return booking.food_type === "veg" 
-            ? booking.hostel.amount.Mgmt_veg 
-            : booking.hostel.amount.Mgmt_non_veg;
+            ? booking.hostel.amount.Mgmt_veg || booking.hostel.amount.Govt_veg
+            : booking.hostel.amount.Mgmt_non_veg || booking.hostel.amount.Govt_non_veg;
     };
 
     // Function to format food type for display
