@@ -151,7 +151,7 @@ class PaymentManagementAdmin(ModelAdmin):
         return obj.user.student_type
     
     def amount(self, obj):
-        return obj.hostel.get_amount(self.user_year(obj),self.student_type(obj))
+        return obj.get_amount()
     amount.short_description = 'Amount'
 
     def payment_status(self, obj):

@@ -162,7 +162,7 @@ class RoomBooking(models.Model):
         default='otp_pending', 
         choices=BOOKING_STATUS
     )
-    food_type = models.CharField('Food Type', default=False, choices=FOOD_TYPE, max_length=20)
+    food_type = models.CharField('Food Type', null=True, choices=FOOD_TYPE, max_length=20)
     is_internal_booking = models.BooleanField(default=False)
     booked_at = models.DateTimeField(auto_now_add=True)
     otp_verified_at = models.DateTimeField(null=True, blank=True)
@@ -223,52 +223,61 @@ class RoomBooking(models.Model):
         super().save(*args, **kwargs)
 
     def get_amount(self):
-        amounts = {
-            1: {
-                "Govt": {
-                    "veg": self.first_year_fee_govt_veg,
-                    "non_veg": self.first_year_fee_govt_non_veg,
+        try:
+            amounts = {
+                1: {
+                    "Govt": {
+                        "veg": self.hostel.first_year_fee_govt_veg,
+                        "non_veg": self.hostel.first_year_fee_govt_non_veg,
+                    },
+                    "Mgmt": {
+                        "veg": self.hostel.first_year_fee_mgmt_veg,
+                        "non_veg": self.hostel.first_year_fee_mgmt_non_veg,
+                    }
                 },
-                "Mgmt": {
-                    "veg": self.first_year_fee_mgmt_veg,
-                    "non_veg": self.first_year_fee_mgmt_non_veg,
-                }
-            },
-            2: {
-                "Govt": {
-                    "veg": self.second_year_fee_govt_veg,
-                    "non_veg": self.second_year_fee_govt_non_veg,
+                2: {
+                    "Govt": {
+                        "veg": self.hostel.second_year_fee_govt_veg,
+                        "non_veg": self.hostel.second_year_fee_govt_non_veg,
+                    },
+                    "Mgmt": {
+                        "veg": self.hostel.second_year_fee_mgmt_veg,
+                        "non_veg": self.hostel.second_year_fee_mgmt_non_veg,
+                    }
                 },
-                "Mgmt": {
-                    "veg": self.second_year_fee_mgmt_veg,
-                    "non_veg": self.second_year_fee_mgmt_non_veg,
-                }
-            },
-            3: {
-                "Govt": {
-                    "veg": self.third_year_fee_govt_veg,
-                    "non_veg": self.third_year_fee_govt_non_veg,
+                3: {
+                    "Govt": {
+                        "veg": self.hostel.third_year_fee_govt_veg,
+                        "non_veg": self.hostel.third_year_fee_govt_non_veg,
+                    },
+                    "Mgmt": {
+                        "veg": self.hostel.third_year_fee_mgmt_veg,
+                        "non_veg": self.hostel.third_year_fee_mgmt_non_veg,
+                    }
                 },
-                "Mgmt": {
-                    "veg": self.third_year_fee_mgmt_veg,
-                    "non_veg": self.third_year_fee_mgmt_non_veg,
-                }
-            },
-            4: {
-                "Govt": {
-                    "veg": self.fourth_year_fee_govt_veg,
-                    "non_veg": self.fourth_year_fee_govt_non_veg,
+                4: {
+                    "Govt": {
+                        "veg": self.hostel.fourth_year_fee_govt_veg,
+                        "non_veg": self.hostel.fourth_year_fee_govt_non_veg,
+                    },
+                    "Mgmt": {
+                        "veg": self.hostel.fourth_year_fee_mgmt_veg,
+                        "non_veg": self.hostel.fourth_year_fee_mgmt_non_veg,
+                    }
                 },
-                "Mgmt": {
-                    "veg": self.fourth_year_fee_mgmt_veg,
-                    "non_veg": self.fourth_year_fee_mgmt_non_veg,
-                }
-            },
-        }
+            }
 
-        year = self.user.year
-        quota = self.user.student_type.title()
-        return amounts[year][quota][self.food_type]
+            year = self.user.year
+            quota = self.user.student_type.title()
+            print("Year", year)
+            print("Quota", quota)
+            print("Food Type", self.food_type.lower())
+            print(amounts[year][quota][self.food_type.lower()])
+            return amounts[year][quota][self.food_type.lower()]
+        except Exception as e:
+            print("This guys fucked up")
+            print(e)
+            return 0
 
     def update_status(self, new_status, verified_by_user=None):
         old_status = self.status
@@ -312,7 +321,7 @@ class RoomBooking(models.Model):
         subject = "Hostel Booking OTP Verification"
         to_email = self.user.email
         amount = self.get_amount()
-        
+        print("Amount", amount)
         send_email(
             subject=subject,
             to_email=to_email,

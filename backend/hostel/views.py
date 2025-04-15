@@ -19,7 +19,7 @@ class InitiateBookingAPI(generics.CreateAPIView):
             user = User.objects.filter(email=request.user).first()
             food_type = request.data.get('food_type')
 
-            if not food_type or food_type not in ['veg', 'non_veg']:
+            if not food_type or food_type.lower() not in ['veg', 'non_veg']:
                 return Response(
                     {
                         'detail': "Invalid food type",
@@ -27,6 +27,8 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            food_type = 'Veg' if food_type.lower() == 'veg' else 'Non-veg'
+
             is_blocked = BlockedStudents.objects.filter(email=user.email).exists()
             if is_blocked:
                 return Response({
@@ -56,15 +58,13 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            
+            print("Food Type: ", food_type)
             booking = RoomBooking.objects.create(
                 user = request.user,
                 hostel = hostel,
                 food_type = food_type
             )
-
             booking.generate_otp()
-
             return Response(
                 {
                     "message": "OTP sent to your email",
@@ -179,6 +179,8 @@ class VerifyOTPApi(generics.CreateAPIView):
         booking = get_object_or_404(RoomBooking, id=booking_id, user=request.user)
         otp_code = request.data.get('otp_code')
 
+        print("OTP Code:", otp_code)
+        # print("")
         if not otp_code:
             return Response(
                 {
