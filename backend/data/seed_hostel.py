@@ -34,7 +34,7 @@ COMMON_FEES = {
 # Hostel data from the table
 BOYS_HOSTELS = [
     {
-        "name": "Category A - 2 AC A",
+        "name": "Type A - 2 AC A",
         "location": "BH2",
         "room_type": "AC",
         "food_type": "Veg",
@@ -48,7 +48,7 @@ BOYS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category B - 3 Non AC C",
+        "name": "Type B - 3 Non AC C",
         "location": "Thandalam",
         "room_type": "NON-AC",
         "food_type": "Non-veg",
@@ -62,7 +62,7 @@ BOYS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category C - 4 AC A",
+        "name": "Type C - 4 AC A",
         "location": "BH2",
         "room_type": "AC",
         "food_type": "Veg",
@@ -76,7 +76,7 @@ BOYS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category D - 4 Non AC A",
+        "name": "Type D - 4 Non AC A",
         "location": "Habitat",
         "room_type": "NON-AC",
         "food_type": "Non-veg",
@@ -90,7 +90,7 @@ BOYS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category E - 5 Non AC C",
+        "name": "Type E - 5 Non AC C",
         "location": "Thandalam",
         "room_type": "NON-AC",
         "food_type": "Non-veg",
@@ -104,7 +104,7 @@ BOYS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category F - 6 Non AC C",
+        "name": "Type F - 6 Non AC C",
         "location": "Habitat",
         "room_type": "NON-AC",
         "food_type": "Non-veg",
@@ -121,7 +121,7 @@ BOYS_HOSTELS = [
 
 GIRLS_HOSTELS = [
     {
-        "name": "Category A - 2 AC A (GH1)",
+        "name": "Type A - 2 AC A (GH1)",
         "location": "GH1 (BH3)",
         "room_type": "AC",
         "food_type": "Veg",
@@ -135,7 +135,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category A - 2 AC A (GH2)",
+        "name": "Type A - 2 AC A (GH2)",
         "location": "GH2",
         "room_type": "AC",
         "food_type": "Veg",
@@ -149,7 +149,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category A - 2 AC A (GH3)",
+        "name": "Type A - 2 AC A (GH3)",
         "location": "GH3 (BH1)",
         "room_type": "AC",
         "food_type": "Veg",
@@ -163,7 +163,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category B - 2 Non AC C (GH1)",
+        "name": "Type B - 2 Non AC C (GH1)",
         "location": "GH1 (BH3)",
         "room_type": "NON-AC",
         "food_type": "Veg",
@@ -177,7 +177,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category B - 2 Non AC C (GH3)",
+        "name": "Type B - 2 Non AC C (GH3)",
         "location": "GH3 (BH1)",
         "room_type": "NON-AC",
         "food_type": "Veg",
@@ -191,7 +191,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category C - 3 AC A",
+        "name": "Type C - 3 AC A",
         "location": "GH3 (BH1)",
         "room_type": "AC",
         "food_type": "Veg",
@@ -205,7 +205,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category D - 3 Non AC C",
+        "name": "Type D - 3 Non AC C",
         "location": "GH3 (BH1)",
         "room_type": "NON-AC",
         "food_type": "Veg",
@@ -219,7 +219,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category E - 4 Non AC C",
+        "name": "Type E - 4 Non AC C",
         "location": "GH3 (BH1)",
         "room_type": "NON-AC",
         "food_type": "Veg",
@@ -233,7 +233,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category F - 4 Non AC A",
+        "name": "Type F - 4 Non AC A",
         "location": "GH2",
         "room_type": "NON-AC",
         "food_type": "Veg",
@@ -247,7 +247,7 @@ GIRLS_HOSTELS = [
         **COMMON_FEES
     },
     {
-        "name": "Category G - 6 Non AC C",
+        "name": "Type G - 6 Non AC C",
         "location": "GH1 (BH3)",
         "room_type": "NON-AC",
         "food_type": "Veg",

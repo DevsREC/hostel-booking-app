@@ -84,7 +84,7 @@ class Hostel(models.Model):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
             status__in=['confirmed', 'payment_verified', 'payment_pending']
-        ).count()
+        ).count()   
 
         total_available = self.total_capacity - booked_rooms
         internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
