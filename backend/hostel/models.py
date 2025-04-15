@@ -30,7 +30,10 @@ class Hostel(models.Model):
     name = models.CharField('Hostel Name', blank=False, max_length=50)
     location = models.CharField('Location', blank=False,max_length=50)
     room_type = models.CharField('Room Type', max_length=20, blank=False, choices=ROOM_TYPE)
-    food_type = models.CharField('Food Type', max_length=20, blank=False, choices=FOOD_TYPE)
+    # food_type = models.CharField('Food Type', max_length=20, blank=False, choices=FOOD_TYPE)
+    is_veg = models.BooleanField('Veg Available', default=True)
+    is_non_veg = models.BooleanField('Non-Veg Available', default=False)
+    
     gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER)
     person_per_room = models.IntegerField(blank=False)
     no_of_rooms = models.IntegerField(blank=False)
@@ -41,17 +44,26 @@ class Hostel(models.Model):
     enable = models.BooleanField(default=False)
     allow_bookings = models.BooleanField(default=False)
     bathroom_type = models.CharField(max_length=20, choices=BATHROOM_CHOICES, default='Common')
-    first_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
-    first_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
-    second_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
-    second_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
-    third_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
-    third_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
-    fourth_year_fee_mgmt = models.IntegerField(blank=False, null=False, default=0)
-    fourth_year_fee_govt = models.IntegerField(blank=False, null=False, default=0)
-
+    
+    first_year_fee_mgmt_veg = models.IntegerField(blank=False, null=False, default=0)
+    first_year_fee_mgmt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    first_year_fee_govt_veg = models.IntegerField(blank=False, null=False, default=0)
+    first_year_fee_govt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_mgmt_veg = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_mgmt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_govt_veg = models.IntegerField(blank=False, null=False, default=0)
+    second_year_fee_govt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_mgmt_veg = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_mgmt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_govt_veg = models.IntegerField(blank=False, null=False, default=0)
+    third_year_fee_govt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_mgmt_veg = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_mgmt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_govt_veg = models.IntegerField(blank=False, null=False, default=0)
+    fourth_year_fee_govt_non_veg = models.IntegerField(blank=False, null=False, default=0)
+    
     def __str__(self):
-        return f"{self.name}-{self.location}-{self.room_type}-{self.food_type}-{self.person_per_room}"
+        return f"{self.name}-{self.location}-{self.room_type}-{self.person_per_room}"
     
     def clean(self):
         self.total_capacity = self.person_per_room * self.no_of_rooms
@@ -62,20 +74,44 @@ class Hostel(models.Model):
             quota = self.context.get('quota')
         amounts = {
             1: {
-                "Govt": self.first_year_fee_govt,
-                "Mgmt": self.first_year_fee_mgmt,
+                "Govt": {
+                    "Govt_veg": self.first_year_fee_govt_veg,
+                    "Govt_non_veg": self.first_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "Mgmt_veg": self.first_year_fee_mgmt_veg,
+                    "Mgmt_non_veg": self.first_year_fee_mgmt_non_veg,
+                }
             },
             2: {
-                "Govt": self.second_year_fee_govt,
-                "Mgmt": self.second_year_fee_mgmt,
+                "Govt": {
+                    "Govt_veg": self.second_year_fee_govt_veg,
+                    "Govt_non_veg": self.second_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "Mgmt_veg": self.second_year_fee_mgmt_veg,
+                    "Mgmt_non_veg": self.second_year_fee_mgmt_non_veg,
+                }
             },
             3: {
-                "Govt": self.third_year_fee_govt,
-                "Mgmt": self.third_year_fee_mgmt,
+                "Govt": {
+                    "Govt_veg": self.third_year_fee_govt_veg,
+                    "Govt_non_veg": self.third_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "Mgmt_veg": self.third_year_fee_mgmt_veg,
+                    "Mgmt_non_veg": self.third_year_fee_mgmt_non_veg,
+                }
             },
             4: {
-                "Govt": self.fourth_year_fee_govt,
-                "Mgmt": self.fourth_year_fee_mgmt,
+                "Govt": {
+                    "Govt_veg": self.fourth_year_fee_govt_veg,
+                    "Govt_non_veg": self.fourth_year_fee_govt_non_veg,
+                },
+                "Mgmt": {
+                    "Mgmt_veg": self.fourth_year_fee_mgmt_veg,
+                    "Mgmt_non_veg": self.fourth_year_fee_mgmt_non_veg,
+                }
             },
         }
         print(year, quota)
@@ -114,6 +150,10 @@ class RoomBooking(models.Model):
         ('cancelled', 'Cancelled'),
         ('payment_not_done', 'Payment Not Done'), # Worst case scenario
     ]
+    FOOD_TYPE = [
+        ('Veg', "Veg"),
+        ('Non-veg', 'Non-Veg'),
+    ]
 
     user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)
     hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE)
@@ -122,6 +162,7 @@ class RoomBooking(models.Model):
         default='otp_pending', 
         choices=BOOKING_STATUS
     )
+    food_type = models.CharField('Food Type', default=False, choices=FOOD_TYPE, max_length=20)
     is_internal_booking = models.BooleanField(default=False)
     booked_at = models.DateTimeField(auto_now_add=True)
     otp_verified_at = models.DateTimeField(null=True, blank=True)
@@ -317,7 +358,6 @@ class RoomBooking(models.Model):
     #     print(f"Admin notification: Payment reference {self.payment_reference} submitted for booking {self.id}")
 
 class Penalty(models.Model):
-
     BOOKING_STATUS = [
         ('otp_pending', 'OTP Pending'),
         ('payment_pending', 'Payment Pending'),

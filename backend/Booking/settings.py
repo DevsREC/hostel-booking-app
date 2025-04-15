@@ -30,7 +30,7 @@ is_dev = ENVIRONMENT == 'development'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = config("DEBUG", False)
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']

@@ -8,7 +8,7 @@ class HostelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hostel
-        fields =  ['id', 'name', 'location', 'room_type', 'food_type', 'gender', 
+        fields =  ['id', 'name', 'location', 'room_type', 'is_veg', 'is_non_veg', 'gender', 
                   'person_per_room', 'no_of_rooms', 'total_capacity', 
                   'room_description', 'image', 'available_rooms', 'amount', 'bathroom_type']
     

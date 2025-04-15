@@ -15,10 +15,10 @@ INTERNAL_RESERVATION_PERCENT = 25
 # Register your models here.
 @admin.register(Hostel)
 class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
-    list_display = ('name', 'enable', 'location', 'room_type', 'food_type','person_per_room', 'no_of_rooms', 'mgmt_amount', 'govt_amount' ,'total_capacity', 'gender')
-    list_filter = ('location', 'gender', 'room_type', 'food_type')
+    list_display = ('name', 'enable', 'location', 'room_type', 'is_veg', 'is_non_veg','person_per_room', 'no_of_rooms' ,'total_capacity', 'gender')
+    list_filter = ('location', 'gender', 'room_type')
     resource_classes = [HostelResource]
-
+# 'mgmt_amount', 'govt_amount'
     def mgmt_amount(self, obj):
         return format_html(
             '<p class="text-xs">1 - ₹{}</p>'
@@ -75,10 +75,10 @@ class RoomStats(Hostel):
 
 @admin.register(RoomStats)
 class RoomBookingStats(ColumnToggleModelAdmin):
-    list_display = ['name', 'location', 'gender', 'room_type', 'food_type', 'person_per_room', 'total_capacity', 'rooms_booked', 'rooms_available', 'reserved_capacity']
+    list_display = ['name', 'location', 'gender', 'room_type', 'person_per_room', 'total_capacity', 'rooms_booked', 'rooms_available', 'reserved_capacity']
     default_selected_columns=list_display
     search_fields = ['name']
-    list_filter = ['name', 'location', 'gender', 'room_type', 'food_type']
+    list_filter = ['name', 'location', 'gender', 'room_type']
 
     def has_view_permission(self, request, obj = ...):
         return True
