@@ -53,8 +53,8 @@ export default function HostelDetail() {
     const getPrice = () => {
         if (!hostel?.amount) return "N/A";
         return selectedFoodType === "veg" 
-            ? hostel.amount.Mgmt_veg || "N/A" 
-            : hostel.amount.Mgmt_non_veg || "N/A";
+            ? hostel.amount.Mgmt_veg || hostel.amount.Govt_veg || "N/A" 
+            : hostel.amount.Mgmt_non_veg || hostel.amount.Govt_non_veg || "N/A";
     };
 
     const formatDate = (dateString: string) => {
