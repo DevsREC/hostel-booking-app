@@ -15,7 +15,7 @@ INTERNAL_RESERVATION_PERCENT = 25
 # Register your models here.
 @admin.register(Hostel)
 class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
-    list_display = ('name', 'enable', 'location', 'room_type', 'is_veg', 'is_non_veg','person_per_room', 'no_of_rooms' ,'total_capacity', 'gender')
+    list_display = ('id', 'name', 'enable', 'location', 'room_type', 'is_veg', 'is_non_veg','person_per_room', 'no_of_rooms' ,'total_capacity', 'gender')
     list_filter = ('location', 'gender', 'room_type')
     list_search = ('name', 'location')
     resource_classes = [HostelResource]

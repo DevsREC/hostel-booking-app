@@ -3,7 +3,11 @@ import django
 import csv
 from datetime import datetime, timedelta
 from django.utils import timezone
+import sys
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.dirname(current_dir)
+sys.path.append(backend_dir)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Booking.settings')
 django.setup()
 
@@ -12,7 +16,7 @@ from authentication.models import User
 
 def create_room_bookings():
     # Read the vacated list CSV file
-    with open('data/vacatedlist.csv', 'r') as file:
+    with open('data/girlsvacketed.csv', 'r') as file:
         reader = csv.reader(file)
         next(reader)  # Skip header
         next(reader)  # Skip title row
@@ -33,7 +37,7 @@ def create_room_bookings():
                     # Create room booking
                     RoomBooking.objects.create(
                         user=user,
-                        hostel_id=2,  # Hostel ID 2 as specified
+                        hostel_id=9,  # Hostel ID 2 as specified
                         status='confirmed',
                         food_type='Veg',  # Default to Veg
                         is_internal_booking=False,
@@ -43,7 +47,7 @@ def create_room_bookings():
                         payment_expiry=timezone.now() + timedelta(days=5)
                     )
                     
-                    print(f"Created booking for {user.name}")
+                    print(f"Created booking for {user.first_name}")
                 except User.DoesNotExist:
                     print(f"User with email {email} does not exist. Skipping...")
                 

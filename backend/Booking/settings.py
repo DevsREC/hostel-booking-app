@@ -210,12 +210,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
-GMAIL_API_CLIENT_ID=config("GMAIL_API_CLIENT_ID")
-GMAIL_API_CLIENT_SECRET=config("GMAIL_API_CLIENT_SECRET")
-GMAIL_API_REFRESH_TOKEN=config("GMAIL_API_REFRESH_TOKEN")
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.zeptomail.com'
+# EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
+# GMAIL_API_CLIENT_ID=config("GMAIL_API_CLIENT_ID")
+# GMAIL_API_CLIENT_SECRET=config("GMAIL_API_CLIENT_SECRET")
+# GMAIL_API_REFRESH_TOKEN=config("GMAIL_API_REFRESH_TOKEN")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.zeptomail.in'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
