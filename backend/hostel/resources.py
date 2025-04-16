@@ -1,11 +1,15 @@
-from import_export import resources
+from import_export import resources, fields
 from .models import *
 from unfold.admin import ModelAdmin
 
 class RoomBookingResource(resources.ModelResource):
+    amount = fields.Field(column_name='Amount', attribute='amount')
     class Meta:
         model = RoomBooking
-        fields = ['user', 'hostel', 'status', 'booked_at', 'otp_verified_at', 'payment_completed_at', 'payment_link', 'payment_reference', 'otp_code', 'otp_expiry', 'payment_expiry', 'admin_notes', 'verified_by']
+        fields = ['user', 'user__email', 'user__first_name', 'user__last_name', 'hostel', 'hostel__name', 'status', 'booked_at', 'otp_verified_at', 'otp_code', 'otp_expiry', 'amount', 'payment_expiry', 'verified_by']
+
+    def dehydrate_amount(self, obj):
+        return obj.get_amount()
 
 class HostelResource(resources.ModelResource):
     class Meta:

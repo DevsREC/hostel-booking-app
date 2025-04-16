@@ -130,11 +130,12 @@ class PaymentManagement(RoomBooking):
         verbose_name_plural = "Payment Management"
 
 @admin.register(PaymentManagement)
-class PaymentManagementAdmin(ModelAdmin):
+class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'amount', 'payment_status', 'payment_actions')
     list_filter = ('status', 'hostel')
     search_fields = ('user__email', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
+    resource_classes = [RoomBookingResource]
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
