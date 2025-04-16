@@ -114,6 +114,7 @@ export default function HostelsPage() {
                                         : "N/A"}
                                 </span>
                             </div>
+                            <p className="text-xs text-muted-foreground italic">*Total fees including academic and hostel fee</p>
                         </CardContent>
                         <CardFooter className="pt-2 pb-6">
                             <Link to={`/hostels/${hostel.id}`} className="w-full">
