@@ -35,16 +35,16 @@ def cancel_expired_bookings():
         
         send_cancellation_email(booking=booking)
     
-    send_email(
-        subject=f"OTP Cleanup Report - {count} Expired Bookings",
-        to_email="220701317@rajalakshmi.edu.in",
-        context={
-            "count": count,
-            "expired_bookings": expired_bookings_data,
-            "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-        },
-        template_name="otp_expired.html"
-    )
+    # send_email(
+    #     subject=f"OTP Cleanup Report - {count} Expired Bookings",
+    #     to_email="220701317@rajalakshmi.edu.in",
+    #     context={
+    #         "count": count,
+    #         "expired_bookings": expired_bookings_data,
+    #         "timestamp": timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+    #     },
+    #     template_name="otp_expired.html"
+    # )
     
     expired_otp_bookings.delete()
     print(f"[{timezone.now()}] Cancelled and deleted {count} expired OTP bookings.")
@@ -126,7 +126,7 @@ def send_cancellation_email(booking):
             "user_name": booking.user.first_name or "Valued Guest",
             "hostel_name": booking.hostel.name,
             "room_type": booking.hostel.room_type,
-            "food_type": "booking.hostel.food_type",
+            "food_type": booking.food_type,
         },
         template_name="booking_cancellation_template.html"
     )
@@ -144,7 +144,7 @@ def send_payment_expired_email(booking):
             "user_name": booking.user.first_name or "Valued Guest",
             "hostel_name": booking.hostel.name,
             "room_type": booking.hostel.room_type,
-            "food_type": 'booking.hostel.food_type',
+            "food_type": booking.food_type,
         },
         template_name="payment_expired.html"
     )

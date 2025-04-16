@@ -32,7 +32,7 @@ def create_user(row: Dict) -> None:
             parent_phone_number=row.get('parent_phone_number', '0000000000'),
             gender=row['gender'],
             tution_fee=True,
-            student_type='Mgmt'
+            student_type=row['student_type']
         )
         
         user.set_password("changeme@123")
@@ -68,9 +68,9 @@ def seed_data():
     """Main function to seed data using multiple processes."""
     # List of CSV files to process
     csv_files = [
-        '2thyear_final.csv',
-        '3thyear_final.csv',
-        '4thyear_final.csv'
+        '2th_final.csv',
+        '3th_final.csv',
+        '4th_final.csv'
     ]
     
     # Base directory where CSV files are located

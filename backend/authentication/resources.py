@@ -8,7 +8,7 @@ class UserResource(resources.ModelResource):
         report_skipped = True
         import_id_fields = ['email']
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'year',
-                 'roll_no', 'dept', 'tution_fee', 'gender', 'student_type']
+                 'roll_no', 'dept', 'tution_fee', 'gender', 'student_type', 'degree_type']
         exclude = ['password']
 
     def before_import_row(self, row, **kwargs):

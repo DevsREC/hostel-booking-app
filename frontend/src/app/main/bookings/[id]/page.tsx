@@ -68,9 +68,9 @@ export default function BookingDetail() {
   
   const getAmount = (booking: any) => {
     if (!booking?.hostel?.amount) return "N/A";
-    return booking.food_type === "veg" 
-      ? booking.hostel.amount.Mgmt_veg 
-      : booking.hostel.amount.Mgmt_non_veg;
+    return booking.food_type === "veg" || 'Veg'
+      ? booking.hostel.amount.Mgmt_veg || booking.hostel.amount.Govt_veg
+      : booking.hostel.amount.Mgmt_non_veg || booking.hostel.amount.Govt_non_veg;
   };
   
   const handleOTPVerification = async () => {
@@ -214,7 +214,11 @@ export default function BookingDetail() {
                     ? "secondary"
                     : booking.status === "confirmed"
                       ? "default"
-                      : "destructive"
+                      : booking.status === "vacated"
+                        ? "secondary"
+                        : booking.status === "course_completed"
+                          ? "secondary"
+                          : "destructive"
               }
               className="capitalize"
             >
@@ -226,7 +230,11 @@ export default function BookingDetail() {
                     ? "Confirmed"
                     : booking.status === "payment_not_done"
                       ? "Payment Not Done"
-                      : "Canceled"}
+                      : booking.status === "vacated"
+                        ? "Vacated"
+                        : booking.status === "course_completed"
+                          ? "Course Completed"
+                          : "Canceled"}
             </Badge>
           </div>
         </CardHeader>

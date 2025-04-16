@@ -149,10 +149,12 @@ class RoomBooking(models.Model):
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('payment_not_done', 'Payment Not Done'), # Worst case scenario
+        ('vacated', 'Vacated'),
+        ('course_completed', 'Course Completed'),
     ]
     FOOD_TYPE = [
         ('Veg', "Veg"),
-        ('Non-veg', 'Non-Veg'),
+        ('Non_veg', 'Non-Veg'),
     ]
 
     user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)
@@ -397,6 +399,8 @@ class Penalty(models.Model):
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('payment_not_done', 'Payment Not Done'),
+        ('vacated', 'Vacated'),
+        ('course_completed', 'Course Completed'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -30,10 +30,10 @@ is_dev = ENVIRONMENT == 'development'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = config("DEBUG", False)
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost', 'https://hostel.rajalakshmi.org']
 CSRF_COOKIE_NAME="csrftoken"
 CSRF_COOKIE_HTTPONLY=True
 CSRF_COOKIE_SECURE=False
@@ -202,7 +202,8 @@ COOKIE_DOMAIN = config('COOKIE_DOMAIN')
 
 CORS_ALLOWED_ORIGINS = [
   "http://localhost:3000",
-  'http://localhost:5173'  
+  'http://localhost:5173',
+  'https://hostel.rajalakshmi.org'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -339,33 +340,33 @@ UNFOLD = {
 if not is_dev:
     FORCE_SCRIPT_NAME = '/api'
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'INFO',  # Log level
-#             'class': 'logging.FileHandler',  # Use FileHandler
-#             'filename': os.path.join(BASE_DIR, 'log/debug7.log'),  # Log file path
-#             'formatter': 'verbose',  # Formatter (defined below)
-#         },
-#     },
-#     'formatters': {
-#         'verbose': {
-#             'format': '{asctime} {levelname} {name} {message}',  # Log format
-#             'style': '{',  # Use curly braces for formatting
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],  # Use the 'file' handler
-#             'level': 'INFO',  # Log level
-#             'propagate': True,  # Propagate logs to parent loggers
-#         },
-#         'hostel': {
-#             'handlers': ['file'],
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',  # Log level
+            'class': 'logging.FileHandler',  # Use FileHandler
+            'filename': os.path.join(BASE_DIR, 'log/debug7.log'),  # Log file path
+            'formatter': 'verbose',  # Formatter (defined below)
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',  # Log format
+            'style': '{',  # Use curly braces for formatting
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],  # Use the 'file' handler
+            'level': 'INFO',  # Log level
+            'propagate': True,  # Propagate logs to parent loggers
+        },
+        'hostel': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
