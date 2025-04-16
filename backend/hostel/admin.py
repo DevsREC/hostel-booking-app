@@ -131,12 +131,21 @@ class PaymentManagement(RoomBooking):
 
 @admin.register(PaymentManagement)
 class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
-    list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'amount', 'payment_status', 'payment_actions')
-    list_filter = ('status', 'hostel')
+    list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'is_payment_link_sent', 'amount', 'payment_status', 'payment_actions')
+    list_filter = ('status', 'hostel', 'status')
     search_fields = ('user__email', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
     resource_classes = [RoomBookingResource]
-    
+    actions = ['set_sent_payment_mail']
+
+    def set_sent_payment_mail(self, request, queryset):
+        updated = queryset.filter(status='payment_pending').update(is_payment_link_sent=True)
+        self.message_user(
+            request,
+            f"Successfully marked {updated} payment{'s' if updated != 1 else ''} as mail sent",
+        )
+    set_sent_payment_mail.short_description = 'Mark selected as payment mail sent'
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(status__in=['payment_pending', 'otp_pending'])

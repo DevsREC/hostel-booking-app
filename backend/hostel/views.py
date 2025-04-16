@@ -35,8 +35,6 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     'detail': 'No account found with this email. If you think it\'s a mistake, please contact the admin.',
                     'code': 'user_not_found'
                 }, status=status.HTTP_401_UNAUTHORIZED)
-            print("Bookings")
-            print(RoomBooking.objects.filter(user=user).exclude(status__in=['payment_not_done', 'cancelled']))
             if RoomBooking.objects.filter(
                 user = user,
             ).exclude(status__in=['payment_not_done', 'cancelled']).exists():
@@ -58,7 +56,6 @@ class InitiateBookingAPI(generics.CreateAPIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            print("Food Type: ", food_type)
             booking = RoomBooking.objects.create(
                 user = request.user,
                 hostel = hostel,
@@ -179,8 +176,6 @@ class VerifyOTPApi(generics.CreateAPIView):
         booking = get_object_or_404(RoomBooking, id=booking_id, user=request.user)
         otp_code = request.data.get('otp_code')
 
-        print("OTP Code:", otp_code)
-        # print("")
         if not otp_code:
             return Response(
                 {

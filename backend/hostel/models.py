@@ -168,6 +168,7 @@ class RoomBooking(models.Model):
     is_internal_booking = models.BooleanField(default=False)
     booked_at = models.DateTimeField(auto_now_add=True)
     otp_verified_at = models.DateTimeField(null=True, blank=True)
+    is_payment_link_sent = models.BooleanField(default=False)
     payment_completed_at = models.DateTimeField(null=True, blank=True)
     payment_link = models.URLField(max_length=255, blank=True, null=True)
     payment_reference = models.CharField(max_length=100, blank=True, null=True)
