@@ -4,7 +4,7 @@ import csv
 from datetime import datetime, timedelta
 from django.utils import timezone
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hostel_booking.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Booking.settings')
 django.setup()
 
 from hostel.models import RoomBooking
