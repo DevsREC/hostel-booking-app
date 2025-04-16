@@ -33,7 +33,7 @@ is_dev = ENVIRONMENT == 'development'
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost', 'https://hostel.rajalakshmi.org']
 CSRF_COOKIE_NAME="csrftoken"
 CSRF_COOKIE_HTTPONLY=True
 CSRF_COOKIE_SECURE=False
@@ -202,7 +202,8 @@ COOKIE_DOMAIN = config('COOKIE_DOMAIN')
 
 CORS_ALLOWED_ORIGINS = [
   "http://localhost:3000",
-  'http://localhost:5173'  
+  'http://localhost:5173',
+  'https://hostel.rajalakshmi.org'
 ]
 
 CORS_ALLOW_CREDENTIALS = True

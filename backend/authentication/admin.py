@@ -25,15 +25,15 @@ class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'parent_phone_number', 'gender')}),
-        ('Student info', {'fields': ('tution_fee', 'student_type')}),
+        ('Student info', {'fields': ('tution_fee', 'student_type', 'degree_type')}),
         ('Academic Info', {'fields': ('year', 'dept', 'roll_no')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser','groups', 'user_permissions')}),
         ('Other Info', {'fields': ('last_login', 'date_joined')}),
     )
 
-    list_filter = ['is_active', 'is_staff', 'is_superuser', 'year', 'dept', 'gender', 'tution_fee', 'student_type']
-    search_fields = ['email', 'first_name', 'last_name', 'phone_number']
-    list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'tution_fee','gender', 'student_type']
+    list_filter = ['is_active', 'is_staff', 'is_superuser', 'year', 'dept', 'gender', 'tution_fee', 'student_type', 'degree_type']
+    search_fields = ['email', 'first_name', 'last_name', 'phone_number', 'roll_no', 'dept']
+    list_display = ['email', 'uuid', 'first_name', 'last_name', 'year', 'dept', 'roll_no', 'tution_fee','gender', 'student_type', 'degree_type']
     resource_classes = [UserResource]
     
     def _create_log_entry(self, request, obj, change_message, change=False):
