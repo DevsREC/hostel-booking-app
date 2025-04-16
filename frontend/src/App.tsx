@@ -12,24 +12,23 @@ import { fetchCSRFToken, setupCSRF } from './utils/csrf'
 import { useEffect } from 'react'
 import ReactGA from "react-ga";
 
+ReactGA.initialize('G-XM14X6BYN5');
+
 function App() {
-  // const location = useLocation();
 
-  // useEffect(() => {
-  //   const TRACKING_ID = 'G-XM14X6BYN5';
-  //   ReactGA.initialize(TRACKING_ID);
+  useEffect(() => {
+    setupCSRF();
+    fetchCSRFToken().catch(error => {
+      console.error('Failed to fetch CSRF token:', error);
+    });
+    ReactGA.initialize('G-XM14X6BYN5');
 
-  //   setupCSRF();
-  //   fetchCSRFToken().catch(error => {
-  //     console.error('Failed to fetch CSRF token:', error);
-  //   });
-
-  //   ReactGA.pageview(location.pathname + location.search);
-  // }, []);
-
-  // useEffect(() => {
-  //   ReactGA.pageview(location.pathname + location.search)
-  // }, [location]);
+    ReactGA.send({
+      hitType: 'pageview',
+      page: window.location.pathname + window.location.search,
+      title: document.title
+    });
+  }, []);
 
   return (
     <MainLayout>
