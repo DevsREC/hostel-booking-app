@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useLocation } from 'react-router'
 import { MainLayout } from './components/global/main-layout'
 import Landing from './app/landing/page'
 import Login from './app/auth/login/login'
@@ -13,18 +13,24 @@ import { useEffect } from 'react'
 import ReactGA from "react-ga";
 
 function App() {
+  const location = useLocation();
+
   useEffect(() => {
+    const TRACKING_ID = 'G-XM14X6BYN5';
+    ReactGA.initialize(TRACKING_ID);
+
     setupCSRF();
-    
     fetchCSRFToken().catch(error => {
       console.error('Failed to fetch CSRF token:', error);
     });
+
+    ReactGA.pageview(location.pathname + location.search);
   }, []);
 
-  const TRACKING_ID = 'G-XM14X6BYN5';
+  useEffect(() => {
+    ReactGA.pageview(location.pathname + location.search)
+  }, [location]);
 
-  ReactGA.initialize(TRACKING_ID);
-  
   return (
     <MainLayout>
       <Routes>
