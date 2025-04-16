@@ -13,23 +13,23 @@ import { useEffect } from 'react'
 import ReactGA from "react-ga";
 
 function App() {
-  const location = useLocation();
+  // const location = useLocation();
 
-  useEffect(() => {
-    const TRACKING_ID = 'G-XM14X6BYN5';
-    ReactGA.initialize(TRACKING_ID);
+  // useEffect(() => {
+  //   const TRACKING_ID = 'G-XM14X6BYN5';
+  //   ReactGA.initialize(TRACKING_ID);
 
-    setupCSRF();
-    fetchCSRFToken().catch(error => {
-      console.error('Failed to fetch CSRF token:', error);
-    });
+  //   setupCSRF();
+  //   fetchCSRFToken().catch(error => {
+  //     console.error('Failed to fetch CSRF token:', error);
+  //   });
 
-    ReactGA.pageview(location.pathname + location.search);
-  }, []);
+  //   ReactGA.pageview(location.pathname + location.search);
+  // }, []);
 
-  useEffect(() => {
-    ReactGA.pageview(location.pathname + location.search)
-  }, [location]);
+  // useEffect(() => {
+  //   ReactGA.pageview(location.pathname + location.search)
+  // }, [location]);
 
   return (
     <MainLayout>
