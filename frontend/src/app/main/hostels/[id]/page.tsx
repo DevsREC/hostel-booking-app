@@ -210,6 +210,7 @@ export default function HostelDetail() {
                         <div className="bg-muted/50 p-4 rounded-lg">
                             <p className="text-3xl font-bold text-primary">₹{getPrice()}</p>
                             <p className="text-sm text-muted-foreground">{selectedFoodType} option</p>
+                            <p className="text-xs text-muted-foreground italic">*Total fees including academic and hostel fee</p>
                         </div>
                     </div>
                 </CardHeader>
@@ -319,6 +320,7 @@ export default function HostelDetail() {
                                 <div>
                                     <p className="text-muted-foreground mb-2">Total Fees</p>
                                     <p className="text-3xl font-bold text-primary">₹{getPrice()}</p>
+                                    <p className="text-xs text-muted-foreground italic">*Total fees including academic and hostel fee</p>
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground mb-2">Available</p>
