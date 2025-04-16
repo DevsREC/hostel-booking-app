@@ -49,7 +49,7 @@ class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel',)
-    search_fields = ('user__username', 'hostel__name', 'verified_by__username')
+    search_fields = ('user__first_name', 'hostel__name', 'verified_by__first_name')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
     
@@ -246,7 +246,6 @@ class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
             },
             template_name="booking_confirmation_template.html"
         )
-        print("Sent confirmation Mail")
 
     
     def send_rejection_email(self, booking):

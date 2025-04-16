@@ -114,7 +114,6 @@ class Hostel(models.Model):
                 }
             },
         }
-        print(year, quota)
         return amounts[year][quota]
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
@@ -223,6 +222,34 @@ class RoomBooking(models.Model):
             )
             self.delete()
             return
+        elif self.status == 'confirmed':
+            subject = "Booking Confirmed - Your Stay is Ready!"
+            to_email = self.user.email
+            
+            send_email(
+                subject=subject,
+                to_email=to_email,
+                context={
+                    "user_name": self.user.first_name or "Valued Guest",
+                    "hostel_name": self.hostel.name,
+                    "room_type": self.hostel.room_type,
+                    "food_type": self.food_type,
+                },
+                template_name="booking_confirmation_template.html"
+            )
+        elif self.status == 'cancelled':
+            subject = "Important Update on Your Hostel Booking Payment"
+            to_email = self.user.email
+            send_email(
+                subject=subject,
+                to_email=to_email,
+                context={
+                    "user_name": self.user.first_name or "Valued Guest",
+                    "hostel_name": self.hostel.name,
+                    "room_type": self.hostel.room_type,
+                },
+                template_name="payment_rejection_template.html"
+            )
         super().save(*args, **kwargs)
 
     def get_amount(self):
@@ -272,13 +299,8 @@ class RoomBooking(models.Model):
 
             year = self.user.year
             quota = self.user.student_type.title()
-            print("Year", year)
-            print("Quota", quota)
-            print("Food Type", self.food_type.lower())
-            print(amounts[year][quota][self.food_type.lower()])
             return amounts[year][quota][self.food_type.lower()]
         except Exception as e:
-            print("This guys fucked up")
             print(e)
             return 0
 
