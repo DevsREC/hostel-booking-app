@@ -49,6 +49,10 @@ class User(AbstractUser):
         ('Mgmt', 'Management'),
         ('Govt', 'Govt'),
     ]
+    DEGREE_TYPE = [
+        ('UG', 'UG'),
+        ('PG', 'PG')
+    ]
 
     username = None
 
@@ -58,13 +62,14 @@ class User(AbstractUser):
     year = models.IntegerField('Year', blank=False, default=0)
     dept = models.CharField('Department', max_length=50)
     roll_no = models.CharField('Roll No', max_length=50)
-    phone_number = models.CharField('Phone Number', max_length=20)
+    phone_number = models.CharField('Phone Number', max_length=50)
     parent_phone_number = models.CharField('Parent Ph. No.', max_length=20)
     gender = models.CharField('Gender', max_length=10, blank=False, choices=GENDER_CHOICES)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tution_fee = models.BooleanField(default=True)
     student_type = models.CharField(default='Mgmt', max_length=10, choices=STUDENT_TYPE)
-    
+    degree_type = models.CharField(default='UG', max_length=10, choices=DEGREE_TYPE)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
