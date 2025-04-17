@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router'
+import { Route, Routes } from 'react-router'
 import { MainLayout } from './components/global/main-layout'
 import Landing from './app/landing/page'
 import Login from './app/auth/login/login'
@@ -10,9 +10,7 @@ import DashboardLayout from './app/main/layout'
 import ForgotPassword from './app/auth/forgot-password/page'
 import { fetchCSRFToken, setupCSRF } from './utils/csrf'
 import { useEffect } from 'react'
-import ReactGA from "react-ga";
-
-ReactGA.initialize('G-XM14X6BYN5');
+import ReactGA from 'react-ga4'
 
 function App() {
 
@@ -21,12 +19,13 @@ function App() {
     fetchCSRFToken().catch(error => {
       console.error('Failed to fetch CSRF token:', error);
     });
-    ReactGA.initialize('G-XM14X6BYN5');
+  }, []);
 
+  useEffect(() => {
     ReactGA.send({
-      hitType: 'pageview',
-      page: window.location.pathname + window.location.search,
-      title: document.title
+      hitType: "Home Page",
+      page: "/",
+      title: "Hostel Booking App",
     });
   }, []);
 
