@@ -137,7 +137,7 @@ class Hostel(models.Model):
         ).count()
         
         total_available = self.total_capacity - booked_rooms
-        internal_reserved = int(self.total_capacity * (self.internal_reservation_percent / 100))
+        internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
         
         return min(total_available, internal_reserved)
     
@@ -194,8 +194,11 @@ class RoomBooking(models.Model):
         if self.user.gender != self.hostel.gender:
             raise ValidationError("User gender doesn't match hostel gender requirement")
         
-        # if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
-        if self.pk is None:
+        if self.is_internal_booking:
+            return
+
+        if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
+        # if self.pk is None:
             if self.is_internal_booking:
                 if self.hostel.admin_bookings_available() <= 0:
                     raise ValidationError("No more internal reservation slots available")

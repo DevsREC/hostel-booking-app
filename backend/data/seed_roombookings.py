@@ -16,40 +16,39 @@ from authentication.models import User
 
 def create_room_bookings():
     # Read the vacated list CSV file
-    with open('data/girlsvacketed.csv', 'r') as file:
+    with open('data/matched_roll_numbers_with_emails.csv', 'r') as file:
         reader = csv.reader(file)
-        next(reader)  # Skip header
-        next(reader)  # Skip title row
-        next(reader)  # Skip empty row
+        next(reader)  # Skip header row
         
         for row in reader:
-            if not row or not row[0]:  # Skip empty rows
+            if not row or len(row) < 2:  # Skip empty or incomplete rows
                 continue
                 
             try:
-                # Extract data from CSV
-                email = row[5].strip()
+                # Extract data from CSV (assuming format: Roll No., E-mail ID)
+                roll_number = row[0].strip()
+                email = row[1].strip()
                 
                 # Get existing user
                 try:
-                    user = User.objects.get(email=email)
+                    user = User.objects.get(roll_no=roll_number)
                     
                     # Create room booking
                     RoomBooking.objects.create(
                         user=user,
-                        hostel_id=9,  # Hostel ID 2 as specified
+                        hostel_id=7,  # Hostel ID 6 as specified
                         status='confirmed',
-                        food_type='Veg',  # Default to Veg
-                        is_internal_booking=False,
+                        food_type='Non_veg',  # Default to Non-veg
+                        is_internal_booking=True,
                         booked_at=timezone.now(),
                         otp_verified_at=timezone.now(),
                         payment_completed_at=timezone.now(),
                         payment_expiry=timezone.now() + timedelta(days=5)
                     )
                     
-                    print(f"Created booking for {user.first_name}")
+                    print(f"Created booking for {user.first_name} (Roll No: {roll_number})")
                 except User.DoesNotExist:
-                    print(f"User with email {email} does not exist. Skipping...")
+                    print(f"User with email {email} (Roll No: {roll_number}) does not exist. Skipping...")
                 
             except Exception as e:
                 print(f"Error processing row: {row}")
@@ -58,4 +57,4 @@ def create_room_bookings():
 if __name__ == '__main__':
     print("Starting to create room bookings...")
     create_room_bookings()
-    print("Finished creating room bookings!") 
+    print("Finished creating room bookings!")

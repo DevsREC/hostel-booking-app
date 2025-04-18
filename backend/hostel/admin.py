@@ -48,7 +48,7 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
 class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
-    list_filter = ('status', 'hostel',)
+    list_filter = ('status', 'hostel', 'hostel__location')
     search_fields = ('user__first_name', 'hostel__name', 'verified_by__first_name')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
@@ -98,16 +98,27 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         return False
     
     def booking_count(self, hostel):
-        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_verified', 'payment_pending', 'payment_not_done']).count()
+        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_verified', 'payment_pending']).count()
     
     def rooms_booked(self, hostel: Hostel):
         no_of_rooms_booked = self.booking_count(hostel)
         return str(no_of_rooms_booked)
     
     def rooms_available(self, hostel: Hostel):
-        booked_room_count = self.booking_count(hostel)
-        remaining_capacity = hostel.total_capacity - booked_room_count
-        return remaining_capacity
+        # booked_room_count = self.booking_count(hostel)
+
+        # remaining_capacity = hostel.total_capacity - booked_room_count
+        # return remaining_capacity
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_verified', 'payment_pending']
+        ).count()   
+
+        total_available = hostel.total_capacity - booked_rooms
+        internal_reserved = int(hostel.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        online_available = total_available - internal_reserved
+
+        return max(0, online_available)
     
     # def reserved_heads(self):
     #     booked_rooms = RoomBooking.objects.filter(
@@ -121,8 +132,15 @@ class RoomBookingStats(ColumnToggleModelAdmin):
     #     return min(total_available, internal_reserved)
 
     def reserved_capacity(self, hostel: Hostel):
-        return int(hostel.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
-    
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending']
+        ).count()
+        
+        total_available = hostel.total_capacity - booked_rooms
+        internal_reserved = int(hostel.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        
+        return min(total_available, internal_reserved)
 class PaymentManagement(RoomBooking):
     class Meta:
         proxy = True
@@ -225,11 +243,16 @@ class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
         return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
 
     def reject_payment(self, request, object_id):
-        booking = self.get_object(request, object_id)
-        if booking:
-            booking.update_status('cancelled', verified_by_user=request.user)
-            self.send_rejection_email(booking)
-        return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
+        try:
+            booking = self.get_object(request, object_id)
+            if booking:
+                booking.update_status('cancelled', verified_by_user=request.user)
+                self.send_rejection_email(booking)
+            return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
+        except Exception as e:
+            print(e)
+            return HttpResponseRedirect(reverse('admin:hostel_paymentmanagement_changelist'))
+        
 
     def send_confirmation_email(self, booking):
         subject = "Booking Confirmed - Your Stay is Ready!"

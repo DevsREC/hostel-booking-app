@@ -6,7 +6,7 @@ class RoomBookingResource(resources.ModelResource):
     amount = fields.Field(column_name='Amount', attribute='amount')
     class Meta:
         model = RoomBooking
-        fields = ['user', 'user__email', 'user__first_name', 'user__last_name', 'hostel', 'hostel__name', 'status', 'booked_at', 'otp_verified_at', 'otp_code', 'otp_expiry', 'amount', 'is_payment_link_sent', 'payment_expiry', 'verified_by']
+        fields = ['user', 'user__email', 'user__first_name', 'user__last_name', 'user__gender', 'hostel', 'hostel__name', 'status', 'booked_at', 'otp_verified_at', 'otp_code', 'otp_expiry', 'amount', 'is_payment_link_sent', 'payment_expiry', 'verified_by']
 
     def dehydrate_amount(self, obj):
         return obj.get_amount()

@@ -10,6 +10,7 @@ import PageNotFound from "../page-not-found/page";
 
 export default function Dashboard() {
   return (
+    // <div>Booking is currently stopped... Please stand by</div>
     <ProtectedRoute>
       <Routes>
         <Route path="/profile" element={<Profile />} />
