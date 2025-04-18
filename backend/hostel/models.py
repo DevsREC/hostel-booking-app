@@ -190,15 +190,44 @@ class RoomBooking(models.Model):
     class Meta:
         unique_together = ('user', 'hostel', 'status', 'booked_at')
 
-    def clean(self):
-        if self.user.gender != self.hostel.gender:
-            raise ValidationError("User gender doesn't match hostel gender requirement")
+    # def clean(self):
+    #     if self.user.gender != self.hostel.gender:
+    #         raise ValidationError("User gender doesn't match hostel gender requirement")
         
-        if self.is_internal_booking:
-            return
+    #     if self.is_internal_booking:
+    #         return
 
-        if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
-        # if self.pk is None:
+    #     if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
+    #     # if self.pk is None:
+    #         if self.is_internal_booking:
+    #             if self.hostel.admin_bookings_available() <= 0:
+    #                 raise ValidationError("No more internal reservation slots available")
+    #         else:
+    #             if not self.hostel.is_available():
+    #                 raise ValidationError("This hostel is currently not available")
+
+    def clean(self):
+        if self.pk:
+            original = RoomBooking.objects.get(pk=self.pk)
+            
+            if original.hostel_id != self.hostel_id:
+                if self.user.gender != self.hostel.gender:
+                    raise ValidationError("User gender doesn't match hostel gender requirement")
+                    
+                if self.is_internal_booking:
+                    if self.hostel.admin_bookings_available() <= 0:
+                        raise ValidationError("No more internal reservation slots available in the new hostel")
+                else:
+                    if not self.hostel.is_available():
+                        raise ValidationError("The new hostel is currently not available")
+            
+            elif not original.is_internal_booking and self.is_internal_booking:
+                if self.hostel.admin_bookings_available() <= 0:
+                    raise ValidationError("No more internal reservation slots available")
+        else:
+            if self.user.gender != self.hostel.gender:
+                raise ValidationError("User gender doesn't match hostel gender requirement")
+                
             if self.is_internal_booking:
                 if self.hostel.admin_bookings_available() <= 0:
                     raise ValidationError("No more internal reservation slots available")
