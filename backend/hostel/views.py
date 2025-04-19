@@ -137,7 +137,8 @@ class CancelBookingAPI(generics.CreateAPIView):
                         },
                         status=status.HTTP_400_BAD_REQUEST
                     )
-                booking.delete()
+                booking.status = 'cancelled'
+                booking.save()
                 return Response(
                     {
                         "message": "Booking cancelled successfully"

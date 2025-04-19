@@ -18,7 +18,7 @@ def create_room_bookings():
     # Read the vacated list CSV file
     with open('data/matched_roll_numbers_with_emails.csv', 'r') as file:
         reader = csv.reader(file)
-        next(reader)  # Skip header row
+        # next(reader)  # Skip header row
         
         for row in reader:
             if not row or len(row) < 2:  # Skip empty or incomplete rows
@@ -36,9 +36,9 @@ def create_room_bookings():
                     # Create room booking
                     RoomBooking.objects.create(
                         user=user,
-                        hostel_id=7,  # Hostel ID 6 as specified
+                        hostel_id=14,  # Hostel ID 6 as specified
                         status='confirmed',
-                        food_type='Non_veg',  # Default to Non-veg
+                        food_type='Veg',  # Default to Non-veg
                         is_internal_booking=True,
                         booked_at=timezone.now(),
                         otp_verified_at=timezone.now(),

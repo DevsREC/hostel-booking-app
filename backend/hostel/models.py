@@ -207,6 +207,8 @@ class RoomBooking(models.Model):
     #                 raise ValidationError("This hostel is currently not available")
 
     def clean(self):
+        # if self.is_internal_booking:
+        #     return
         if self.pk:
             original = RoomBooking.objects.get(pk=self.pk)
             
@@ -225,6 +227,9 @@ class RoomBooking(models.Model):
                 if self.hostel.admin_bookings_available() <= 0:
                     raise ValidationError("No more internal reservation slots available")
         else:
+            old_bookings = RoomBooking.objects.filter(user=self.user, status__in = ['payment_pending', 'otp_pending', 'confirmed'])
+            if old_bookings.exists():
+                raise ValidationError("Already an existing booking is found!")
             if self.user.gender != self.hostel.gender:
                 raise ValidationError("User gender doesn't match hostel gender requirement")
                 

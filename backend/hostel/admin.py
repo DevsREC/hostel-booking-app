@@ -49,7 +49,7 @@ class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel', 'hostel__location')
-    search_fields = ('user__first_name', 'hostel__name', 'verified_by__first_name')
+    search_fields = ('user__first_name', 'user__email', 'hostel__name', 'verified_by__first_name', 'user__roll_no')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
     
@@ -151,7 +151,7 @@ class PaymentManagement(RoomBooking):
 class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'is_payment_link_sent', 'amount', 'payment_status', 'payment_actions')
     list_filter = ('status', 'hostel', 'status')
-    search_fields = ('user__email', 'user__first_name', 'hostel__name', 'payment_reference')
+    search_fields = ('user__email', 'user__roll_no', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
     resource_classes = [RoomBookingResource]
     actions = ['set_sent_payment_mail']
