@@ -3,7 +3,7 @@ from authentication.utils import send_email
 import logging
 import os
 from subprocess import Popen, PIPE
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -216,3 +216,31 @@ def create_db_dump_and_send_email():
             template_name="db_backup_error.html"
         )
         return False
+    
+def extend_payment_expiry():
+    from .models import RoomBooking
+    """
+    Extends payment expiry by one day for all bookings with payment expiring today
+    """
+    # Get current date (start and end of day)
+    today = timezone.now().date()
+    start_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time()))
+    end_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.max.time()))
+    
+    # Find all bookings with payment status pending and expiry date today
+    expiring_bookings = RoomBooking.objects.filter(
+        status='payment_pending',
+        payment_expiry__gte=start_of_day,
+        payment_expiry__lte=end_of_day
+    )
+    
+    count = 0
+    for booking in expiring_bookings:
+        # Extend by one day
+        booking.payment_expiry = booking.payment_expiry + timedelta(days=1)
+        booking.admin_notes = (booking.admin_notes or "") + f"\nPayment expiry extended by 1 day on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        booking.save()
+        count += 1
+    
+    print(f"Successfully extended payment expiry for {count} bookings")
+    return count
