@@ -69,11 +69,11 @@ class DebarredAdmin(ModelAdmin):
 # @admin.register(BookingOTP)
 class VerificationCodeAdmin(ModelAdmin):
     list_display = ['user', 'code']
-    search_fields = ['user_email', 'user_first_name']
+    search_fields = ['user__email', 'user__first_name']
     autocomplete_fields = ['user']
 
 @admin.register(ForgetPassword)
 class ForgotPasswordAdmin(ModelAdmin):
     list_display = ['user', 'code']
-    search_fields = ['user_email', 'user_first_name']
+    search_fields = ['user__email', 'user__first_name']
     autocomplete_fields = ['user']

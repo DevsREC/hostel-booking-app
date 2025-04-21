@@ -96,7 +96,7 @@ def mark_expired_payment():
         send_payment_expired_email(booking)
         
         booking.status = 'payment_not_done'
-        booking.delete()
+        booking.save()
     
     if count > 0:
         send_email(
