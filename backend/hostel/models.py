@@ -208,6 +208,8 @@ class RoomBooking(models.Model):
 
     def clean(self):
 
+        # if self.is_internal_booking:
+        #     return
         if self.pk:
             original = RoomBooking.objects.get(pk=self.pk)
             
@@ -257,7 +259,7 @@ class RoomBooking(models.Model):
                 payment_expiry=self.payment_expiry,
                 admin_notes=self.admin_notes,
             )
-            self.delete()
+            self.save()
             return
         elif self.status == 'confirmed':
             subject = "Booking Confirmed - Your Stay is Ready!"
@@ -366,7 +368,7 @@ class RoomBooking(models.Model):
                 payment_expiry=self.payment_expiry,
                 admin_notes=self.admin_notes,
             )
-            self.delete()
+            self.save()
         else:
             self.save()
         return True
