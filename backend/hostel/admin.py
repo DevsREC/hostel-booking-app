@@ -46,9 +46,9 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
 
 @admin.register(RoomBooking)
 class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
-    list_display = ('user', 'hostel', 'status', 'booked_at','food_type', 'amount', 'verified_by',)
+    list_display = ('user', 'hostel', 'status', 'booked_at', 'payment_expiry','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
-    list_filter = ('status', 'hostel', 'hostel__location')
+    list_filter = ('status', 'hostel', 'hostel__location', 'payment_expiry')
     search_fields = ('user__first_name', 'user__email', 'hostel__name', 'verified_by__first_name', 'user__roll_no')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]

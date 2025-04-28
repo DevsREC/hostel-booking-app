@@ -32,7 +32,8 @@ def cancel_expired_bookings():
             'roll_no': booking.user.roll_no,
         }
         expired_bookings_data.append(booking_data)
-        
+        booking.status = 'cancelled'
+        booking.save()
         send_cancellation_email(booking=booking)
     
     # send_email(
@@ -46,7 +47,7 @@ def cancel_expired_bookings():
     #     template_name="otp_expired.html"
     # )
     
-    expired_otp_bookings.delete()
+    # expired_otp_bookings.delete()
     print(f"[{timezone.now()}] Cancelled and deleted {count} expired OTP bookings.")
     return count
 
@@ -226,12 +227,13 @@ def extend_payment_expiry():
     today = timezone.now().date()
     start_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time()))
     end_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.max.time()))
-    
+
     # Find all bookings with payment status pending and expiry date today
     expiring_bookings = RoomBooking.objects.filter(
         status='payment_pending',
         payment_expiry__gte=start_of_day,
-        payment_expiry__lte=end_of_day
+        payment_expiry__lte=end_of_day,
+        is_payment_link_sent=False,
     )
     
     count = 0
