@@ -14,4 +14,5 @@ class RoomBookingResource(resources.ModelResource):
 class HostelResource(resources.ModelResource):
     class Meta:
         model = Hostel
-        fields = ['name', 'location', 'room_type', 'food_type', 'gender', 'person_per_room', 'no_of_rooms', 'total_capacity', 'room_description', 'enable', 'bathroom_type', 'first_year_fee_mgmt', 'first_year_fee_govt', 'second_year_fee_mgmt', 'second_year_fee_govt', 'third_year_fee_mgmt', 'third_year_fee_govt', 'fourth_year_fee_mgmt', 'fourth_year_fee_govt']
+        fields = ['name', 'location', 'room_type', 'food_type', 'gender', 'person_per_room', 'no_of_rooms', 'total_capacity', 'room_description', 'enable', 'bathroom_type', 'first_year_fee_mgmt_veg', 'first_year_fee_mgmt_non_veg', 'first_year_fee_govt_veg', 'first_year_fee_govt_non_veg', 'second_year_fee_mgmt_veg', 'second_year_fee_mgmt_non_veg', 'second_year_fee_govt_veg', 'second_year_fee_govt_non_veg','third_year_fee_mgmt_veg','third_year_fee_mgmt_non_veg',
+        'third_year_fee_govt_veg','third_year_fee_govt_non_veg', 'fourth_year_fee_mgmt_veg','fourth_year_fee_mgmt_non_veg', 'fourth_year_fee_govt_veg', 'fourth_year_fee_govt_non_veg']

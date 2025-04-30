@@ -78,7 +78,7 @@ def send_payment_reminders():
     print("Script is running...")
     
     # Define cutoff date (April 24th, 2025)
-    cutoff_date = timezone.make_aware(datetime(2025, 4, 24, 23, 59, 59))
+    cutoff_date = timezone.make_aware(datetime(2025, 4, 29, 23, 59, 59))
     
     # Get bookings that have verified OTP on or before cutoff date but payment is still pending
     bookings = RoomBooking.objects.filter(
