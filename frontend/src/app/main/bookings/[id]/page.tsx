@@ -280,13 +280,13 @@ export default function BookingDetail() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Payment Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+              {/*<div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <IndianRupee className="h-4 w-4" />
                   <span className="text-sm">Total Amount</span>
                 </div>
                 <p className="font-medium text-xl text-primary">₹{getAmount(booking)}</p>
-              </div>
+              </div>*/}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Clock className="h-4 w-4" />

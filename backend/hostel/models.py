@@ -207,7 +207,6 @@ class RoomBooking(models.Model):
     #                 raise ValidationError("This hostel is currently not available")
 
     def clean(self):
-
         # if self.is_internal_booking:
         #     return
         if self.pk:
@@ -242,8 +241,10 @@ class RoomBooking(models.Model):
                     raise ValidationError("This hostel is currently not available")
 
     def save(self, *args, **kwargs):
+        print("Saving RoomBooking instance", self.status, self.user)
         self.clean()
-        if self.status == 'payment_not_done':
+        print("After clean",)
+        if self.status.strip() == 'payment_not_done':
             Penalty.objects.create(
                 user=self.user,
                 hostel=self.hostel,
@@ -259,12 +260,14 @@ class RoomBooking(models.Model):
                 payment_expiry=self.payment_expiry,
                 admin_notes=self.admin_notes,
             )
-            self.save()
+            super().save(*args, **kwargs)
             return
-        elif self.status == 'confirmed':
+        elif self.status.strip() == 'confirmed':
+            print("Mail triggered")
             subject = "Booking Confirmed - Your Stay is Ready!"
             to_email = self.user.email
-            
+            self.status = 'confirmed'
+            self.payment_completed_at = timezone.now()
             send_email(
                 subject=subject,
                 to_email=to_email,
@@ -276,7 +279,8 @@ class RoomBooking(models.Model):
                 },
                 template_name="booking_confirmation_template.html"
             )
-        elif self.status == 'cancelled':
+        elif self.status.strip() == 'cancelled':
+            self.status = 'cancelled'
             subject = "Important Update on Your Hostel Booking Payment"
             to_email = self.user.email
             send_email(
@@ -289,6 +293,7 @@ class RoomBooking(models.Model):
                 },
                 template_name="payment_rejection_template.html"
             )
+        print("After conditions", self.user)
         super().save(*args, **kwargs)
 
     def get_amount(self):

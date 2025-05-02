@@ -45,7 +45,7 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
         )
 
 @admin.register(RoomBooking)
-class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
+class RoomBookingAdmin(ImportExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'payment_expiry','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
     list_filter = ('status', 'hostel', 'hostel__location', 'payment_expiry')
@@ -63,7 +63,10 @@ class RoomBookingAdmin(ExportActionModelAdmin, ModelAdmin):
             if original_obj.status != obj.status:
                 obj.verified_by = request.user
         super().save_model(request, obj, form, change)
-
+        
+    def generate_log_entries(self, result, request):
+        """Override to disable logging"""
+        pass
     # def confirm_payment(self, request, queryset):
     #     queryset.filter(status='payment_verified').update(status='confirmed')
     #     self.message_user(request, "Selected bookings confirmed")
