@@ -48,7 +48,7 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
 class RoomBookingAdmin(ImportExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'payment_expiry','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
-    list_filter = ('status', 'hostel', 'hostel__location', 'payment_expiry')
+    list_filter = ('status', 'hostel', 'hostel__location', 'payment_expiry', 'is_payment_link_sent')
     search_fields = ('user__first_name', 'user__email', 'hostel__name', 'verified_by__first_name', 'user__roll_no')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
@@ -83,7 +83,7 @@ class RoomStats(Hostel):
 
 @admin.register(RoomStats)
 class RoomBookingStats(ColumnToggleModelAdmin):
-    list_display = ['name', 'location', 'gender', 'room_type', 'person_per_room', 'total_capacity', 'rooms_booked', 'rooms_available', 'reserved_capacity']
+    list_display = ['name', 'location', 'gender', 'room_type', 'person_per_room', 'total_capacity', 'capacity_filled', 'capacity_available', 'reserved_capacity']
     default_selected_columns=list_display
     search_fields = ['name']
     list_filter = ['name', 'location', 'gender', 'room_type']
@@ -101,20 +101,20 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         return False
     
     def booking_count(self, hostel):
-        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_verified', 'payment_pending']).count()
+        return RoomBooking.objects.filter(hostel=hostel, status__in=['confirmed', 'payment_pending']).count()
     
-    def rooms_booked(self, hostel: Hostel):
+    def capacity_filled(self, hostel: Hostel):
         no_of_rooms_booked = self.booking_count(hostel)
         return str(no_of_rooms_booked)
     
-    def rooms_available(self, hostel: Hostel):
+    def capacity_available(self, hostel: Hostel):
         # booked_room_count = self.booking_count(hostel)
 
         # remaining_capacity = hostel.total_capacity - booked_room_count
         # return remaining_capacity
         booked_rooms = RoomBooking.objects.filter(
             hostel=hostel, 
-            status__in=['confirmed', 'payment_verified', 'payment_pending']
+            status__in=['confirmed', 'payment_pending']
         ).count()   
 
         total_available = hostel.total_capacity - booked_rooms
@@ -153,7 +153,7 @@ class PaymentManagement(RoomBooking):
 @admin.register(PaymentManagement)
 class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'is_payment_link_sent', 'amount', 'payment_status', 'payment_actions')
-    list_filter = ('status', 'hostel', 'status')
+    list_filter = ('status', 'hostel', 'status', 'is_payment_link_sent')
     search_fields = ('user__email', 'user__roll_no', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
     resource_classes = [RoomBookingResource]

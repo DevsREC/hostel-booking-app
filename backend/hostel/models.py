@@ -118,7 +118,7 @@ class Hostel(models.Model):
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status__in=['confirmed', 'payment_verified', 'payment_pending']
+            status__in=['confirmed', 'payment_pending']
         ).count()   
 
         total_available = self.total_capacity - booked_rooms
@@ -133,7 +133,7 @@ class Hostel(models.Model):
     def admin_bookings_available(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status__in=['confirmed', 'payment_pending', 'otp_pending']
+            status__in=['confirmed', 'payment_pending',]
         ).count()
         
         total_available = self.total_capacity - booked_rooms
