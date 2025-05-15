@@ -306,7 +306,7 @@ export default function BookingDetail() {
                     </p>
                   </div>
                 )}
-              {booking.status === "payment_pending" &&
+              {/* {booking.status === "payment_pending" &&
                 booking.payment_expiry && (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -317,10 +317,10 @@ export default function BookingDetail() {
                       {formatDate(booking.payment_expiry)}
                     </p>
                   </div>
-                )}
+                )} */}
             </div>
 
-            {booking.status === "payment_pending" && (
+            {/* {booking.status === "payment_pending" && (
               <div className="bg-amber-50 p-4 rounded-lg mt-4">
                 <div className="flex gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -335,7 +335,7 @@ export default function BookingDetail() {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {booking.status === "otp_pending" && (
               <div className="bg-amber-50 p-4 rounded-lg mt-4">

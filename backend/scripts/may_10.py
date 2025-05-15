@@ -42,7 +42,7 @@ def process_booking_extension(booking, new_expiry, expiry_formatted):
         # Send payment extension email
         amount = booking.get_amount()
         
-        subject = "IMPORTANT: Your Hostel Payment Deadline Extended"
+        subject = "PENDING: Fee Payment"
         to_email = booking.user.email
         
         send_email(
@@ -82,17 +82,17 @@ def extend_payment_deadlines():
     now = timezone.now()
     
     # Get bookings with payment expiry on May 5, 2025
-    target_date_start = timezone.make_aware(datetime(2025, 5, 5, 0, 0, 0))
-    target_date_end = timezone.make_aware(datetime(2025, 5, 5, 23, 59, 59))
+    target_date_start = timezone.make_aware(datetime(2025, 5, 15, 0, 0, 0))
+    target_date_end = timezone.make_aware(datetime(2025, 5, 19, 23, 59, 59))
     
     # New expiry date (May 10, 2025 at 11:59 PM)
-    new_expiry_date = timezone.make_aware(datetime(2025, 5, 10, 23, 59, 59))
+    new_expiry_date = timezone.make_aware(datetime(2025, 5, 20, 23, 59, 59))
     
     bookings = RoomBooking.objects.filter(
         status='payment_pending',
         payment_expiry__gte=target_date_start,
         payment_expiry__lte=target_date_end,
-        is_payment_link_sent=True  # Only extend deadlines for bookings that received payment links
+        # is_payment_link_sent=False  # Only extend deadlines for bookings that received payment links
     )
     
     booking_count = bookings.count()

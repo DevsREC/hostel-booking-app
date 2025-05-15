@@ -74,10 +74,11 @@
     <div class="content">
         <p>Dear {{ user_name }},</p>
         
-        <p>We hope this email finds you well. We are writing to inform you that your hostel booking payment deadline has been <strong>extended by one day</strong>.</p>
+        <!-- <p>We hope this email finds you well. We are writing to inform you that your hostel booking payment deadline has been <strong>extended by one day</strong>.</p> -->
         
         <div class="notice">
-            <p><strong>Good News:</strong> Your payment deadline has been extended from <strong>{{ old_payment_expiry_date }}</strong> to <strong>{{ payment_expiry_date }}</strong>.</p>
+            <p>Pay the fees asap to confirm your Hostel Booking!</p>
+            <!-- <p><strong>Good News:</strong> Your payment deadline has been extended from <strong>{{ old_payment_expiry_date }}</strong> to <strong>{{ payment_expiry_date }}</strong>.</p> -->
         </div>
         
         <div class="details">
@@ -86,22 +87,22 @@
             <p><strong>Room Type:</strong> {{ room_type }}</p>
             <p><strong>Food Type:</strong> {{ food_type }}</p>
             <p><strong>Amount Due:</strong> ₹{{ amount }}</p>
-            <p><strong>New Payment Deadline:</strong> {{ payment_expiry_date }}</p>
+            <!-- <p><strong>New Payment Deadline:</strong> {{ payment_expiry_date }}</p> -->
         </div>
 
         <div class="warning">
-            <p><strong>Important:</strong> If payment is not received by the new deadline, your booking will be automatically cancelled.</p>
+            <p><strong>Important:</strong> If payment is not received, your booking will be automatically cancelled.</p>
         </div>
         
         <div class="warning">
-            <p><strong>Note:</strong> After making the payment, please confirm the same with the accounts department by tomorrow to confirm your booking.</p>
+            <p><strong>Note:</strong> After making the payment, please confirm the same with the accounts department to confirm your booking.</p>
         </div>
         
-        <p>To complete your payment and secure your booking, please click the button below:</p>
+        <!-- <p>To complete your payment and secure your booking, please click the button below:</p> -->
         
-        <div style="text-align: center;">
+        <!-- <div style="text-align: center;">
             <a href="{{ payment_link }}" class="button">Make Payment Now</a>
-        </div>
+        </div> -->
         
         <p>If you encounter any issues during the payment process or have any questions, please contact our support team immediately at <a href="mailto:rhms.admin@rajalakshmi.edu.in">support</a>.</p>
     </div>
