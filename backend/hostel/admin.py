@@ -81,10 +81,111 @@ class RoomStats(Hostel):
     class Meta:
         proxy = True
 
+    @property
+    def capacity_filled(self):
+        return RoomBooking.objects.filter(
+            hostel=self, 
+            status__in=['confirmed', 'payment_pending']
+        ).count()
+
+    @property
+    def capacity_available(self):
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=self, 
+            status__in=['confirmed', 'payment_pending']
+        ).count()   
+        total_available = self.total_capacity - booked_rooms
+        internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        online_available = total_available - internal_reserved
+        return max(0, online_available)
+
+    @property
+    def payment_pending(self):
+        return RoomBooking.objects.filter(
+            hostel=self, 
+            status__in=['payment_pending', 'otp_pending']
+        ).count()
+
+    @property
+    def year_split_up(self):
+        first_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=1
+        ).count()
+        second_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=2
+        ).count()
+        third_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=3
+        ).count()
+        fourth_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=4
+        ).count()
+        
+        return format_html(
+            "1 - {}<br/>2 - {}<br/>3 - {}<br/>4 - {}",
+            first_year_count,
+            second_year_count,
+            third_year_count,
+            fourth_year_count
+        )
+
+    @property
+    def reserved_capacity(self):
+        booked_rooms = RoomBooking.objects.filter(
+            hostel=self, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending']
+        ).count()
+        total_available = self.total_capacity - booked_rooms
+        internal_reserved = int(self.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
+        return min(total_available, internal_reserved)
+    
+class RoomStatsResource(resources.ModelResource):
+    capacity_filled = fields.Field(column_name='capacity_filled')
+    capacity_available = fields.Field(column_name='capacity_available')
+    payment_pending = fields.Field(column_name='payment_pending')
+    year_split_up = fields.Field(column_name='year_split_up')
+    reserved_capacity = fields.Field(column_name='reserved_capacity')
+
+    class Meta:
+        model = RoomStats
+        fields = ['name', 'location', 'gender', 'room_type', 'person_per_room', 
+                 'total_capacity', 'capacity_filled', 'year_split_up', 
+                 'capacity_available', 'reserved_capacity', 'payment_pending']
+        export_order = fields
+
+    def dehydrate_capacity_filled(self, hostel):
+        admin_class = RoomBookingStats(model=RoomStats, admin_site=admin.site)
+        return admin_class.capacity_filled(hostel)
+
+    def dehydrate_capacity_available(self, hostel):
+        admin_class = RoomBookingStats(model=RoomStats, admin_site=admin.site)
+        return admin_class.capacity_available(hostel)
+
+    def dehydrate_payment_pending(self, hostel):
+        admin_class = RoomBookingStats(model=RoomStats, admin_site=admin.site)
+        return admin_class.payment_pending(hostel)
+
+    def dehydrate_year_split_up(self, hostel):
+        admin_class = RoomBookingStats(model=RoomStats, admin_site=admin.site)
+        return admin_class.year_split_up(hostel).replace('<br/>', ' | ')
+
+    def dehydrate_reserved_capacity(self, hostel):
+        admin_class = RoomBookingStats(model=RoomStats, admin_site=admin.site)
+        return admin_class.reserved_capacity(hostel)
+    
 @admin.register(RoomStats)
-class RoomBookingStats(ColumnToggleModelAdmin):
-    list_display = ['name', 'location', 'gender', 'room_type', 'person_per_room', 'total_capacity', 'capacity_filled', 'capacity_available', 'reserved_capacity']
+class RoomBookingStats(ExportActionModelAdmin, ModelAdmin):
+    list_display = ['name', 'location', 'gender', 'room_type', 'person_per_room', 'total_capacity', 'capacity_filled', 'year_split_up', 'payment_pending', 'capacity_available', 'reserved_capacity']
     default_selected_columns=list_display
+    resource_classes = [RoomStatsResource]
     search_fields = ['name']
     list_filter = ['name', 'location', 'gender', 'room_type']
 
@@ -123,6 +224,12 @@ class RoomBookingStats(ColumnToggleModelAdmin):
 
         return max(0, online_available)
     
+    def payment_pending(self, hostel: Hostel):
+        return RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['payment_pending', 'otp_pending']
+        ).count()
+    
     # def reserved_heads(self):
     #     booked_rooms = RoomBooking.objects.filter(
     #         hostel=self.hostel, 
@@ -134,6 +241,36 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         
     #     return min(total_available, internal_reserved)
 
+    def year_split_up(self, hostel: Hostel):
+        first_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=1
+        ).count()
+        second_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=2
+        ).count()
+        third_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=3
+        ).count()
+        fourth_year_count = RoomBooking.objects.filter(
+            hostel=hostel, 
+            status__in=['confirmed', 'payment_pending', 'otp_pending'],
+            user__year=4
+        ).count()
+        
+        return format_html(
+            "1 - {}<br/>2 - {}<br/>3 - {}<br/>4 - {}",
+            first_year_count,
+            second_year_count,
+            third_year_count,
+            fourth_year_count
+        )
+        
     def reserved_capacity(self, hostel: Hostel):
         booked_rooms = RoomBooking.objects.filter(
             hostel=hostel, 
@@ -144,6 +281,7 @@ class RoomBookingStats(ColumnToggleModelAdmin):
         internal_reserved = int(hostel.total_capacity * (INTERNAL_RESERVATION_PERCENT / 100))
         
         return min(total_available, internal_reserved)
+    
 class PaymentManagement(RoomBooking):
     class Meta:
         proxy = True
@@ -292,5 +430,5 @@ class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
 class PenaltyAdmin(ModelAdmin):
     list_display = ['user', 'hostel', 'payment_expiry', 'status']
     list_filter = list_display
-    search_fields = ['user', 'hostel']
+    search_fields = ['user__roll_no', 'user__email',]
     # readonly_fields = list_display
