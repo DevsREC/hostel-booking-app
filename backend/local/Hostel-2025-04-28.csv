@@ -1,0 +1,17 @@
+name,location,room_type,gender,person_per_room,no_of_rooms,total_capacity,room_description,enable,bathroom_type
+Type G - 6 Non AC C,GH1 (BH3),NON-AC,F,6,13,78,6-person Non-AC room with basic amenities and vegetarian food option,1,Common
+Type F - 4 Non AC A,GH2,NON-AC,F,4,178,712,4-person Non-AC room with premium amenities and vegetarian food option,1,Attached
+Type E - 4 Non AC C,GH3 (BH1),NON-AC,F,4,19,76,4-person Non-AC room with basic amenities and vegetarian food option,1,Common
+Type D - 3 Non AC C,GH3 (BH1),NON-AC,F,3,80,240,3-person Non-AC room with basic amenities and vegetarian food option,1,Common
+Type C - 3 AC A,GH3 (BH1),AC,F,3,12,36,3-person AC room with premium amenities and vegetarian food option,1,Attached
+Type B - 2 Non AC C (GH3),GH3 (BH1),NON-AC,F,2,43,86,2-person Non-AC room with basic amenities and vegetarian food option,1,Common
+Type B - 2 Non AC C (GH1),GH1 (BH3),NON-AC,F,2,118,236,2-person Non-AC room with basic amenities and vegetarian food option,1,Common
+Type A - 2 AC A (GH3),GH3 (BH1),AC,F,2,6,12,2-person AC room with premium amenities and vegetarian food option,1,Attached
+Type A - 2 AC A (GH2),GH2,AC,F,2,27,54,2-person AC room with premium amenities and vegetarian food option,0,Attached
+Type A - 2 AC A (GH1),GH1 (BH3),AC,F,2,6,12,2-person AC room with premium amenities and vegetarian food option,0,Attached
+Type F - 6 Non AC C,Habitat,NON-AC,M,6,240,1440,6-person Non-AC room with basic amenities and non-vegetarian food option,1,Common
+Type E - 5 Non AC C,Thandalam,NON-AC,M,5,27,135,5-person Non-AC room with basic amenities and non-vegetarian food option,1,Common
+Type D - 4 Non AC C,Habitat,NON-AC,M,4,152,608,4-person Non-AC room with premium amenities and non-vegetarian food option,1,Common
+Type C - 4 AC A,BH2,AC,M,4,73,292,4-person AC room with premium amenities and vegetarian food option,1,Attached
+Type B - 3 Non AC C,Thandalam,NON-AC,M,3,2,6,3-person Non-AC room with basic amenities and non-vegetarian food option,1,Common
+Type A - 2 AC A,BH2,AC,M,2,30,60,2-person AC room with basic amenities and vegetarian food option,0,Attached
