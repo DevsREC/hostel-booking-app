@@ -6,7 +6,7 @@ from authentication.utils import send_email
 from django.contrib.auth.hashers import make_password
 from datetime import timedelta, time, datetime
 
-INTERNAL_RESERVATION_PERCENT = 25
+INTERNAL_RESERVATION_PERCENT = 0
 
 # Create your models here.
 class Hostel(models.Model):
@@ -223,28 +223,28 @@ class RoomBooking(models.Model):
                     raise ValidationError("This hostel is currently not available")
 
     def save(self, *args, **kwargs):
-        print("Saving RoomBooking instance", self.status, self.user)
+        # print("Saving RoomBooking instance", self.status, self.user)
         self.clean()
-        print("After clean",)
-        if self.status.strip() == 'payment_not_done':
-            Penalty.objects.create(
-                user=self.user,
-                hostel=self.hostel,
-                status=self.status,
-                is_internal_booking=self.is_internal_booking,
-                booked_at=self.booked_at,
-                otp_verified_at=self.otp_verified_at,
-                payment_completed_at=self.payment_completed_at,
-                payment_link=self.payment_link,
-                payment_reference=self.payment_reference,
-                otp_code=self.otp_code,
-                otp_expiry=self.otp_expiry,
-                payment_expiry=self.payment_expiry,
-                admin_notes=self.admin_notes,
-            )
-            super().save(*args, **kwargs)
-            return
-        elif self.status.strip() == 'confirmed':
+        # print("After clean",)
+        # if self.status.strip() == 'payment_not_done':
+        #     Penalty.objects.create(
+        #         user=self.user,
+        #         hostel=self.hostel,
+        #         status=self.status,
+        #         is_internal_booking=self.is_internal_booking,
+        #         booked_at=self.booked_at,
+        #         otp_verified_at=self.otp_verified_at,
+        #         payment_completed_at=self.payment_completed_at,
+        #         payment_link=self.payment_link,
+        #         payment_reference=self.payment_reference,
+        #         otp_code=self.otp_code,
+        #         otp_expiry=self.otp_expiry,
+        #         payment_expiry=self.payment_expiry,
+        #         admin_notes=self.admin_notes,
+        #     )
+        #     super().save(*args, **kwargs)
+        #     return
+        if self.status.strip() == 'confirmed':
             print("Mail triggered")
             subject = "Booking Confirmed - Your Stay is Ready!"
             to_email = self.user.email
