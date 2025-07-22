@@ -6,7 +6,7 @@ from authentication.utils import send_email
 from django.contrib.auth.hashers import make_password
 from datetime import timedelta, time, datetime
 
-INTERNAL_RESERVATION_PERCENT = 25
+INTERNAL_RESERVATION_PERCENT = 0
 
 # Create your models here.
 class Hostel(models.Model):
@@ -118,7 +118,7 @@ class Hostel(models.Model):
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status__in=['confirmed', 'payment_verified', 'payment_pending']
+            status__in=['confirmed', 'payment_pending']
         ).count()   
 
         total_available = self.total_capacity - booked_rooms
@@ -133,7 +133,7 @@ class Hostel(models.Model):
     def admin_bookings_available(self):
         booked_rooms = RoomBooking.objects.filter(
             hostel=self, 
-            status__in=['confirmed', 'payment_pending', 'otp_pending']
+            status__in=['confirmed', 'payment_pending',]
         ).count()
         
         total_available = self.total_capacity - booked_rooms
@@ -190,26 +190,7 @@ class RoomBooking(models.Model):
     class Meta:
         unique_together = ('user', 'hostel', 'status', 'booked_at')
 
-    # def clean(self):
-    #     if self.user.gender != self.hostel.gender:
-    #         raise ValidationError("User gender doesn't match hostel gender requirement")
-        
-    #     if self.is_internal_booking:
-    #         return
-
-    #     if self.pk is None or self.status not in ['confirmed', 'payment_verified']:
-    #     # if self.pk is None:
-    #         if self.is_internal_booking:
-    #             if self.hostel.admin_bookings_available() <= 0:
-    #                 raise ValidationError("No more internal reservation slots available")
-    #         else:
-    #             if not self.hostel.is_available():
-    #                 raise ValidationError("This hostel is currently not available")
-
     def clean(self):
-
-        # if self.is_internal_booking:
-        #     return
         if self.pk:
             original = RoomBooking.objects.get(pk=self.pk)
             
@@ -242,29 +223,33 @@ class RoomBooking(models.Model):
                     raise ValidationError("This hostel is currently not available")
 
     def save(self, *args, **kwargs):
+        # print("Saving RoomBooking instance", self.status, self.user)
         self.clean()
-        if self.status == 'payment_not_done':
-            Penalty.objects.create(
-                user=self.user,
-                hostel=self.hostel,
-                status=self.status,
-                is_internal_booking=self.is_internal_booking,
-                booked_at=self.booked_at,
-                otp_verified_at=self.otp_verified_at,
-                payment_completed_at=self.payment_completed_at,
-                payment_link=self.payment_link,
-                payment_reference=self.payment_reference,
-                otp_code=self.otp_code,
-                otp_expiry=self.otp_expiry,
-                payment_expiry=self.payment_expiry,
-                admin_notes=self.admin_notes,
-            )
-            self.save()
-            return
-        elif self.status == 'confirmed':
+        # print("After clean",)
+        # if self.status.strip() == 'payment_not_done':
+        #     Penalty.objects.create(
+        #         user=self.user,
+        #         hostel=self.hostel,
+        #         status=self.status,
+        #         is_internal_booking=self.is_internal_booking,
+        #         booked_at=self.booked_at,
+        #         otp_verified_at=self.otp_verified_at,
+        #         payment_completed_at=self.payment_completed_at,
+        #         payment_link=self.payment_link,
+        #         payment_reference=self.payment_reference,
+        #         otp_code=self.otp_code,
+        #         otp_expiry=self.otp_expiry,
+        #         payment_expiry=self.payment_expiry,
+        #         admin_notes=self.admin_notes,
+        #     )
+        #     super().save(*args, **kwargs)
+        #     return
+        if self.status.strip() == 'confirmed':
+            print("Mail triggered")
             subject = "Booking Confirmed - Your Stay is Ready!"
             to_email = self.user.email
-            
+            self.status = 'confirmed'
+            self.payment_completed_at = timezone.now()
             send_email(
                 subject=subject,
                 to_email=to_email,
@@ -276,7 +261,8 @@ class RoomBooking(models.Model):
                 },
                 template_name="booking_confirmation_template.html"
             )
-        elif self.status == 'cancelled':
+        elif self.status.strip() == 'cancelled':
+            self.status = 'cancelled'
             subject = "Important Update on Your Hostel Booking Payment"
             to_email = self.user.email
             send_email(
@@ -289,6 +275,7 @@ class RoomBooking(models.Model):
                 },
                 template_name="payment_rejection_template.html"
             )
+        print("After conditions", self.user)
         super().save(*args, **kwargs)
 
     def get_amount(self):

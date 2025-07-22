@@ -280,13 +280,13 @@ export default function BookingDetail() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Payment Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+              {/*<div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <IndianRupee className="h-4 w-4" />
                   <span className="text-sm">Total Amount</span>
                 </div>
                 <p className="font-medium text-xl text-primary">₹{getAmount(booking)}</p>
-              </div>
+              </div>*/}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Clock className="h-4 w-4" />
@@ -306,7 +306,7 @@ export default function BookingDetail() {
                     </p>
                   </div>
                 )}
-              {booking.status === "payment_pending" &&
+              {/* {booking.status === "payment_pending" &&
                 booking.payment_expiry && (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -317,10 +317,10 @@ export default function BookingDetail() {
                       {formatDate(booking.payment_expiry)}
                     </p>
                   </div>
-                )}
+                )} */}
             </div>
 
-            {booking.status === "payment_pending" && (
+            {/* {booking.status === "payment_pending" && (
               <div className="bg-amber-50 p-4 rounded-lg mt-4">
                 <div className="flex gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -335,7 +335,7 @@ export default function BookingDetail() {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {booking.status === "otp_pending" && (
               <div className="bg-amber-50 p-4 rounded-lg mt-4">
