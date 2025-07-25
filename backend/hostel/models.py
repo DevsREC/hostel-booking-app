@@ -62,6 +62,8 @@ class Hostel(models.Model):
     fourth_year_fee_govt_veg = models.IntegerField(blank=False, null=False, default=0)
     fourth_year_fee_govt_non_veg = models.IntegerField(blank=False, null=False, default=0)
     
+    special_fees_transport = models.IntegerField(blank=False, null=True, default=0)
+    
     def __str__(self):
         return f"{self.name}-{self.location}-{self.room_type}-{self.person_per_room}"
     
@@ -477,3 +479,15 @@ class Penalty(models.Model):
 
     def delete(self, *args, **kwargs):
         raise ValidationError("Penalty records cannot be deleted")
+    
+
+class LongDistanceRoutes(models.Model):
+    bus_route_no = models.CharField(verbose_name="Bus Route No.", max_length=10)
+    bus_route_name = models.CharField(verbose_name="Bus Route Name", max_length=255)
+
+    def __str__(self):
+        return f"{self.bus_route_no} - {self.bus_route_name}"
+
+class LongDistanceStudents(models.Model):
+    user = models.ForeignKey('authentication.User', on_delete=models.CASCADE)
+    route = models.ForeignKey(LongDistanceRoutes, on_delete=models.CASCADE)

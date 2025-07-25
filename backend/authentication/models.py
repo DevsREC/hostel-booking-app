@@ -69,7 +69,8 @@ class User(AbstractUser):
     tution_fee = models.BooleanField(default=True)
     student_type = models.CharField(default='Mgmt', max_length=10, choices=STUDENT_TYPE)
     degree_type = models.CharField(default='UG', max_length=10, choices=DEGREE_TYPE)
-
+    is_long_distance_student = models.BooleanField(default=False)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -100,6 +101,7 @@ class User(AbstractUser):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'gender': self.gender,
+            'is_long_distance': self.is_long_distance_student,
         }, status=status.HTTP_200_OK)
 
         response.set_cookie(key='token', value=token, samesite='Lax', httponly=True, secure=False, domain=settings.COOKIE_DOMAIN)

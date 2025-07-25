@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     gender = serializers.CharField(required=True)
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone_number', 'dept', 'year', 'gender')
+        fields = ('email', 'first_name', 'last_name', 'phone_number', 'dept', 'year', 'gender', 'is_long_distance_student')
 
 
 class LoginSerializer(serializers.ModelSerializer):

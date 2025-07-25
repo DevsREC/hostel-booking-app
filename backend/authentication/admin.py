@@ -28,6 +28,7 @@ class UserAdmin(ImportExportActionModelAdmin, ModelAdmin):
         ('Student info', {'fields': ('tution_fee', 'student_type', 'degree_type')}),
         ('Academic Info', {'fields': ('year', 'dept', 'roll_no')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser','groups', 'user_permissions')}),
+        ('Long Distance', {'fields': ('is_long_distance_student',)}),
         ('Other Info', {'fields': ('last_login', 'date_joined')}),
     )
 

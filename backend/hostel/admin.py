@@ -432,3 +432,16 @@ class PenaltyAdmin(ModelAdmin):
     list_filter = list_display
     search_fields = ['user__roll_no', 'user__email',]
     # readonly_fields = list_display
+    
+@admin.register(LongDistanceRoutes)
+class LongDistanceRoutesAdmin(ModelAdmin):
+    list_display = ['bus_route_no', 'bus_route_name']
+    list_filter = list_display
+    search_fields = list_display
+  
+  
+@admin.register(LongDistanceStudents)
+class LongDistanceStudentsAdmin(ModelAdmin):
+    list_display = ['user', 'route']
+    list_filter = list_display
+    search_fields = list_display
