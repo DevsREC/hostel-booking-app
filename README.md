@@ -24,7 +24,7 @@
 
 <div align="center">
 
-[🚀 Live Demo](#) • [📱 Student Portal](#) • [🖥️ Admin Dashboard](#) • [📖 Documentation](#getting-started) • [🐛 Report Issues](https://github.com/DevsREC/hostel-booking-app/issues)
+[🚀 Live Demo](https://hostel.rajalakshmi.org/) • [📱 Student Portal](https://hostel.rajalakshmi.org/) • [📖 Documentation](#getting-started) • [🐛 Report Issues](https://github.com/DevsREC/hostel-booking-app/issues)
 
 </div>
 
