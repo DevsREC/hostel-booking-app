@@ -10,7 +10,7 @@ import { Building2, MapPin, Users, Utensils, User2, BedDouble, AlertCircle, Bath
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { api } from "@/action/user";
+import { api, useCurrentUser } from "@/action/user";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -34,6 +34,7 @@ export default function HostelDetail() {
 
     const { data: hostel, isLoading: isLoadingHostel } = useGetHostelById(id || "");
     const { data: userBookings } = useGetUserBookings();
+    const { data: currentUser } = useCurrentUser();
 
     // Set default food type based on available options
     useEffect(() => {
@@ -373,9 +374,13 @@ export default function HostelDetail() {
                                     <div className="bg-yellow-50 p-4 rounded-lg space-y-2 text-sm text-yellow-800">
                                         <p>1. An OTP will be sent to your email for verification.</p>
                                         <p>2. The OTP is valid for 10 minutes only.</p>
-                                        <p>3. After OTP verification, you must complete the payment within 5 days.</p>
-                                        <p>4. If failed to pay within given deadline, booking will be cancelled and a Rs.10,000 penalty will be added.</p>
-                                        <p>5. The Fees shown is for the entire academic year.</p>
+                                        {!currentUser?.is_long_distance_student && (
+                                            <>
+                                                <p>3. After OTP verification, you must complete the payment within 5 days.</p>
+                                                <p>4. If failed to pay within given deadline, booking will be cancelled and a Rs.10,000 penalty will be added.</p>
+                                                <p>5. The Fees shown is for the entire academic year.</p>                                        
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
