@@ -434,10 +434,11 @@ class PenaltyAdmin(ModelAdmin):
     # readonly_fields = list_display
     
 @admin.register(LongDistanceRoutes)
-class LongDistanceRoutesAdmin(ModelAdmin):
+class LongDistanceRoutesAdmin(ModelAdmin, ImportExportActionModelAdmin):
     list_display = ['bus_route_no', 'bus_route_name']
     list_filter = list_display
     search_fields = list_display
+    resource_classes = [LongDistanceRoutesResources]
   
   
 @admin.register(LongDistanceStudents)

@@ -7,6 +7,7 @@ import Bookings from "./bookings/page";
 import BookingDetail from "./bookings/[id]/page";
 import { ProtectedRoute } from "../../components/auth/protected-route";
 import PageNotFound from "../page-not-found/page";
+import SpecialFormPage from "./special-form/page";
 
 export default function Dashboard() {
   return (
@@ -19,6 +20,7 @@ export default function Dashboard() {
         <Route path="/hostels/:id" element={<HostelDetail />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/bookings/:id" element={<BookingDetail />} />
+        <Route path="/special-form" element={<SpecialFormPage />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </ProtectedRoute>

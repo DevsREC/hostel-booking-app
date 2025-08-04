@@ -70,10 +70,14 @@ class Hostel(models.Model):
     def clean(self):
         self.total_capacity = self.person_per_room * self.no_of_rooms
 
-    def get_amount(self, year, quota):
+    def get_amount(self, year, quota, is_long_distance_student):
         if not year or not quota:
             year = self.context.get('year')
             quota = self.context.get('quota')
+        
+        if is_long_distance_student:
+            return 0
+        
         amounts = {
             1: {
                 "Govt": {
@@ -281,6 +285,8 @@ class RoomBooking(models.Model):
         super().save(*args, **kwargs)
 
     def get_amount(self):
+        if self.user.is_long_distance_student:
+            return 0
         try:
             amounts = {
                 1: {

@@ -101,7 +101,18 @@ class User(AbstractUser):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'gender': self.gender,
-            'is_long_distance': self.is_long_distance_student,
+            'is_long_distance_student': self.is_long_distance_student,
+            'email': self.email,
+            'year': self.year,
+            'dept': self.dept,
+            'roll_no': self.roll_no,
+            'phone_number': self.phone_number,
+            'parent_phone_number': self.parent_phone_number,
+            'is_active': self.is_active,
+            'is_staff': self.is_staff,
+            'is_superuser': self.is_superuser,
+            'date_joined': self.date_joined,
+            'last_login': self.last_login,
         }, status=status.HTTP_200_OK)
 
         response.set_cookie(key='token', value=token, samesite='Lax', httponly=True, secure=False, domain=settings.COOKIE_DOMAIN)

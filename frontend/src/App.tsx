@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router'
 import { MainLayout } from './components/global/main-layout'
-import Landing from './app/landing/page'
 import Login from './app/auth/login/login'
 import PageNotFound from './app/page-not-found/page'
 import Dashboard from './app/main/page'
@@ -11,6 +10,7 @@ import ForgotPassword from './app/auth/forgot-password/page'
 import { fetchCSRFToken, setupCSRF } from './utils/csrf'
 import { useEffect } from 'react'
 import ReactGA from 'react-ga4'
+import SpecialFormPage from './app/main/special-form/page';
 
 function App() {
 
@@ -47,6 +47,8 @@ function App() {
             </PublicOnlyRoute>
           } />
         </Route>
+
+        {/* Special form route at top level */}
 
         <Route element={<DashboardLayout />}>
           <Route path="/*" element={

@@ -24,6 +24,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         return <Navigate to="/auth/login" state={{ from: location }} replace />;
     }
 
+    // Redirect if user has a booking
+    // if (user.has_booking && location.pathname !== "/") {
+    //     return <Navigate to="/" replace />;
+    // }
+
+    // Removed long distance student redirect logic
+
     return <>{children}</>;
 };
 

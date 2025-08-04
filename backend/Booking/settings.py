@@ -30,7 +30,7 @@ is_dev = ENVIRONMENT == 'development'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = config("DEBUG", False)
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost', 'https://hostel.rajalakshmi.org']
@@ -340,12 +340,12 @@ UNFOLD = {
                 "items": [
                     {
                         "title": "Long Distance Router",
-                        "icon": "bus",
+                        "icon": "directions_bus",
                         "link": reverse_lazy("admin:hostel_longdistanceroutes_changelist"),
                     },
                     {
                         "title": "Long Distance Students",
-                        "icon": "bus",
+                        "icon": "person_book",
                         "link": reverse_lazy("admin:hostel_longdistancestudents_changelist"),
                     },
                 ]

@@ -111,6 +111,8 @@ class ProfileAPIView(generics.CreateAPIView):
             "is_superuser": user.is_superuser,
             "date_joined": user.date_joined,
             "last_login": user.last_login,
+            "is_long_distance_student": user.is_long_distance_student,
+            "has_booking": RoomBooking.objects.filter(user=user, status__in=["otp_pending", "payment_pending", "confirmed"]).exists(),
         }
 
         return Response({

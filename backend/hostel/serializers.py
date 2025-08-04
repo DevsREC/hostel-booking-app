@@ -15,7 +15,8 @@ class HostelSerializer(serializers.ModelSerializer):
     def get_amount(self, obj):
         year = self.context.get('year')
         std_type = self.context.get('quota')
-        return obj.get_amount(year, std_type)
+        is_long_distance_student = self.context.get('is_long_distance_student')
+        return obj.get_amount(year, std_type, is_long_distance_student)
         # # 3 : Govt
         # # 3 : Mgmt
         # print(f"{year} : {std_type}")
@@ -46,3 +47,14 @@ class RoomBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomBooking
         fields = ['id', 'user', 'hostel', 'status', 'payment_expiry', "booked_at", "payment_completed_at", "food_type"]
+
+class LongDistanceRoutesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LongDistanceRoutes
+        fields = ['id', 'bus_route_no', 'bus_route_name']
+
+class LongDistanceStudentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LongDistanceStudents
+        fields = ['id', 'user', 'route']
+        read_only_fields = ['user']

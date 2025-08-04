@@ -5,6 +5,13 @@ import { api } from "./user";
 import { useCurrentUser } from "./user";
 import axios from "axios";
 
+// Route interface for long distance routes
+export interface Route {
+    id: number;
+    bus_route_no: string;
+    bus_route_name: string;
+}
+
 // Get all hostels
 export const useGetHostels = () => {
     const { data: currentUser } = useCurrentUser();
@@ -137,6 +144,31 @@ export const useCancelBooking = (onSuccess?: () => void) => {
             }
         },
         'userBookings',
+        onSuccess
+    );
+};
+
+// Get all long distance routes
+export const useGetLongDistanceRoutes = () => {
+    return useQueryData<Route[]>(
+        ['longDistanceRoutes'],
+        async () => {
+            const response = await api.get('/hostel/long-distance-routes/');
+            // If paginated, use response.data.results, else response.data
+            return response.data.results || response.data;
+        }
+    );
+};
+
+// Create long distance student
+export const useCreateLongDistanceStudent = (onSuccess?: () => void) => {
+    return useMutationData<any, { route: number }>(
+        ['longDistanceStudent'],
+        async (payload) => {
+            const response = await api.post('/hostel/long-distance-students/', payload);
+            return response.data;
+        },
+        undefined,
         onSuccess
     );
 }; 

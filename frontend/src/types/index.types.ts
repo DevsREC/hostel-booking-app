@@ -12,8 +12,10 @@ export interface User {
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
-  date_joined: string;
+  date_joined: string;x 
   last_login: string | null;
+  is_long_distance_student: boolean;
+  has_booking: boolean;
 }
 
 // Types
@@ -55,6 +57,8 @@ export interface LoginResponse {
   date_joined: string;
   last_login: string;
   user?: User;
+  is_long_distance_student: boolean;
+  has_booking: boolean;
 }
 
 export interface Hostel {

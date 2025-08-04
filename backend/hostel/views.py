@@ -210,8 +210,11 @@ class GetHostelDataAPI(generics.CreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Hostel.objects.filter(enable=True, gender__in=[user.gender])
-
+        print("Is long distance user", user.is_long_distance_student)
+        if user.is_long_distance_student:
+            queryset = Hostel.objects.filter(enable=True, gender__in=[user.gender], room_type='NON-AC')
+        else:
+            queryset = Hostel.objects.filter(enable=True, gender__in=[user.gender])
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -223,9 +226,26 @@ class GetHostelDataAPI(generics.CreateAPIView):
                 'code': 'user_not_found'
             }, status=status.HTTP_401_UNAUTHORIZED)
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={"year": user.year, "quota": user.student_type})
-        print(serializer.data)
+        serializer = self.get_serializer(queryset, many=True, context={"year": user.year, "quota": user.student_type, 'is_long_distance_student': user.is_long_distance_student})
         return Response({
             "message": "Fetched data successfully",
             "data": serializer.data
         })
+
+class LongDistanceRoutesListAPI(generics.ListAPIView):
+    queryset = LongDistanceRoutes.objects.all()
+    serializer_class = LongDistanceRoutesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [IsAuthenticated]
+
+class LongDistanceStudentsCreateAPI(generics.CreateAPIView):
+    queryset = LongDistanceStudents.objects.all()
+    serializer_class = LongDistanceStudentsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        instance = serializer.save(user=self.request.user)
+        user = self.request.user
+        user.is_long_distance_student = True
+        user.save()

@@ -51,9 +51,7 @@ export default function Login() {
   });
 
   // Use the login mutation
-  const { mutate, isPending } = useLoginUser(() => {
-    navigate("/dashboard");
-  });
+  const { mutate, isPending } = useLoginUser();
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -71,9 +69,14 @@ export default function Login() {
               first_name: result.user?.first_name,
               last_name: result.user?.last_name,
               gender: result.user?.gender,
+              is_long_distance_student: result.user?.is_long_distance_student
             };
             localStorage.setItem('user', JSON.stringify(userData));
             toast.success("Login successful! Welcome back.");
+            if(userData.is_long_distance_student === false) {
+              navigate('/special-form');
+              return;
+            }
             navigate("/");
           } else {
             // Handle specific error cases based on error code
