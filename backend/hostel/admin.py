@@ -48,7 +48,7 @@ class HostelAdmin(ImportExportActionModelAdmin, ModelAdmin):
 class RoomBookingAdmin(ImportExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'hostel', 'status', 'booked_at', 'payment_expiry','food_type', 'amount', 'verified_by',)
     readonly_fields = ('verified_by',)
-    list_filter = ('status', 'user__year', 'hostel', 'hostel__location', 'payment_expiry', 'is_payment_link_sent')
+    list_filter = ('status', 'user__is_long_distance_student', 'user__year', 'hostel', 'hostel__location', 'payment_expiry', 'is_payment_link_sent')
     search_fields = ('user__first_name', 'user__email', 'hostel__name', 'verified_by__first_name', 'user__roll_no')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
@@ -291,7 +291,7 @@ class PaymentManagement(RoomBooking):
 @admin.register(PaymentManagement)
 class PaymentManagementAdmin(ExportActionModelAdmin, ModelAdmin):
     list_display = ('user', 'user_year', 'student_type', 'user_gender', 'hostel_name', 'is_payment_link_sent', 'amount', 'payment_status', 'payment_actions')
-    list_filter = ('status', 'user__year', 'hostel', 'status', 'is_payment_link_sent')
+    list_filter = ('status', 'user__is_long_distance_student', 'user__year', 'hostel', 'status', 'is_payment_link_sent')
     search_fields = ('user__email', 'user__roll_no', 'user__first_name', 'hostel__name', 'payment_reference')
     readonly_fields = ('user', 'hostel', 'user_gender', 'hostel_name', 'amount', 'status', 'payment_expiry')
     resource_classes = [RoomBookingResource]
@@ -444,5 +444,5 @@ class LongDistanceRoutesAdmin(ModelAdmin, ImportExportActionModelAdmin):
 @admin.register(LongDistanceStudents)
 class LongDistanceStudentsAdmin(ModelAdmin):
     list_display = ['user', 'route']
-    list_filter = list_display
-    search_fields = list_display
+    list_filter = ['route']
+    search_fields = ['user__roll_no', 'user__email']
