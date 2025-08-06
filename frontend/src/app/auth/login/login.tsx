@@ -13,7 +13,7 @@ import { toast } from "sonner";
 // Define the login schema with Zod
 const loginSchema = z.object({
   email: z.string()
-    .min(1, "Roll number is required"),
+    .email("Email is required"),
   password: z.string().min(1, "Password is required")
 });
 
@@ -58,7 +58,8 @@ export default function Login() {
       // Add the domain to the roll number before sending
       const emailData = {
         ...data,
-        email: `${data.email}@rajalakshmi.edu.in`
+        // email: `${data.email}@rajalakshmi.edu.in`
+        email: `${data.email}`
       };
       mutate(emailData, {
         onSuccess: (result) => {
@@ -161,18 +162,15 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base">Roll Number</Label>
+                <Label htmlFor="email" className="text-base">Email</Label>
                 <div className="flex items-center">
                   <Input
                     id="email"
-                    type="text"
-                    placeholder="Roll No"
+                    type="email"
+                    placeholder="Email"
                     className="h-11 rounded-r-none"
                     {...register("email")}
                   />
-                  <div className="h-11 px-3 flex items-center bg-muted border border-l-0 rounded-r-md">
-                    @rajalakshmi.edu.in
-                  </div>
                 </div>
                 {errors.email && (
                   <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
@@ -188,6 +186,7 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
+                  placeholder="********"
                   className="h-11"
                   {...register("password")}
                 />

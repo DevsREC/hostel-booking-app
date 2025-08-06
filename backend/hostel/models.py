@@ -205,7 +205,7 @@ class RoomBooking(models.Model):
                     raise ValidationError("User gender doesn't match hostel gender requirement")
                     
                 if self.is_internal_booking:
-                    if self.hostel.admin_bookings_available() <= 0:
+                    if self.hostel.admin_bookings_available() <= 0 or self.hostel.available_rooms() <= 0:
                         raise ValidationError("No more internal reservation slots available in the new hostel")
                 else:
                     if not self.hostel.is_available():
@@ -222,7 +222,7 @@ class RoomBooking(models.Model):
                 raise ValidationError("User gender doesn't match hostel gender requirement")
                 
             if self.is_internal_booking:
-                if self.hostel.admin_bookings_available() <= 0:
+                if self.hostel.admin_bookings_available() <= 0 or self.hostel.available_rooms() <= 0:
                     raise ValidationError("No more internal reservation slots available")
             else:
                 if not self.hostel.is_available():
@@ -281,7 +281,6 @@ class RoomBooking(models.Model):
                 },
                 template_name="payment_rejection_template.html"
             )
-        print("After conditions", self.user)
         super().save(*args, **kwargs)
 
     def get_amount(self):

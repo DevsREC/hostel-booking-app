@@ -246,9 +246,9 @@ export default function ForgotPassword() {
                 <Card className="w-full max-w-md shadow-lg bg-background/80 backdrop-blur-sm border-border/50">
                     <CardHeader className="text-center space-y-4">
                         <img
-                            src="/images/images.jpeg"
+                            src="/images/rec_logo.png"
                             alt="REC Hostel Logo"
-                            className="w-24 h-24 mx-auto object-contain"
+                            className="w-32 h-32 mx-auto object-contain"
                         />
                         <div className="space-y-2">
                             <CardTitle className="text-2xl font-bold">

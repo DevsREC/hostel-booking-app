@@ -220,73 +220,79 @@ export default function HostelsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {hostels.map((hostel) => (
-                    <Card
-                        key={hostel.id}
-                        className="overflow-hidden border border-border shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
-                    >
-                        <CardHeader className="relative pt-6 pb-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <CardTitle className="text-xl font-semibold text-card-foreground">{hostel.name}</CardTitle>
-                                <div className="flex gap-1.5">
-                                    <Badge variant="default" className="bg-primary text-primary-foreground px-2 py-0.5 text-xs">
-                                        {hostel.room_type}
+                {hostels.map((hostel) => 
+                    {
+                        return hostel.available_rooms > 0 ? <>
+                            <Card
+                                key={hostel.id}
+                                className="overflow-hidden border border-border shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-card"
+                            >
+                                <CardHeader className="relative pt-6 pb-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <CardTitle className="text-xl font-semibold text-card-foreground">{hostel.name}</CardTitle>
+                                        <div className="flex gap-1.5">
+                                            <Badge variant="default" className="bg-primary text-primary-foreground px-2 py-0.5 text-xs">
+                                                {hostel.room_type}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <MapPin className="h-4 w-4 shrink-0" />
+                                        <span className="text-sm">{hostel.location}</span>
+                                    </div>
+                                    <Badge variant="outline" className="mt-2 bg-background/90 px-2 py-0.5 text-xs border-primary/50 text-primary">
+                                        {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
+                                        hostel.is_veg ? "Veg" : 
+                                        hostel.is_non_veg ? "Non-veg" : "No food"}
                                     </Badge>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4 shrink-0" />
-                                <span className="text-sm">{hostel.location}</span>
-                            </div>
-                            <Badge variant="outline" className="mt-2 bg-background/90 px-2 py-0.5 text-xs border-primary/50 text-primary">
-                                {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
-                                 hostel.is_veg ? "Veg" : 
-                                 hostel.is_non_veg ? "Non-veg" : "No food"}
-                            </Badge>
-                        </CardHeader>
-                        <CardContent className="space-y-4 pt-0">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Users className="h-4 w-4" />
-                                    <span className="text-sm">Available</span>
-                                </div>
-                                <span className="font-semibold text-card-foreground">{hostel.available_rooms}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Utensils className="h-4 w-4" />
-                                    <span className="text-sm">Food Options</span>
-                                </div>
-                                <span className="font-semibold text-card-foreground">
-                                    {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
-                                     hostel.is_veg ? "Veg only" : 
-                                     hostel.is_non_veg ? "Non-veg only" : "No food"}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                    <IndianRupee className="h-4 w-4" />
-                                    <span className="text-sm">Starting From</span>
-                                </div>
-                                <span className="font-semibold text-card-foreground">
-                                    ₹{(() => {
-                                        if (!hostel.amount || Object.values(hostel.amount).length === 0) return 0;
-                                        const validAmounts = Object.values(hostel.amount).filter(val => val > 0);
-                                        return validAmounts.length > 0 ? Math.min(...validAmounts) : 0;
-                                    })()}
-                                </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground italic">*Total fees including academic and hostel fee</p>
-                        </CardContent>
-                        <CardFooter className="pt-2 pb-6">
-                            <Link to={`/hostels/${hostel.id}`} className="w-full">
-                                <Button className="w-full h-10 text-sm font-medium" variant="default">
-                                    View Details
-                                </Button>
-                            </Link>
-                        </CardFooter>
-                    </Card>
-                ))}
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-0">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Users className="h-4 w-4" />
+                                            <span className="text-sm">Available</span>
+                                        </div>
+                                        <span className="font-semibold text-card-foreground">{hostel.available_rooms}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <Utensils className="h-4 w-4" />
+                                            <span className="text-sm">Food Options</span>
+                                        </div>
+                                        <span className="font-semibold text-card-foreground">
+                                            {hostel.is_veg && hostel.is_non_veg ? "Veg & Non-veg" : 
+                                            hostel.is_veg ? "Veg only" : 
+                                            hostel.is_non_veg ? "Non-veg only" : "No food"}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                            <IndianRupee className="h-4 w-4" />
+                                            <span className="text-sm">Starting From</span>
+                                        </div>
+                                        <span className="font-semibold text-card-foreground">
+                                            ₹{(() => {
+                                                if (!hostel.amount || Object.values(hostel.amount).length === 0) return 0;
+                                                const validAmounts = Object.values(hostel.amount).filter(val => val > 0);
+                                                return validAmounts.length > 0 ? Math.min(...validAmounts) : 0;
+                                            })()}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground italic">*Total fees including academic and hostel fee</p>
+                                </CardContent>
+                                <CardFooter className="pt-2 pb-6">
+                                    <Link to={`/hostels/${hostel.id}`} className="w-full">
+                                        <Button className="w-full h-10 text-sm font-medium" variant="default">
+                                            View Details
+                                        </Button>
+                                    </Link>
+                                </CardFooter>
+                            </Card>
+                        </>
+                        :
+                        <></>
+                    }
+                )}
             </div>
         </div>
     );
