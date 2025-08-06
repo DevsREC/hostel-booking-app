@@ -96,7 +96,7 @@ class GetBookingAPI(generics.CreateAPIView):
         try:
             user = User.objects.get(email = request.user)
             bookings = RoomBooking.objects.filter(user=user)
-            serializer = self.serializer_class(bookings, many=True, context={"year": user.year, "quota": user.student_type})
+            serializer = self.serializer_class(bookings, many=True, context={"year": user.year, "quota": user.student_type, 'is_long_distance_student': user.is_long_distance_student})
             return Response(
                 {
                     "message": "Success!",
