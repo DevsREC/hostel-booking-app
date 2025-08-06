@@ -75,8 +75,8 @@ class Hostel(models.Model):
             year = self.context.get('year')
             quota = self.context.get('quota')
         
-        if is_long_distance_student:
-            return 0
+        # if is_long_distance_student:
+        #     return 0
         
         amounts = {
             1: {
@@ -119,7 +119,20 @@ class Hostel(models.Model):
                     "Mgmt_non_veg": self.fourth_year_fee_mgmt_non_veg,
                 }
             },
+            6: {
+                "Govt": {
+                    "Govt_veg": 0,
+                    "Govt_non_veg": 0,
+                },
+                "Mgmt": {
+                    "Mgmt_veg": 0,
+                    "Mgmt_non_veg": 0,
+                }
+            }
         }
+        if is_long_distance_student:
+            return amounts[6][quota]
+        
         return amounts[year][quota]
     def available_rooms(self):
         booked_rooms = RoomBooking.objects.filter(
@@ -205,15 +218,15 @@ class RoomBooking(models.Model):
                     raise ValidationError("User gender doesn't match hostel gender requirement")
                     
                 if self.is_internal_booking:
-                    if self.hostel.admin_bookings_available() <= 0:
+                    if self.hostel.available_rooms() <= 0 and self.hostel.admin_bookings_available() <= 0:
                         raise ValidationError("No more internal reservation slots available in the new hostel")
                 else:
                     if not self.hostel.is_available():
                         raise ValidationError("The new hostel is currently not available")
             
             elif not original.is_internal_booking and self.is_internal_booking:
-                if self.hostel.admin_bookings_available() <= 0:
-                    raise ValidationError("No more internal reservation slots available")
+                if self.hostel.available_rooms() <= 0 and self.hostel.admin_bookings_available() <= 0:
+                    raise ValidationError("No more internal reservation slots available - Old")
         else:
             old_bookings = RoomBooking.objects.filter(user=self.user, status__in = ['payment_pending', 'otp_pending', 'confirmed'])
             if old_bookings.exists():
@@ -222,8 +235,9 @@ class RoomBooking(models.Model):
                 raise ValidationError("User gender doesn't match hostel gender requirement")
                 
             if self.is_internal_booking:
-                if self.hostel.admin_bookings_available() <= 0:
-                    raise ValidationError("No more internal reservation slots available")
+                if self.hostel.available_rooms() <= 0 and self.hostel.admin_bookings_available() <= 0:
+                    raise ValidationError(f"Admin Available: {self.hostel.admin_bookings_available()} Available: {self.hostel.available_rooms()} Condition: {self.hostel.available_rooms() <= 0 and self.hostel.admin_bookings_available() <= 0}")
+                    raise ValidationError("No more internal reservation slots available - New")
             else:
                 if not self.hostel.is_available():
                     raise ValidationError("This hostel is currently not available")
@@ -285,8 +299,8 @@ class RoomBooking(models.Model):
         super().save(*args, **kwargs)
 
     def get_amount(self):
-        if self.user.is_long_distance_student:
-            return 0
+        # if self.user.is_long_distance_student:
+        #     return 0
         try:
             amounts = {
                 1: {
@@ -329,10 +343,24 @@ class RoomBooking(models.Model):
                         "non_veg": self.hostel.fourth_year_fee_mgmt_non_veg,
                     }
                 },
+                6: {
+                    "Govt": {
+                        "Govt_veg": 0,
+                        "Govt_non_veg": 0,
+                    },
+                    "Mgmt": {
+                        "Mgmt_veg": 0,
+                        "Mgmt_non_veg": 0,
+                    }
+                }
             }
 
             year = self.user.year
             quota = self.user.student_type.title()
+            
+            if self.user.is_long_distance_student:
+                return amounts[6][quota][self.food_type.lower()]
+            
             return amounts[year][quota][self.food_type.lower()]
         except Exception as e:
             print(e)

@@ -52,6 +52,7 @@ class RoomBookingAdmin(ImportExportActionModelAdmin, ModelAdmin):
     search_fields = ('user__first_name', 'user__email', 'hostel__name', 'verified_by__first_name', 'user__roll_no')
     # actions = ['confirm_payment',   'cancel_booking']
     resource_classes = [RoomBookingResource]
+    autocomplete_fields = ('user', )
     
     def amount(self, obj):
         return obj.get_amount()
@@ -442,7 +443,8 @@ class LongDistanceRoutesAdmin(ModelAdmin, ImportExportActionModelAdmin):
   
   
 @admin.register(LongDistanceStudents)
-class LongDistanceStudentsAdmin(ModelAdmin):
+class LongDistanceStudentsAdmin(ModelAdmin, ImportExportActionModelAdmin):
     list_display = ['user', 'route']
     list_filter = ['route']
     search_fields = ['user__roll_no', 'user__email']
+    resource_classes = [LongDistanceStudentsResource]
