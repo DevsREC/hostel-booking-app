@@ -60,3 +60,8 @@ class LongDistanceRoutesResources(resources.ModelResource):
         model = LongDistanceRoutes
         fields = ['bus_route_no', 'bus_route_name']
         import_id_fields = ['bus_route_no']
+        
+class LongDistanceStudentsResource(resources.ModelResource):
+    class Meta:
+        model = LongDistanceStudents
+        fields = ['user__roll_no', 'user__email', 'route__bus_route_name']
